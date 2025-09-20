@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Play, Target, Zap, Gift, TrendingUp } from 'lucide-react'
+import { Play, Target, TrendingUp } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
@@ -37,13 +37,6 @@ export default function HomePage() {
       name: 'Grammar Levels',
       icon: Target,
       route: '/game/levels'
-    },
-    {
-      id: 'quick-match',
-      name: 'Quick Match',
-      icon: Zap,
-      route: '/game/quick-match',
-      disabled: false
     }
   ]
 
@@ -102,7 +95,7 @@ export default function HomePage() {
       id: 'modals-special',
       name: 'Modals & Special Verbs',
       description: 'Essential for real-world communication',
-      icon: Zap,
+      icon: TrendingUp,
       color: 'from-orange-400/80 to-red-500/80',
       progress: 0,
       total: 6,
@@ -112,7 +105,7 @@ export default function HomePage() {
       id: 'commands-suggestions',
       name: 'Commands & Suggestions',
       description: 'Imperatives and polite suggestions',
-      icon: Gift,
+      icon: Target,
       color: 'from-amber-400/80 to-yellow-500/80',
       progress: 0,
       total: 3,
@@ -213,28 +206,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="px-6 pb-6">
-          <div className="max-w-3xl mx-auto flex gap-4 justify-center">
-            <Button
-              onClick={() => router.push('/game/quick-match')}
-              variant="secondary"
-              size="lg"
-              className="rounded-2xl bg-slate-800/70 hover:bg-slate-700/70 text-slate-200 font-semibold shadow-lg backdrop-blur-md border border-slate-600/30 transform hover:scale-105 transition-all duration-300"
-            >
-              Quick Match
-            </Button>
-            <Button
-              onClick={() => router.push('/bonus-packs')}
-              variant="ghost"
-              size="lg"
-              className="text-slate-200 font-semibold hover:bg-slate-800/50 rounded-2xl backdrop-blur-md transform hover:scale-105 transition-all duration-300 border border-slate-600/30"
-            >
-              <Gift className="w-5 h-5 mr-2" />
-              Bonus Packs
-            </Button>
-          </div>
-        </div>
 
         {/* Category Cards */}
         <div className="px-6 pb-10">
