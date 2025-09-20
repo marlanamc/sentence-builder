@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Play, Target, TrendingUp } from 'lucide-react'
+import { Play, Target, TrendingUp, HelpCircle, X, Book, Star, CheckCircle, ArrowRight } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
 export default function HomePage() {
   const router = useRouter()
+  const [showHelpModal, setShowHelpModal] = useState(false)
   const [userStats, setUserStats] = useState({
     streak: 3,
     xp: 180,
@@ -204,8 +205,20 @@ export default function HomePage() {
               </Button>
             ))}
           </div>
-        </div>
 
+          {/* How does this work? Button */}
+          <div className="flex justify-center mt-4">
+            <Button
+              onClick={() => setShowHelpModal(true)}
+              variant="outline"
+              size="sm"
+              className="flex items-center space-x-2 bg-slate-800/70 text-slate-200 border-slate-600/30 hover:bg-slate-700/70 rounded-full backdrop-blur-sm transition-all duration-300"
+            >
+              <HelpCircle className="w-4 h-4" />
+              <span>How does this work?</span>
+            </Button>
+          </div>
+        </div>
 
         {/* Category Cards */}
         <div className="px-6 pb-10">
@@ -270,6 +283,227 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+
+      {/* Help Modal */}
+      {showHelpModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-slate-800 rounded-2xl shadow-2xl max-w-4xl max-h-[90vh] overflow-y-auto m-4 border border-slate-600">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-slate-600">
+              <div className="flex items-center space-x-3">
+                <Book className="w-6 h-6 text-blue-400" />
+                <h2 className="text-2xl font-bold text-white">How to Use the Sentence Builder</h2>
+              </div>
+              <Button
+                onClick={() => setShowHelpModal(false)}
+                variant="ghost"
+                size="sm"
+                className="text-slate-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 space-y-8">
+
+              {/* Game Modes Section */}
+              <section>
+                <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                  <Play className="w-5 h-5 text-green-400 mr-2" />
+                  Game Modes
+                </h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <Card className="p-4 bg-slate-700/50">
+                    <h4 className="font-bold text-green-400 mb-2">Sentence Tiles</h4>
+                    <p className="text-slate-300 text-sm">
+                      Free practice mode. Build sentences using word tiles without time pressure. Perfect for exploring grammar and vocabulary.
+                    </p>
+                  </Card>
+                  <Card className="p-4 bg-slate-700/50">
+                    <h4 className="font-bold text-blue-400 mb-2">Grammar Levels</h4>
+                    <p className="text-slate-300 text-sm">
+                      Structured progression through 47 levels. Master specific grammar topics step by step, from basic present tense to advanced structures.
+                    </p>
+                  </Card>
+                </div>
+              </section>
+
+              {/* How Levels Work */}
+              <section>
+                <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                  <Target className="w-5 h-5 text-purple-400 mr-2" />
+                  How Levels Work - Dual Learning System
+                </h3>
+                <div className="space-y-4">
+                  <Card className="p-4 bg-blue-500/10 border border-blue-500/30">
+                    <h4 className="font-bold text-blue-400 mb-2 flex items-center">
+                      <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs mr-2">1</span>
+                      Learn with Categories (5 sentences)
+                    </h4>
+                    <p className="text-slate-300 text-sm">
+                      Words are organized by type: Subjects (I, you, she), Verbs (eat, play, study), Objects (pizza, soccer).
+                      This helps you understand sentence structure: Subject + Verb + Object.
+                    </p>
+                  </Card>
+                  <div className="flex justify-center">
+                    <ArrowRight className="w-6 h-6 text-slate-400" />
+                  </div>
+                  <Card className="p-4 bg-purple-500/10 border border-purple-500/30">
+                    <h4 className="font-bold text-purple-400 mb-2 flex items-center">
+                      <span className="bg-purple-500 text-white px-2 py-1 rounded-full text-xs mr-2">2</span>
+                      Challenge Mode - Mixed Words (5 sentences)
+                    </h4>
+                    <p className="text-slate-300 text-sm">
+                      Like Duolingo! All words are shuffled together without categories.
+                      Test what you learned by building sentences without help from word groupings.
+                    </p>
+                  </Card>
+                </div>
+              </section>
+
+              {/* Verb Forms Section */}
+              <section>
+                <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                  <Star className="w-5 h-5 text-yellow-400 mr-2" />
+                  Understanding Verb Forms
+                </h3>
+                <div className="grid md:grid-cols-3 gap-4">
+                  <Card className="p-4 bg-slate-700/50">
+                    <h4 className="font-bold text-green-400 mb-2">V1 - Base Form</h4>
+                    <p className="text-slate-300 text-sm mb-2">Present tense, infinitive</p>
+                    <div className="space-y-1 text-xs">
+                      <div className="bg-slate-600/50 p-2 rounded">eat, play, study, work</div>
+                      <div className="text-slate-400">Used with: I, you, we, they</div>
+                    </div>
+                  </Card>
+                  <Card className="p-4 bg-slate-700/50">
+                    <h4 className="font-bold text-orange-400 mb-2">V2 - Past Form</h4>
+                    <p className="text-slate-300 text-sm mb-2">Simple past tense</p>
+                    <div className="space-y-1 text-xs">
+                      <div className="bg-slate-600/50 p-2 rounded">ate, played, studied, worked</div>
+                      <div className="text-slate-400">Used for completed actions</div>
+                    </div>
+                  </Card>
+                  <Card className="p-4 bg-slate-700/50">
+                    <h4 className="font-bold text-blue-400 mb-2">V3 - Past Participle</h4>
+                    <p className="text-slate-300 text-sm mb-2">Perfect tenses, passive voice</p>
+                    <div className="space-y-1 text-xs">
+                      <div className="bg-slate-600/50 p-2 rounded">eaten, played, studied, worked</div>
+                      <div className="text-slate-400">Used with: have, has, had</div>
+                    </div>
+                  </Card>
+                </div>
+                <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                  <h5 className="font-bold text-yellow-400 mb-2">💡 Pro Tip: Toggleable Verbs</h5>
+                  <p className="text-slate-300 text-sm">
+                    Look for the ↔ symbol on verb tiles! Click them to switch between forms:
+                    <span className="bg-slate-600/50 px-2 py-1 rounded mx-1">eat ↔ eats</span>
+                    This helps you match verbs with different subjects.
+                  </p>
+                </div>
+              </section>
+
+              {/* Level Progression */}
+              <section>
+                <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                  <TrendingUp className="w-5 h-5 text-emerald-400 mr-2" />
+                  Level Progression (47 Levels)
+                </h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <Card className="p-3 bg-green-500/10 border border-green-500/30">
+                      <h5 className="font-bold text-green-400 text-sm">Levels 1-8: Present Tense Basics</h5>
+                      <p className="text-slate-300 text-xs">I eat pizza, She plays soccer</p>
+                    </Card>
+                    <Card className="p-3 bg-yellow-500/10 border border-yellow-500/30">
+                      <h5 className="font-bold text-yellow-400 text-sm">Levels 9-12: Time & Expressions</h5>
+                      <p className="text-slate-300 text-xs">Today, always, never, usually</p>
+                    </Card>
+                    <Card className="p-3 bg-red-500/10 border border-red-500/30">
+                      <h5 className="font-bold text-red-400 text-sm">Levels 13-17: Past Tense</h5>
+                      <p className="text-slate-300 text-xs">I ate pizza yesterday</p>
+                    </Card>
+                    <Card className="p-3 bg-purple-500/10 border border-purple-500/30">
+                      <h5 className="font-bold text-purple-400 text-sm">Levels 18-24: Present Perfect</h5>
+                      <p className="text-slate-300 text-xs">I have eaten pizza today</p>
+                    </Card>
+                  </div>
+                  <div className="space-y-3">
+                    <Card className="p-3 bg-blue-500/10 border border-blue-500/30">
+                      <h5 className="font-bold text-blue-400 text-sm">Levels 25-29: Future Tenses</h5>
+                      <p className="text-slate-300 text-xs">I will eat pizza tomorrow</p>
+                    </Card>
+                    <Card className="p-3 bg-orange-500/10 border border-orange-500/30">
+                      <h5 className="font-bold text-orange-400 text-sm">Levels 30-35: Modals & Special</h5>
+                      <p className="text-slate-300 text-xs">I can eat, I should study</p>
+                    </Card>
+                    <Card className="p-3 bg-amber-500/10 border border-amber-500/30">
+                      <h5 className="font-bold text-amber-400 text-sm">Levels 36-38: Commands</h5>
+                      <p className="text-slate-300 text-xs">Eat your breakfast!</p>
+                    </Card>
+                    <Card className="p-3 bg-gray-500/10 border border-gray-500/30">
+                      <h5 className="font-bold text-gray-400 text-sm">Levels 39-47: Advanced</h5>
+                      <p className="text-slate-300 text-xs">Comparisons, conditionals, complex structures</p>
+                    </Card>
+                  </div>
+                </div>
+              </section>
+
+              {/* Tips for Success */}
+              <section>
+                <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                  <CheckCircle className="w-5 h-5 text-emerald-400 mr-2" />
+                  Tips for Success
+                </h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <ul className="space-y-2 text-slate-300 text-sm">
+                    <li className="flex items-start space-x-2">
+                      <span className="text-green-400 mt-1">•</span>
+                      <span>Start with basic sentences: Subject + Verb + Object</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <span className="text-green-400 mt-1">•</span>
+                      <span>Pay attention to verb forms - click toggleable verbs to match subjects</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <span className="text-green-400 mt-1">•</span>
+                      <span>Use the Pattern box to understand sentence structure</span>
+                    </li>
+                  </ul>
+                  <ul className="space-y-2 text-slate-300 text-sm">
+                    <li className="flex items-start space-x-2">
+                      <span className="text-green-400 mt-1">•</span>
+                      <span>Read the Grammar Guide for detailed explanations</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <span className="text-green-400 mt-1">•</span>
+                      <span>Practice makes perfect - complete both learning phases!</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <span className="text-green-400 mt-1">•</span>
+                      <span>Challenge mode prepares you for real conversations</span>
+                    </li>
+                  </ul>
+                </div>
+              </section>
+
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-6 py-4 border-t border-slate-600 bg-slate-700/30">
+              <div className="flex justify-center">
+                <Button
+                  onClick={() => setShowHelpModal(false)}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full"
+                >
+                  Got it! Let&apos;s start learning
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
