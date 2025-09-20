@@ -31,6 +31,9 @@ export default function LevelPage() {
   const [isEvaluating, setIsEvaluating] = useState(false) // Show evaluation animation
   const [usedPronouns, setUsedPronouns] = useState<string[]>([]) // Track used pronouns for variety
   const [lastCheckTime, setLastCheckTime] = useState(0) // Prevent double-checking
+  const [categorizedCorrect, setCategorizedCorrect] = useState(0) // Track correct sentences in categorized mode
+  const [shuffledCorrect, setShuffledCorrect] = useState(0) // Track correct sentences in shuffled mode
+  const [learningMode, setLearningMode] = useState<'categorized' | 'shuffled'>('categorized') // Current learning mode
 
   // Load user stats
   useEffect(() => {
@@ -215,10 +218,27 @@ export default function LevelPage() {
       setFeedback(finalFeedback)
       setShowFeedback(true)
 
-      // Update stats
+      // Update stats and handle mode progression
       if (validation.isValid) {
-        const newProgress = levelProgress + 1
-        setLevelProgress(newProgress)
+        if (learningMode === 'categorized') {
+          const newCategorizedCorrect = categorizedCorrect + 1
+          setCategorizedCorrect(newCategorizedCorrect)
+
+          // After 5 correct in categorized mode, switch to shuffled mode
+          if (newCategorizedCorrect >= 5) {
+            setLearningMode('shuffled')
+            setFeedback('🎉 Great! Now try without categories - like Duolingo! All words are mixed together.')
+          }
+        } else {
+          const newShuffledCorrect = shuffledCorrect + 1
+          setShuffledCorrect(newShuffledCorrect)
+
+          // After 5 correct in shuffled mode, level is complete
+          if (newShuffledCorrect >= 5) {
+            const newProgress = levelProgress + 1
+            setLevelProgress(newProgress)
+          }
+        }
 
         // Track used pronouns for variety enforcement
         const usedPronoun = selectedTiles.find(tile => tile.category.includes('pronoun'))
@@ -268,6 +288,22 @@ export default function LevelPage() {
   const removeTile = (index: number) => {
     const newTiles = selectedTiles.filter((_, i) => i !== index)
     setSelectedTiles(newTiles)
+  }
+
+  // Generate shuffled words for challenge mode (like Duolingo)
+  const getShuffledWords = () => {
+    const allWords: Array<{ word: string; category: string; originalWord: string; toggleable?: boolean }> = []
+
+    // Collect all words from required categories
+    const requiredCategories = level.requiredCategories || []
+    requiredCategories.forEach(categoryName => {
+      const categoryWords = wordCategories[categoryName as keyof typeof wordCategories] || []
+      allWords.push(...categoryWords)
+    })
+
+    // Shuffle the array
+    const shuffled = [...allWords].sort(() => Math.random() - 0.5)
+    return shuffled
   }
 
   // Helper function to render markdown bold text in feedback
@@ -1391,21 +1427,37 @@ export default function LevelPage() {
               <div className="text-center mb-3">
                 <div className="flex items-center justify-center space-x-2">
                   <BookOpen className="w-4 h-4 text-white" />
-                  <h2 className="text-lg font-bold text-white">Build Your Sentence</h2>
+                  <h2 className="text-lg font-bold text-white">
+                    {learningMode === 'categorized' ? 'Build Your Sentence' : 'Challenge Mode - Mixed Words!'}
+                  </h2>
                 </div>
 
-                {/* Level Goal Progress Bar with Integrated Feedback */}
+                {/* Dual-Mode Progress Bar */}
                 <div className="mt-2 max-w-md mx-auto">
                   <div className="flex items-center justify-between text-xs text-gray-300 mb-1">
-                    <span>Progress</span>
-                    <span>{levelProgress}/5 correct</span>
+                    <span>
+                      {learningMode === 'categorized' ? 'Learn with Categories' : 'Challenge - No Categories'}
+                    </span>
+                    <span>
+                      {learningMode === 'categorized'
+                        ? `${categorizedCorrect}/5 correct`
+                        : `${shuffledCorrect}/5 correct`}
+                    </span>
                   </div>
                   <div className={`bg-slate-700/50 rounded-full h-1.5 transition-all duration-300 ${
                     isEvaluating ? 'ring-2 ring-blue-400/50 animate-pulse' : ''
                   }`}>
                     <div
-                      className="bg-gradient-to-r from-green-400 to-emerald-400 h-1.5 rounded-full transition-all duration-500"
-                      style={{ width: `${(levelProgress / 5) * 100}%` }}
+                      className={`h-1.5 rounded-full transition-all duration-500 ${
+                        learningMode === 'categorized'
+                          ? 'bg-gradient-to-r from-blue-400 to-blue-500'
+                          : 'bg-gradient-to-r from-purple-400 to-purple-500'
+                      }`}
+                      style={{
+                        width: `${learningMode === 'categorized'
+                          ? (categorizedCorrect / 5) * 100
+                          : (shuffledCorrect / 5) * 100}%`
+                      }}
                     ></div>
                   </div>
 
@@ -1546,53 +1598,85 @@ export default function LevelPage() {
 
 
 
-            {/* Main Categories Row - Horizontal Scroll */}
-            <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory">
-              {['subjects', 'verbs', 'articles', 'objects', 'helpers', 'negatives'].filter(categoryName =>
-                level.requiredCategories?.includes(categoryName)
-              ).map(categoryName => {
-                const categoryWords = wordCategories[categoryName as keyof typeof wordCategories] || []
-                if (categoryWords.length === 0) return null
+            {/* Conditional Word Layout - Categorized vs Shuffled */}
+            {learningMode === 'categorized' ? (
+              /* Categorized Mode - Horizontal Scroll Categories */
+              <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory">
+                {['subjects', 'verbs', 'articles', 'objects', 'helpers', 'negatives'].filter(categoryName =>
+                  level.requiredCategories?.includes(categoryName)
+                ).map(categoryName => {
+                  const categoryWords = wordCategories[categoryName as keyof typeof wordCategories] || []
+                  if (categoryWords.length === 0) return null
 
-                const categoryColor = categoryName === 'subjects' ? 'from-sky-200/60 to-sky-300/60' :
-                                    categoryName === 'verbs' ? 'from-purple-200/60 to-purple-300/60' :
-                                    categoryName === 'articles' ? 'from-pink-200/60 to-pink-300/60' :
-                                    categoryName === 'objects' ? 'from-orange-200/60 to-orange-300/60' :
-                                    categoryName === 'helpers' ? 'from-violet-200/60 to-violet-300/60' :
-                                    categoryName === 'negatives' ? 'from-red-200/60 to-red-300/60' :
-                                    'from-gray-200/60 to-gray-300/60'
+                  const categoryColor = categoryName === 'subjects' ? 'from-sky-200/60 to-sky-300/60' :
+                                      categoryName === 'verbs' ? 'from-purple-200/60 to-purple-300/60' :
+                                      categoryName === 'articles' ? 'from-pink-200/60 to-pink-300/60' :
+                                      categoryName === 'objects' ? 'from-orange-200/60 to-orange-300/60' :
+                                      categoryName === 'helpers' ? 'from-violet-200/60 to-violet-300/60' :
+                                      categoryName === 'negatives' ? 'from-red-200/60 to-red-300/60' :
+                                      'from-gray-200/60 to-gray-300/60'
 
-                return (
-                  <Card key={categoryName} className="bg-slate-800/90 backdrop-blur-sm shadow-lg border-0 rounded-2xl overflow-hidden border border-slate-700/50 flex-shrink-0 w-72 snap-start">
-                    <div className={`bg-gradient-to-r ${categoryColor} p-2`}>
-                      <div className="flex items-center justify-center space-x-1">
-                        <span className="text-lg">{getCategoryIcon(categoryName)}</span>
-                        <h3 className="text-sm font-bold capitalize text-gray-900">
-                          {categoryName.replace('-', ' ')}
-                        </h3>
+                  return (
+                    <Card key={categoryName} className="bg-slate-800/90 backdrop-blur-sm shadow-lg border-0 rounded-2xl overflow-hidden border border-slate-700/50 flex-shrink-0 w-72 snap-start">
+                      <div className={`bg-gradient-to-r ${categoryColor} p-2`}>
+                        <div className="flex items-center justify-center space-x-1">
+                          <span className="text-lg">{getCategoryIcon(categoryName)}</span>
+                          <h3 className="text-sm font-bold capitalize text-gray-900">
+                            {categoryName.replace('-', ' ')}
+                          </h3>
+                        </div>
                       </div>
-                    </div>
-                    <div className="p-2 sm:p-3">
-                      <div className="flex flex-wrap gap-2 justify-center">
-                        {categoryWords.map((wordObj: { word: string; category: string; toggleable?: boolean }, index: number) => (
-                          <Button
-                            key={index}
-                            variant="outline"
-                            onClick={() => handleTileClick(wordObj.word, wordObj.category)}
-                            className={`${getCategoryColor(wordObj.category)} transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 rounded-full px-3 py-2 font-medium text-sm min-h-[40px] touch-manipulation`}
-                          >
-                            {wordObj.word}
-                            {wordObj.toggleable && (
-                              <span className="ml-1 text-xs opacity-70">↔</span>
-                            )}
-                          </Button>
-                        ))}
+                      <div className="p-2 sm:p-3">
+                        <div className="flex flex-wrap gap-2 justify-center">
+                          {categoryWords.map((wordObj: { word: string; category: string; toggleable?: boolean }, index: number) => (
+                            <Button
+                              key={index}
+                              variant="outline"
+                              onClick={() => handleTileClick(wordObj.word, wordObj.category)}
+                              className={`${getCategoryColor(wordObj.category)} transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 rounded-full px-3 py-2 font-medium text-sm min-h-[40px] touch-manipulation`}
+                            >
+                              {wordObj.word}
+                              {wordObj.toggleable && (
+                                <span className="ml-1 text-xs opacity-70">↔</span>
+                              )}
+                            </Button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  </Card>
-                )
-              })}
-            </div>
+                    </Card>
+                  )
+                })}
+              </div>
+            ) : (
+              /* Shuffled Mode - All Words Mixed Like Duolingo */
+              <Card className="bg-slate-800/90 backdrop-blur-sm shadow-lg border-0 rounded-2xl overflow-hidden border border-slate-700/50">
+                <div className="bg-gradient-to-r from-purple-400/60 to-pink-400/60 p-2">
+                  <div className="flex items-center justify-center space-x-1">
+                    <span className="text-lg">🎯</span>
+                    <h3 className="text-sm font-bold text-gray-900">
+                      Challenge Mode - All Words Mixed!
+                    </h3>
+                  </div>
+                </div>
+                <div className="p-3">
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {getShuffledWords().map((wordObj, index) => (
+                      <Button
+                        key={`${wordObj.word}-${index}`}
+                        variant="outline"
+                        onClick={() => handleTileClick(wordObj.word, wordObj.category)}
+                        className={`${getCategoryColor(wordObj.category)} transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 rounded-full px-3 py-2 font-medium text-sm min-h-[40px] touch-manipulation`}
+                      >
+                        {wordObj.word}
+                        {wordObj.toggleable && (
+                          <span className="ml-1 text-xs opacity-70">↔</span>
+                        )}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </Card>
+            )}
 
           </div>
         </div>
