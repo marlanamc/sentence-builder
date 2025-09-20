@@ -961,7 +961,7 @@ export default function LevelPage() {
       )}
 
       {/* Content Overlay */}
-      <div className="relative z-10 min-h-screen p-2 pt-16">
+      <div className="relative z-10 min-h-screen p-2 sm:p-4 pt-16">
         <div className="max-w-5xl mx-auto space-y-3">
 
           {/* Header with navigation */}
@@ -1468,7 +1468,7 @@ export default function LevelPage() {
               </div>
 
               {/* Current Sentence Display */}
-              <div className="min-h-[60px] p-4 border-2 border-dashed border-gray-300 rounded-2xl bg-gradient-to-r from-blue-50/60 to-purple-50/60 mb-4 flex items-center justify-center">
+              <div className="min-h-[60px] p-3 sm:p-4 border-2 border-dashed border-gray-300 rounded-2xl bg-gradient-to-r from-blue-50/60 to-purple-50/60 mb-4 flex items-center justify-center">
                 {selectedTiles.length === 0 ? (
                   <p className="text-gray-600 text-center text-sm">
                     <span className="block text-lg mb-1">✨</span>
@@ -1480,7 +1480,7 @@ export default function LevelPage() {
                       <Badge
                         key={index}
                         variant="secondary"
-                        className={`${getCategoryColor(tile.category)} cursor-pointer hover:scale-105 hover:shadow-lg text-sm px-3 py-2 rounded-full transition-all duration-200 border shadow-sm`}
+                        className={`${getCategoryColor(tile.category)} cursor-pointer hover:scale-105 hover:shadow-lg text-sm px-3 py-2 rounded-full transition-all duration-200 border shadow-sm min-h-[36px] touch-manipulation`}
                         onClick={() => removeTile(index)}
                       >
                         {tile.word}
@@ -1492,10 +1492,10 @@ export default function LevelPage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex justify-center space-x-3 mb-4">
+              <div className="flex flex-col sm:flex-row justify-center gap-3 sm:space-x-3 mb-4">
                 <Button
                   onClick={checkSentence}
-                  className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-green-400 hover:from-blue-600 hover:to-green-500 text-white font-semibold rounded-full px-6 py-2 shadow-lg transform hover:scale-105 transition-all duration-200 text-sm"
+                  className="flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-500 to-green-400 hover:from-blue-600 hover:to-green-500 text-white font-semibold rounded-full px-4 py-2.5 shadow-lg transform hover:scale-105 transition-all duration-200 text-sm w-full sm:w-auto"
                   disabled={selectedTiles.length === 0}
                 >
                   <CheckCircle className="w-4 h-4" />
@@ -1505,7 +1505,7 @@ export default function LevelPage() {
                 <Button
                   variant="outline"
                   onClick={clearSentence}
-                  className="flex items-center space-x-2 bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:shadow-md rounded-full px-4 py-2 transition-all duration-200 text-sm"
+                  className="flex items-center justify-center space-x-2 bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:shadow-md rounded-full px-4 py-2.5 transition-all duration-200 text-sm w-full sm:w-auto"
                 >
                   <RotateCcw className="w-4 h-4" />
                   <span>Clear</span>
@@ -1514,7 +1514,7 @@ export default function LevelPage() {
                 {(userStats.completedLevels.includes(levelId) || levelProgress > 0) && (
                   <Button
                     onClick={nextLevel}
-                    className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold rounded-full px-4 py-2 shadow-lg transform hover:scale-105 transition-all duration-200 text-sm"
+                    className="flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold rounded-full px-4 py-2.5 shadow-lg transform hover:scale-105 transition-all duration-200 text-sm w-full sm:w-auto"
                   >
                     <span>Next Level</span>
                     <ArrowLeft className="w-4 h-4 rotate-180" />
@@ -1530,10 +1530,12 @@ export default function LevelPage() {
             {/* Helper Instructions and Logical Word Combination Tips */}
             {level.requiredCategories?.includes('verbs') && (
               <div className="bg-slate-800/70 backdrop-blur-sm rounded-2xl p-3 border border-slate-600/30">
-                <div className="flex items-center justify-center space-x-2 text-slate-300 text-sm">
-                  <span className="text-blue-400">💡</span>
-                  <span><strong>Tip:</strong> Click verb tiles to toggle forms</span>
-                  <div className="flex items-center space-x-1 ml-2">
+                <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-2 text-slate-300 text-sm">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-blue-400">💡</span>
+                    <span><strong>Tip:</strong> Click verb tiles to toggle forms</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
                     <span className="bg-purple-200/80 text-gray-900 px-2 py-1 rounded-full text-xs">eat</span>
                     <span className="text-slate-400">↔</span>
                     <span className="bg-purple-200/80 text-gray-900 px-2 py-1 rounded-full text-xs">eats</span>
@@ -1570,14 +1572,14 @@ export default function LevelPage() {
                         </h3>
                       </div>
                     </div>
-                    <div className="p-3">
-                      <div className="flex flex-wrap gap-1.5 justify-center">
+                    <div className="p-2 sm:p-3">
+                      <div className="flex flex-wrap gap-2 justify-center">
                         {categoryWords.map((wordObj: { word: string; category: string; toggleable?: boolean }, index: number) => (
                           <Button
                             key={index}
                             variant="outline"
                             onClick={() => handleTileClick(wordObj.word, wordObj.category)}
-                            className={`${getCategoryColor(wordObj.category)} transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 rounded-full px-3 py-1.5 font-medium text-xs`}
+                            className={`${getCategoryColor(wordObj.category)} transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 rounded-full px-3 py-2 font-medium text-sm min-h-[40px] touch-manipulation`}
                           >
                             {wordObj.word}
                             {wordObj.toggleable && (
