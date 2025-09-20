@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { CheckCircle, RotateCcw, Home, BookOpen, ArrowLeft } from 'lucide-react'
+import { CheckCircle, RotateCcw, Home, BookOpen, ArrowLeft, ChevronDown } from 'lucide-react'
 import { getLevelById } from '@/data/comprehensiveLevels45'
 import { grammarEngine } from '@/lib/grammar-engine-instance'
 
