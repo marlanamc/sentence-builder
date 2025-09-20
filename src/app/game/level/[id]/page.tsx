@@ -5,8 +5,8 @@ import { useRouter, useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { CheckCircle, XCircle, RotateCcw, Home, BookOpen, Star, Trophy, ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react'
-import { comprehensiveLevels45, getLevelById } from '@/data/comprehensiveLevels45'
+import { CheckCircle, RotateCcw, Home, BookOpen, ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react'
+import { getLevelById } from '@/data/comprehensiveLevels45'
 import { grammarEngine } from '@/lib/grammar-engine-instance'
 
 export default function LevelPage() {
@@ -48,7 +48,7 @@ export default function LevelPage() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4">
         <div className="max-w-2xl mx-auto text-center py-20">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Level Not Found</h1>
-          <p className="text-gray-600 mb-6">The level you're looking for doesn't exist.</p>
+          <p className="text-gray-600 mb-6">The level you&apos;re looking for doesn&apos;t exist.</p>
           <Button onClick={() => router.push('/game/levels')}>
             Back to Levels
           </Button>
@@ -263,15 +263,6 @@ export default function LevelPage() {
     setFeedback('')
     setShowFeedback(false)
     setIsEvaluating(false)
-  }
-
-  const resetLevel = () => {
-    setSelectedTiles([])
-    setFeedback('')
-    setShowFeedback(false)
-    setIsEvaluating(false)
-    setLevelProgress(0)
-    setUsedPronouns([])
   }
 
   const removeTile = (index: number) => {
@@ -962,8 +953,8 @@ export default function LevelPage() {
             <div className="text-center space-y-4">
               <div className="text-6xl animate-bounce">🎉</div>
               <h2 className="text-3xl font-bold text-white">Good Job!</h2>
-              <p className="text-xl text-white/90">You've completed {level.name}!</p>
-              <div className="text-2xl animate-pulse">Let's continue! 🚀</div>
+              <p className="text-xl text-white/90">You&apos;ve completed {level.name}!</p>
+              <div className="text-2xl animate-pulse">Let&apos;s continue! 🚀</div>
             </div>
           </div>
         </div>
@@ -1168,8 +1159,8 @@ export default function LevelPage() {
                                       </div>
                                       {!levelName.includes('past') && (
                                         <div className="flex items-center justify-center space-x-2 text-xs">
-                                          <span className="bg-gray-100 px-2 py-1 rounded text-gray-700">I am → I'm</span>
-                                          <span className="bg-gray-100 px-2 py-1 rounded text-gray-700">You are → You're</span>
+                                          <span className="bg-gray-100 px-2 py-1 rounded text-gray-700">I am → I&apos;m</span>
+                                          <span className="bg-gray-100 px-2 py-1 rounded text-gray-700">You are → You&apos;re</span>
                                         </div>
                                       )}
                                     </div>
@@ -1192,8 +1183,8 @@ export default function LevelPage() {
                                     <div className="text-center">
                                       <div className="text-xs text-gray-600 mb-1">💡 <strong>Tip:</strong> For experiences or actions with present relevance</div>
                                       <div className="flex items-center justify-center space-x-2 text-xs">
-                                        <span className="bg-gray-100 px-2 py-1 rounded text-gray-700">I have → I've</span>
-                                        <span className="bg-gray-100 px-2 py-1 rounded text-gray-700">She has → She's</span>
+                                        <span className="bg-gray-100 px-2 py-1 rounded text-gray-700">I have → I&apos;ve</span>
+                                        <span className="bg-gray-100 px-2 py-1 rounded text-gray-700">She has → She&apos;s</span>
                                       </div>
                                     </div>
                                   </div>
@@ -1465,7 +1456,7 @@ export default function LevelPage() {
                     <div className="mt-2 text-xs text-gray-400 text-center">
                       <span className="inline-flex items-center space-x-1">
                         <span>Used:</span>
-                        {usedPronouns.map((pronoun, index) => (
+                        {usedPronouns.map((pronoun) => (
                           <span key={pronoun} className="bg-slate-600/60 px-2 py-0.5 rounded-full text-xs">
                             {pronoun}
                           </span>
@@ -1581,7 +1572,7 @@ export default function LevelPage() {
                     </div>
                     <div className="p-3">
                       <div className="flex flex-wrap gap-1.5 justify-center">
-                        {categoryWords.map((wordObj: any, index: number) => (
+                        {categoryWords.map((wordObj: { word: string; category: string; toggleable?: boolean }, index: number) => (
                           <Button
                             key={index}
                             variant="outline"

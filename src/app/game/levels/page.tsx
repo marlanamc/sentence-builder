@@ -1,15 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
 import { Home, Play, Star, Trophy, CheckCircle, TrendingUp } from 'lucide-react'
 import { comprehensiveLevels45 } from '@/data/comprehensiveLevels45'
 
-export default function GrammarLevelsPage() {
+function GrammarLevelsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const selectedCategory = searchParams.get('category')
@@ -111,7 +110,7 @@ export default function GrammarLevelsPage() {
     return userStats.completedLevels.includes(levelId)
   }
 
-  const getCategoryProgress = (levels: any[]) => {
+  const getCategoryProgress = (levels: { id: number }[]) => {
     const completed = levels.filter(level => userStats.completedLevels.includes(level.id)).length
     return { completed, total: levels.length }
   }
@@ -218,7 +217,7 @@ export default function GrammarLevelsPage() {
 
                 {/* Levels Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                  {category.levels.map((level, levelIndex) => {
+                  {category.levels.map((level) => {
                     const completed = isLevelCompleted(level.id)
 
                     return (
@@ -276,5 +275,13 @@ export default function GrammarLevelsPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function GrammarLevelsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <GrammarLevelsContent />
+    </Suspense>
   )
 }

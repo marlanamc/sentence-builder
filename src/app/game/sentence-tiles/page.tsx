@@ -8,9 +8,9 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import {
-  CheckCircle, XCircle, RotateCcw, Home, BookOpen, Star, Trophy,
-  Shuffle, HelpCircle, Lightbulb, Users, Zap, Package,
-  Target, Clock, Flame
+  CheckCircle, XCircle, RotateCcw, Home, BookOpen, Trophy,
+  Shuffle, Lightbulb, Users, Zap, Package,
+  Flame
 } from 'lucide-react'
 
 // Import enhanced systems from the complete version
@@ -19,15 +19,13 @@ import { grammarEngine, WordToken } from '@/lib/grammar-engine'
 
 export default function EnhancedSentenceTilesPage() {
   const router = useRouter()
-  const [currentLevel, setCurrentLevel] = useState(1)
+  const [currentLevel] = useState(1)
   const [selectedTiles, setSelectedTiles] = useState<Array<{ word: string; category: string; originalWord: string; id: string }>>([])
   const [feedback, setFeedback] = useState('')
   const [showFeedback, setShowFeedback] = useState(false)
   const [showHint, setShowHint] = useState(false)
   const [sentencesCompleted, setSentencesCompleted] = useState(0)
   const [showConfetti, setShowConfetti] = useState(false)
-  const [draggedTile, setDraggedTile] = useState<string | null>(null)
-  const [dragZone, setDragZone] = useState<'subject' | 'verb' | 'object' | null>(null)
 
   const [userStats, setUserStats] = useState({
     points: 180,
@@ -358,7 +356,7 @@ export default function EnhancedSentenceTilesPage() {
                 >
                   <strong>Formula:</strong> Subject + Verb + Object
                   <br />
-                  <strong>Example:</strong> I + eat + pizza = "I eat pizza"
+                  <strong>Example:</strong> I + eat + pizza = &quot;I eat pizza&quot;
                   <br />
                   <strong>Remember:</strong> he/she/it → adds -s (eats, likes, watches)
                 </motion.div>
@@ -379,7 +377,7 @@ export default function EnhancedSentenceTilesPage() {
               ) : (
                 <div className="flex flex-wrap gap-2">
                   <AnimatePresence>
-                    {selectedTiles.map((tile, index) => (
+                    {selectedTiles.map((tile) => (
                       <motion.div
                         key={tile.id}
                         initial={{ opacity: 0, scale: 0.8 }}
@@ -522,7 +520,7 @@ export default function EnhancedSentenceTilesPage() {
                       <h4 className="font-semibold text-gray-800">{categoryName}</h4>
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      {words.map((wordObj: any, index: number) => (
+                      {words.map((wordObj: { word: string; category: string; locked?: boolean }, index: number) => (
                         <motion.div
                           key={index}
                           whileHover={{ scale: wordObj.locked ? 1 : 1.05 }}

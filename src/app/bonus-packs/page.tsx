@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
 import { Home, Gift, Star, Lock, Trophy, Calendar, Users, Target, Zap } from 'lucide-react'
 
 export default function BonusPacksPage() {
@@ -310,7 +309,7 @@ export default function BonusPacksPage() {
 
         {/* Daily Progress */}
         <Card className="p-6 bg-white/80 backdrop-blur">
-          <h3 className="text-xl font-bold mb-4">Today's Progress</h3>
+          <h3 className="text-xl font-bold mb-4">Today&apos;s Progress</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
               <div className="w-16 h-16 mx-auto rounded-full bg-blue-100 flex items-center justify-center mb-3">
@@ -344,13 +343,13 @@ export default function BonusPacksPage() {
               <strong>Daily Challenge:</strong> Complete it every day to maintain your streak and earn bonus XP!
             </div>
             <div>
-              <strong>Speed Round:</strong> Perfect for quick practice sessions when you're short on time.
+              <strong>Speed Round:</strong> Perfect for quick practice sessions when you&apos;re short on time.
             </div>
             <div>
               <strong>Perfect Streak:</strong> Focus on accuracy over speed to build confidence.
             </div>
             <div>
-              <strong>Grammar Master:</strong> Challenge yourself with advanced concepts once you're ready.
+              <strong>Grammar Master:</strong> Challenge yourself with advanced concepts once you&apos;re ready.
             </div>
           </div>
         </Card>

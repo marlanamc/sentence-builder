@@ -6,14 +6,14 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Home, Zap, Clock, Target, Star, Trophy, ArrowLeft } from 'lucide-react'
-import { questionBank, getRandomQuestions, validateQuestionAnswer } from '@/data/question-bank'
+import { Home, Zap, Clock, Target, Star, Trophy } from 'lucide-react'
+import { getRandomQuestions, validateQuestionAnswer } from '@/data/question-bank'
 
 export default function QuickMatchPage() {
   const router = useRouter()
   const [gameState, setGameState] = useState<'menu' | 'playing' | 'finished'>('menu')
   const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [questions, setQuestions] = useState<any[]>([])
+  const [questions, setQuestions] = useState<{ question: string; correctAnswer: string; type: string }[]>([])
   const [answers, setAnswers] = useState<string[]>([])
   const [score, setScore] = useState(0)
   const [timeLeft, setTimeLeft] = useState(60) // 60 seconds

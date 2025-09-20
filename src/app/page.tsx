@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { Play, Target, Zap, Gift, TrendingUp } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
 
 export default function HomePage() {
   const router = useRouter()
