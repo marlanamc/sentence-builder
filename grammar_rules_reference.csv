@@ -1,0 +1,21 @@
+Rule_Name,Description,Applies_To_Levels,Example_Correct,Example_Incorrect,Error_Message,Teaching_Tip
+subject_verb_agreement,Verbs must agree with subjects,1-47,She eats pizza,She eat pizza,Add -s to verbs with he/she/it,Use base form with I/you/we/they. Add -s with he/she/it.
+article_before_countable,Countable nouns need articles,2-47,I eat a sandwich,I eat sandwich,Missing article before noun,Countable nouns need a/an/the before them.
+a_before_consonant,Use 'a' before consonant sounds,2-47,a book,an book,Wrong article choice,Use 'a' before consonant sounds like 'b' in book.
+an_before_vowel,Use 'an' before vowel sounds,2-47,an apple,a apple,Wrong article choice,Use 'an' before vowel sounds like 'a' in apple.
+auxiliary_agreement,Auxiliary verbs must agree with subjects,3-47,She doesn't eat,She don't eat,Wrong auxiliary verb,Use doesn't with he/she/it. Use don't with I/you/we/they.
+base_after_auxiliary,Use base form after do/does/did,3-47,I don't eat,I don't eats,Wrong verb form after auxiliary,Always use base form (eat not eats) after do/does/did.
+auxiliary_first_questions,Put auxiliary before subject in questions,4-47,Do you like pizza?,You do like pizza?,Wrong word order,Questions start with auxiliary: Do/Does + subject + verb.
+be_agreement,Be verbs must agree with subjects,7-47,I am eating,I is eating,Wrong be verb,Use am with I is with he/she/it are with you/we/they.
+ing_with_continuous,Use -ing with continuous tenses,7-47,I am eating,I am eat,Missing -ing ending,Continuous tenses need verb + ing.
+past_form_all_subjects,Past tense same for all subjects,9-47,I ate / She ate,I eat yesterday,Wrong tense,Past tense looks the same for all subjects.
+did_not_past_form,Don't use past form after did/didn't,11-47,I didn't eat,I didn't ate,Wrong verb form,Use base form (eat not ate) after did/didn't.
+have_has_agreement,Have/has must agree with subjects,13-47,She has eaten,She have eaten,Wrong auxiliary,Use has with he/she/it. Use have with I/you/we/they.
+past_participle_perfect,Use past participle with perfect tenses,13-47,I have eaten,I have eat,Wrong verb form,Perfect tenses need past participle (eaten not eat).
+will_base_form,Use base form after will,15-47,I will eat,I will eats,Wrong verb form after will,Will is followed by base form. No -s needed.
+no_double_negative,Don't use double negatives,3-47,I don't like anything,I don't like nothing,Double negative,Use don't + anything not don't + nothing.
+word_order_svo,Basic word order is Subject-Verb-Object,1-47,I eat pizza,Pizza eat I,Wrong word order,English follows Subject-Verb-Object order.
+question_word_first,Question words come first,5-47,What do you eat?,Do you eat what?,Wrong word order,Question words (what who where) come first.
+no_auxiliary_with_be,Don't use do/does with be verbs,7-47,Are you happy?,Do you are happy?,Unnecessary auxiliary,Be verbs don't need do/does. Just: Are you happy?
+time_expression_placement,Time expressions usually go at the end,9-47,I ate pizza yesterday,Yesterday I ate pizza,Word order preference,Time words usually go at the end of sentences.
+specific_vs_general,Use 'the' for specific 'a/an' for general,2-47,I read the book (specific),I read a book (any book),Article choice,The = specific thing. A/an = any one thing.

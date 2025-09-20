@@ -1,0 +1,48 @@
+Category,Level,Title,Pattern,Example,Focus,Grammar
+Present Tense Basics,1,Basic Affirmative,Subject + V1/V1-3rd + Object,She eats pizza.,V1 vs V1-3rd,Third person singular -s
+Present Tense Basics,2,Articles & Nouns,Subject + V1/V1-3rd + a/an/the + Object,I eat a sandwich. / She drinks the coffee.,Countable vs uncountable,a/an/the rules
+Present Tense Basics,3,Negative Present,Subject + do/does + not + V1 + Object,I don’t like vegetables. / She doesn’t eat meat.,Negative formation,do/does + not + V1
+Present Tense Basics,4,Yes/No Questions,Do/Does + Subject + V1 + Object?,Do you like pizza?,Question formation,Aux inversion
+Present Tense Basics,5,Wh-Questions (What),What + do/does + Subject + V1?,What do you eat?,Wh-question basics,Wh-word + aux
+Present Tense Basics,6,Wh-Questions (Who/Where/When),Wh-word + do/does + Subject + V1?,Where do you live?,Range of wh-words,Question word usage
+Present Tense Basics,7,Present Continuous,Subject + am/is/are + V1-ing + Object,I am eating lunch. / She is studying English.,Ongoing actions,am/is/are + V-ing
+Present Tense Basics,8,Present Continuous Questions,Wh-word + am/is/are + Subject + V1-ing?,What are you doing?,Continuous Qs,Be verb + subject + V-ing
+Time & Expressions,9,Time Prepositions,Subject + V1 + at/on/in + time,She studies on Monday.,Time prepositions,at/on/in rules
+Time & Expressions,10,Frequency Adverbs,Subject + adv + V1 + Object,I always eat breakfast.,Adverb placement,always/never etc.
+Time & Expressions,11,Frequency Expressions,Subject + V1 + Object + frequency exp.,She visits once a month.,Complex freq.,once/twice/3x a week
+Time & Expressions,12,Zero Conditional,"If + Present Simple, Present Simple","If you heat water, it boils.","Facts, rules",Zero Conditional structure
+Past Tense,13,Past Simple Affirmative,Subject + V2 + Object,I ate pizza yesterday.,Regular vs irregular,V2 rules
+Past Tense,14,Past Simple Negative,Subject + didn’t + V1 + Object,She didn’t go to work.,Negatives,didn’t + base verb
+Past Tense,15,Past Simple Questions,Did + Subject + V1 + Object?,Did you eat lunch?,Qs,Did + base verb
+Past Tense,16,Past Continuous,Subject + was/were + V1-ing + Object,They were playing soccer.,Ongoing past,was/were + V-ing
+Past Tense,17,Passive Voice (Intro),Subject + was/were + V3,The book was read by Maria.,Simple passives,Be verb + V3
+Present Perfect,18,Intro,Subject + have/has + V3 + Object,She has visited Paris.,Formation,have/has + V3
+Present Perfect,19,Experience,Have/Has + Subject + ever + V3?,Have you ever been to Japan?,Experiences,ever/never usage
+Present Perfect,20,Recent Actions,Subject + have/has + just/already + V3,She has already left.,Recent completion,just/already
+Present Perfect,21,Duration,Subject + have/has + V3 + for/since,I have lived here for 5 years.,Time length,for vs since
+Present Perfect,22,Present Perfect vs Past Simple,Mixed,I ate pizza yesterday. / I have eaten pizza today.,Finished vs unfinished,Time marker compat.
+Present Perfect,23,Yet/Still,Subject + have/has + not + V3 + yet/still,I haven’t finished yet.,Incomplete actions,yet/still placement
+Present Perfect,24,Mixed Practice,All PP forms,Real-life usage,Mastery,All rules combined
+Future Tense,25,Going to,Subject + am/is/are + going to + V1,I am going to study tonight.,Plans,be + going to + V1
+Future Tense,26,Will,Subject + will + V1 + Object,I will help you.,"Predictions, promises",will + V1
+Future Tense,27,First Conditional,"If + Present, will + V1","If it rains, I will stay home.",Future possibility,First Conditional structure
+Future Tense,28,Future Continuous,Subject + will be + V1-ing + Object,I will be working at 3 PM.,Ongoing future,will be + V-ing
+Future Tense,29,Future Perfect,Subject + will have + V3 + by time,She will have graduated by June.,Completion,will have + V3
+Modals & Special,30,Can/Should/Must,Subject + modal + V1,You should study.,"Ability, advice",modal + base verb
+Modals & Special,31,Used To Family,Multiple,I used to live in Paris.,"Habits, adaptation",used to / be used to
+Modals & Special,32,Have To vs Must,Subject + have to/must + V1,I must study.,Obligation,External vs internal
+Modals & Special,33,Gerunds & Infinitives,Verb + V1-ing / Verb + to + V1,I enjoy swimming. / I want to swim.,Verb complements,Gerund vs Infinitive rules
+Modals & Special,34,Preferences,Subject + prefer/would rather + V1/V1-ing,I prefer walking.,Preferences,prefer vs would rather
+Modals & Special,35,Permission & Requests,Can/Could/May + Subject + V1?,Can I use your phone?,Politeness,Modal politeness hierarchy
+Commands & Suggestions,36,Imperatives,V1 + Object / Don’t + V1 + Object,Open the door.,Commands,No subject
+Commands & Suggestions,37,Let’s Suggestions,Let’s + V1 + Object,Let’s go to the movies.,Group suggestions,Let’s + base verb
+Commands & Suggestions,38,How About/What About,How about/What about + V1-ing/noun,How about pizza?,Casual suggestions,Gerunds/nouns
+Comparisons,39,Comparatives,Subject + V1 + comparative + than + Object,She is taller than me.,Comparing 2,-er than / more than
+Comparisons,40,Superlatives,Subject + V1 + the + superlative,She is the tallest student.,Group comparison,the -est / the most
+Comparisons,41,Indefinite Pronouns,"someone, nothing, anything, everyone",Someone is calling.,High frequency usage,Indefinite pronoun rules
+Advanced,42,Relative Clauses,Noun + who/which/that + clause,The man who lives here is my teacher.,Combining ideas,Defining relative clauses
+Advanced,43,Tag Questions,Statement + tag,"You like pizza, don’t you?",Confirm Qs,Pos vs neg tags
+Advanced,44,Second Conditional,"If + V2, would + V1","If I had money, I would travel.",Hypotheticals,Second Conditional structure
+Advanced,45,Third Conditional,"If + Past Perfect, would have + V3","If I had studied, I would have passed.",Unreal past,Third Conditional structure
+Advanced,46,Reported Speech,Subject + said + clause (backshift),He said he was tired.,Reported ideas,Tense backshift rules
+Advanced,47,Embedded Questions,Do you know + wh-word + Subject + V1?,Do you know what time it is?,Polite questions,Statement order
