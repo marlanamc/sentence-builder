@@ -31,6 +31,7 @@ export default function LevelPage() {
   const [isEvaluating, setIsEvaluating] = useState(false) // Show evaluation animation
   const [usedPronouns, setUsedPronouns] = useState<string[]>([]) // Track used pronouns for variety
   const [lastCheckTime, setLastCheckTime] = useState(0) // Prevent double-checking
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({}) // Track expanded word categories
 
   // Load user stats
   useEffect(() => {
@@ -268,6 +269,13 @@ export default function LevelPage() {
   const removeTile = (index: number) => {
     const newTiles = selectedTiles.filter((_, i) => i !== index)
     setSelectedTiles(newTiles)
+  }
+
+  const toggleCategory = (categoryName: string) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [categoryName]: !prev[categoryName]
+    }))
   }
 
   // Helper function to render markdown bold text in feedback
@@ -1562,33 +1570,54 @@ export default function LevelPage() {
                                     categoryName === 'negatives' ? 'from-red-200/60 to-red-300/60' :
                                     'from-gray-200/60 to-gray-300/60'
 
+                // Essential categories default to expanded, others default to collapsed for mobile
+                const essentialCategories = ['subjects', 'verbs', 'objects']
+                const isExpanded = expandedCategories[categoryName] ?? essentialCategories.includes(categoryName)
+
                 return (
                   <Card key={categoryName} className="bg-slate-800/90 backdrop-blur-sm shadow-lg border-0 rounded-2xl overflow-hidden border border-slate-700/50">
-                    <div className={`bg-gradient-to-r ${categoryColor} p-2`}>
-                      <div className="flex items-center justify-center space-x-1">
-                        <span className="text-lg">{getCategoryIcon(categoryName)}</span>
-                        <h3 className="text-sm font-bold capitalize text-gray-900">
-                          {categoryName.replace('-', ' ')}
-                        </h3>
+                    <div
+                      className={`bg-gradient-to-r ${categoryColor} p-2 cursor-pointer`}
+                      onClick={() => toggleCategory(categoryName)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-1">
+                          <span className="text-lg">{getCategoryIcon(categoryName)}</span>
+                          <h3 className="text-sm font-bold capitalize text-gray-900">
+                            {categoryName.replace('-', ' ')}
+                          </h3>
+                        </div>
+                        {isExpanded ? (
+                          <ChevronUp className="w-4 h-4 text-gray-700" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4 text-gray-700" />
+                        )}
                       </div>
                     </div>
-                    <div className="p-2 sm:p-3">
-                      <div className="flex flex-wrap gap-2 justify-center">
-                        {categoryWords.map((wordObj: { word: string; category: string; toggleable?: boolean }, index: number) => (
-                          <Button
-                            key={index}
-                            variant="outline"
-                            onClick={() => handleTileClick(wordObj.word, wordObj.category)}
-                            className={`${getCategoryColor(wordObj.category)} transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 rounded-full px-3 py-2 font-medium text-sm min-h-[40px] touch-manipulation`}
-                          >
-                            {wordObj.word}
-                            {wordObj.toggleable && (
-                              <span className="ml-1 text-xs opacity-70">↔</span>
-                            )}
-                          </Button>
-                        ))}
+                    {isExpanded && (
+                      <div className="p-2 sm:p-3">
+                        {/* Mobile: Horizontal scroll for many tiles, Desktop: Wrap */}
+                        <div className={`${
+                          categoryWords.length > 4
+                            ? 'flex overflow-x-auto pb-2 gap-2 snap-x snap-mandatory md:flex-wrap md:justify-center md:overflow-x-visible'
+                            : 'flex flex-wrap gap-2 justify-center'
+                        }`}>
+                          {categoryWords.map((wordObj: { word: string; category: string; toggleable?: boolean }, index: number) => (
+                            <Button
+                              key={index}
+                              variant="outline"
+                              onClick={() => handleTileClick(wordObj.word, wordObj.category)}
+                              className={`${getCategoryColor(wordObj.category)} transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 rounded-full px-3 py-2 font-medium text-sm min-h-[40px] touch-manipulation flex-shrink-0 snap-start`}
+                            >
+                              {wordObj.word}
+                              {wordObj.toggleable && (
+                                <span className="ml-1 text-xs opacity-70">↔</span>
+                              )}
+                            </Button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </Card>
                 )
               })}
