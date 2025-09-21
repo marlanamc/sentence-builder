@@ -1684,30 +1684,26 @@ function TimelineVisual({ category }: { category: string }) {
         /* Mobile-specific optimizations */
         @media (max-width: 1024px) {
           .word-toolbox {
-            max-height: 55vh !important;
+            max-height: calc(100vh - 300px) !important;
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: #4B5563 transparent;
           }
           .sentence-building-area {
-            position: fixed;
+            position: sticky;
             top: 0;
-            left: 0;
-            right: 0;
             z-index: 30;
             background: rgba(15, 23, 42, 0.98);
             backdrop-filter: blur(12px);
             margin: 0;
-            border-radius: 0 0 1rem 1rem;
+            border-radius: 1rem;
             padding: 1rem;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-            border-bottom: 2px solid rgba(71, 85, 105, 0.5);
-          }
-          .mobile-content-wrapper {
-            padding-top: 180px !important;
+            border: 2px solid rgba(71, 85, 105, 0.5);
+            margin-bottom: 1rem;
           }
           .mobile-grammar-guide {
-            order: -2 !important;
+            order: -1 !important;
             margin-bottom: 1rem;
           }
           .main-game-container {
@@ -1729,7 +1725,7 @@ function TimelineVisual({ category }: { category: string }) {
 
         @media (max-width: 768px) {
           .word-toolbox {
-            max-height: 60vh !important;
+            max-height: calc(100vh - 350px) !important;
             padding-bottom: 2rem;
           }
           .horizontal-layout {
@@ -1737,27 +1733,22 @@ function TimelineVisual({ category }: { category: string }) {
             gap: 1rem !important;
           }
           .sentence-area-mobile {
-            order: 99;
-            position: fixed;
+            order: 1;
+            position: sticky;
             top: 0;
-            left: 0;
-            right: 0;
             z-index: 35;
             background: rgba(15, 23, 42, 0.98);
             backdrop-filter: blur(15px);
-            border: none;
-            border-radius: 0 0 1.5rem 1.5rem;
-            margin: 0;
+            border: 2px solid rgba(71, 85, 105, 0.5);
+            border-radius: 1rem;
+            margin: 0 0 1rem 0;
             padding: 1rem;
             box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
           }
-          .mobile-content-wrapper {
-            padding-top: 200px !important;
-          }
           .mobile-grammar-guide {
-            order: -1 !important;
+            order: 0 !important;
             margin-top: 0 !important;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
           }
           .word-tile {
             min-height: 48px !important;
@@ -1800,7 +1791,7 @@ function TimelineVisual({ category }: { category: string }) {
       )}
 
       {/* Content Overlay */}
-      <div className="relative z-10 min-h-screen p-2 sm:p-4 pt-16 mobile-content-wrapper">
+      <div className="relative z-10 min-h-screen p-2 sm:p-4 pt-16">
         <div className="max-w-5xl mx-auto space-y-3">
 
           {/* Header with navigation */}
