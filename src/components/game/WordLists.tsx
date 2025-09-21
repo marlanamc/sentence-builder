@@ -37,7 +37,7 @@ export function WordCategoryList({ categoriesToShow, wordCategories, getCategory
             <div className="p-4">
               <div className="grid grid-cols-2 gap-2.5">
                 {categoryWords.map((wordObj, idx) => (
-                  <Button key={`${wordObj.word}-${idx}`} variant="outline" onClick={() => onTileClick(wordObj.word, wordObj.category)} className={`${getCategoryColor(wordObj.category)} transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-[1.02] active:scale-[0.98] rounded-lg px-3 py-2.5 font-medium text-sm min-h-[44px] touch-manipulation w-full text-left justify-start border-slate-600/30 hover:border-slate-500/50`}>
+                  <Button key={`${wordObj.word}-${idx}`} variant="outline" onClick={() => onTileClick(wordObj.word, wordObj.category)} className={`word-tile ${getCategoryColor(wordObj.category)} transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-[1.02] active:scale-[0.98] rounded-lg px-3 py-2.5 font-medium text-sm min-h-[44px] touch-manipulation w-full text-left justify-start border-slate-600/30 hover:border-slate-500/50`}>
                     <div className="flex items-center justify-between w-full">
                       <span className="font-medium">{getChallengeWordDisplay(wordObj)}</span>
                       {wordObj.toggleable && <span className="text-xs opacity-60 font-bold">↔</span>}
@@ -73,7 +73,7 @@ export function ShuffledWordGrid({ words, learningMode, isWordToggled, getCatego
             variant="outline"
             onClick={() => onTileClick(wordObj.word, wordObj.category)}
             className={`
-              ${getCategoryColor(wordObj.category)}
+              word-tile ${getCategoryColor(wordObj.category)}
               transition-all duration-200 shadow-sm hover:shadow-md
               transform hover:scale-105 rounded-full px-3 py-2
               font-medium text-sm min-h-[40px] touch-manipulation

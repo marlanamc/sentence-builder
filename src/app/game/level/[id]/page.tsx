@@ -1660,6 +1660,72 @@ function TimelineVisual({ category }: { category: string }) {
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
           background: #4B5563;
         }
+        
+        /* Mobile-specific optimizations */
+        @media (max-width: 1024px) {
+          .word-toolbox {
+            max-height: 45vh !important;
+            overflow-y: auto;
+          }
+          .sentence-building-area {
+            position: sticky;
+            top: 0;
+            z-index: 15;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(8px);
+            margin-bottom: 1rem;
+            border-radius: 1rem;
+            padding: 1rem;
+          }
+          .main-game-container {
+            gap: 0.75rem !important;
+          }
+          .word-tile {
+            min-height: 44px !important;
+            padding: 0.75rem 1rem !important;
+            font-size: 0.875rem !important;
+            touch-action: manipulation;
+          }
+          .action-button {
+            min-height: 48px !important;
+            padding: 0.75rem 1.5rem !important;
+            font-size: 1rem !important;
+            touch-action: manipulation;
+          }
+        }
+        
+        @media (max-width: 768px) {
+          .word-toolbox {
+            max-height: 40vh !important;
+          }
+          .horizontal-layout {
+            flex-direction: column !important;
+            gap: 1rem !important;
+          }
+          .sentence-area-mobile {
+            order: -1;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(71, 85, 105, 0.5);
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          }
+          .word-tile {
+            min-height: 48px !important;
+            padding: 1rem 1.25rem !important;
+            font-size: 1rem !important;
+          }
+          .action-button {
+            min-height: 52px !important;
+            padding: 1rem 1.5rem !important;
+            font-size: 1.1rem !important;
+          }
+        }
       `}</style>
       <style jsx global>{`
         @keyframes progressGlow {
@@ -1753,10 +1819,10 @@ function TimelineVisual({ category }: { category: string }) {
               </div>
 
           {/* Main Content Area with Horizontal Layout */}
-          <div className="flex flex-col lg:flex-row gap-6 min-h-[600px]">
+          <div className="flex flex-col lg:flex-row gap-6 min-h-[600px] horizontal-layout main-game-container">
             {/* Left Side - Sentence Building Area */}
-            <div className="flex-1 min-w-0">
-              <Card className="bg-slate-800/90 backdrop-blur-sm shadow-lg border-2 border-slate-600 rounded-2xl h-full">
+            <div className="flex-1 min-w-0 sentence-area-mobile">
+              <Card className="bg-slate-800/90 backdrop-blur-sm shadow-lg border-2 border-slate-600 rounded-2xl h-full sentence-building-area">
             <div className="p-4">
               <div className="text-center mb-3">
                 <div className="flex items-center justify-center space-x-2">
@@ -1889,41 +1955,41 @@ function TimelineVisual({ category }: { category: string }) {
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row justify-center gap-3 mb-4">
-                <Button
-                  onClick={checkSentence}
-                  className="flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-500 to-green-400 hover:from-blue-600 hover:to-green-500 text-white font-semibold rounded-full px-4 py-2.5 shadow-lg transform hover:scale-105 transition-all duration-200 text-sm w-full sm:w-auto"
-                  disabled={selectedTiles.length === 0}
-                >
-                  <CheckCircle className="w-4 h-4" />
-                  <span>Check Sentence</span>
-                </Button>
+               <Button
+                 onClick={checkSentence}
+                 className="action-button flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-500 to-green-400 hover:from-blue-600 hover:to-green-500 text-white font-semibold rounded-full px-4 py-2.5 shadow-lg transform hover:scale-105 transition-all duration-200 text-sm w-full sm:w-auto"
+                 disabled={selectedTiles.length === 0}
+               >
+                 <CheckCircle className="w-4 h-4" />
+                 <span>Check Sentence</span>
+               </Button>
 
-                <Button
-                  onClick={saveSentence}
-                  className={`flex items-center justify-center space-x-2 ${justSaved ? 'bg-green-500 hover:bg-green-600' : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'} text-white font-semibold rounded-full px-4 py-2.5 shadow-lg transform hover:scale-105 transition-all duration-200 text-sm w-full sm:w-auto`}
-                  disabled={selectedTiles.length === 0}
-                >
-                  {justSaved ? (
-                    <>
-                      <CheckCircle className="w-4 h-4" />
-                      <span>Saved!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Heart className="w-4 h-4" />
-                      <span>Save</span>
-                    </>
-                  )}
-                </Button>
+               <Button
+                 onClick={saveSentence}
+                 className={`action-button flex items-center justify-center space-x-2 ${justSaved ? 'bg-green-500 hover:bg-green-600' : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'} text-white font-semibold rounded-full px-4 py-2.5 shadow-lg transform hover:scale-105 transition-all duration-200 text-sm w-full sm:w-auto`}
+                 disabled={selectedTiles.length === 0}
+               >
+                 {justSaved ? (
+                   <>
+                     <CheckCircle className="w-4 h-4" />
+                     <span>Saved!</span>
+                   </>
+                 ) : (
+                   <>
+                     <Heart className="w-4 h-4" />
+                     <span>Save</span>
+                   </>
+                 )}
+               </Button>
 
-                <Button
-                  variant="outline"
-                  onClick={clearSentence}
-                  className="flex items-center justify-center space-x-2 bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:shadow-md rounded-full px-4 py-2.5 transition-all duration-200 text-sm w-full sm:w-auto"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                  <span>Clear</span>
-                </Button>
+               <Button
+                 variant="outline"
+                 onClick={clearSentence}
+                 className="action-button flex items-center justify-center space-x-2 bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:shadow-md rounded-full px-4 py-2.5 transition-all duration-200 text-sm w-full sm:w-auto"
+               >
+                 <RotateCcw className="w-4 h-4" />
+                 <span>Clear</span>
+               </Button>
 
                 {(categorizedCorrect >= 5 && shuffledCorrect >= 3) && (
                   <Button
@@ -2004,7 +2070,7 @@ function TimelineVisual({ category }: { category: string }) {
             </div>
 
             {/* Right Side - Word Categories Toolbox */}
-                <div className="w-full lg:w-80 space-y-4 max-h-[600px] overflow-y-auto custom-scrollbar">
+                <div className="w-full lg:w-80 space-y-4 max-h-[600px] overflow-y-auto custom-scrollbar word-toolbox">
               <div className="lg:sticky lg:top-0 bg-gradient-to-r from-gray-900 via-gray-900 to-gray-900/95 backdrop-blur-sm pb-3 z-10 border-b border-slate-700/30">
                 <div className="relative flex items-center justify-center">
                   <h3 className="text-lg font-bold text-white flex items-center tracking-wide">
