@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { TrendingUp, HelpCircle, X, Clock, RotateCcw, Zap, MessageSquare, BookOpen, Gamepad2, Play, Calendar, LogIn, LogOut, Target, CheckCircle, Brain } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
@@ -10,8 +10,14 @@ import { Button } from '@/components/ui/button'
 export default function HomePage() {
   const [showHelpModal, setShowHelpModal] = useState(false);
   const router = useRouter();
-  const { user, signOut } = useAuth();
-  // Authentication is available but not required for playing
+  const { user, signOut, loading } = useAuth();
+
+  // Redirect logged-in users to dashboard
+  useEffect(() => {
+    if (user && !loading) {
+      router.push('/dashboard')
+    }
+  }, [user, loading, router])
 
   const categories = [
     {
@@ -124,6 +130,13 @@ export default function HomePage() {
               {user ? (
                 <div className="flex items-center space-x-1 md:space-x-2">
                   <span className="text-white text-xs md:text-sm hidden md:inline">Hi, {user.email?.split('@')[0]}</span>
+                  <Button
+                    onClick={() => router.push('/dashboard')}
+                    className="bg-blue-500 hover:bg-blue-600 text-white shadow-lg px-2 md:px-4 py-1 md:py-2 text-xs md:text-sm"
+                  >
+                    <Target className="w-3 h-3 md:w-4 md:h-4 md:mr-2" />
+                    <span className="hidden md:inline">Dashboard</span>
+                  </Button>
                   <Button
                     onClick={() => signOut()}
                     className="bg-red-500 hover:bg-red-600 text-white shadow-lg px-2 md:px-4 py-1 md:py-2 text-xs md:text-sm"

@@ -9,6 +9,7 @@ import { CheckCircle, RotateCcw, Home, BookOpen, ArrowLeft, HelpCircle, X, Heart
 import { getLevelById } from '@/data/comprehensiveLevels45'
 import { grammarEngine } from '@/lib/grammar-engine-instance'
 import { GrammarGuideCard } from '@/components/game/GrammarGuideCard'
+import { VerbSystemGuide } from '@/components/game/VerbSystemGuide'
 import { WordCategoryList, ShuffledWordGrid } from '@/components/game/WordLists'
 import { loadGrammarPatternByLevel, fallbackPatterns, type GrammarPattern } from '@/utils/grammarPatterns'
 
