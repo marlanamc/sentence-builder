@@ -26,11 +26,35 @@ export function GrammarGuideCard({ title = 'Quick Grammar Guide', persistKey, he
       {open && (
         <div className="px-3 pb-3 -mt-2">
           <div className="bg-green-500/20 rounded-lg p-4 border border-green-400/40">
-            <div className="space-y-2 text-[11px] text-green-50/90">
+            <div className="space-y-3 text-sm text-green-50/90">
               {sections.map((s, i) => (
-                <div key={i} className="bg-slate-900/20 rounded-md p-2 border border-green-400/20">
-                  <span className="block font-semibold text-green-200 mb-1">{s.label}</span>
-                  <p className="leading-snug">{s.content}</p>
+                <div key={i} className="bg-slate-900/30 rounded-lg p-4 border border-green-400/20">
+                  <span className="block font-bold text-green-200 mb-3 text-base">{s.label}</span>
+                  <div className="space-y-3">
+                    {s.content.split('\n\n').map((paragraph, idx) => {
+                      if (paragraph.startsWith('Examples:')) {
+                        const examples = paragraph.replace('Examples: ', '').split(' / ')
+                        return (
+                          <div key={idx}>
+                            <h4 className="font-semibold text-green-300 mb-2">Examples:</h4>
+                            <div className="space-y-1">
+                              {examples.map((example, exIdx) => (
+                                <div key={exIdx} className="bg-green-500/10 rounded-md p-2 border border-green-400/20">
+                                  <span className="font-mono text-green-100">{example.trim()}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )
+                      } else {
+                        return (
+                          <p key={idx} className="leading-relaxed text-green-50/90">
+                            {paragraph}
+                          </p>
+                        )
+                      }
+                    })}
+                  </div>
                 </div>
               ))}
             </div>
@@ -38,6 +62,5 @@ export function GrammarGuideCard({ title = 'Quick Grammar Guide', persistKey, he
         </div>
       )}
     </div>
-  )}
-
-
+  )
+}

@@ -2082,7 +2082,12 @@ function TimelineVisual({ category }: { category: string }) {
                         })()}
                         <GrammarGuideCard
                           persistKey={`grammar-open-${levelId}`}
-                          sections={[{ label: level.name, content: level.formula }]}
+                          sections={[
+                            { 
+                              label: level.name, 
+                              content: `${level.pattern}\n\nExamples: ${level.example}\n\n${level.explanation}` 
+                            }
+                          ]}
                         />
               </div>
 
