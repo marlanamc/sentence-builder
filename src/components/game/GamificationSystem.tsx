@@ -3,20 +3,17 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { X, Trophy, Star, Target, Zap, Shield, Award } from 'lucide-react';
+import { X, Trophy, Star, Target, Zap, Award } from 'lucide-react';
 import { UserStats } from '@/data/types';
 
 interface GamificationSystemProps {
-  userStats: UserStats = { points: 0, completedLevels: [], totalPoints: 0, currentStreak: 0, totalSentences: 0, unlockedBadges: [], levelsAttempted: [], perfectSentences: 0 };
-  gameStats?: any;
+  userStats?: UserStats;
+  gameStats?: Record<string, unknown>;
   onClose: () => void;
 }
 
 export const GamificationSystem: React.FC<GamificationSystemProps> = ({
-  userStats,
-  gameStats,
+  userStats = { points: 0, completedLevels: [], totalPoints: 0, currentStreak: 0, totalSentences: 0, unlockedBadges: [], levelsAttempted: [], perfectSentences: 0 },
   onClose
 }) => {
   return (

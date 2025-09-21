@@ -631,11 +631,7 @@ function TimelineVisual({ category }: { category: string }) {
   }
 
   const handlePatternPillClick = async (e: React.MouseEvent) => {
-    try {
-      await navigator.clipboard.writeText(level.formula)
-    } catch (error) {
-      console.error('Failed to copy to clipboard:', error)
-    }
+    try { await navigator.clipboard.writeText(level.formula) } catch {}
     setPillToast('Copied!')
     setTimeout(() => setPillToast(''), 1200)
     if ((e as React.MouseEvent & { shiftKey: boolean }).shiftKey) {
@@ -1988,7 +1984,7 @@ function TimelineVisual({ category }: { category: string }) {
                         width: `${learningMode === 'categorized'
                           ? (categorizedCorrect / 5) * 100
                           : (shuffledCorrect / 3) * 100}%`
-                      }
+                      }}
                     ></div>
                   </div>
 

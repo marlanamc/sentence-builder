@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { TrendingUp, HelpCircle, X, Clock, RotateCcw, Zap, MessageSquare, BookOpen, Gamepad2, Play, Calendar, LogIn, LogOut, User, Target, CheckCircle, Brain } from 'lucide-react'
+import { TrendingUp, HelpCircle, X, Clock, RotateCcw, Zap, MessageSquare, BookOpen, Gamepad2, Play, Calendar, LogIn, LogOut, Target, CheckCircle, Brain } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -471,7 +471,7 @@ export default function HomePage() {
                     </div>
                     <div className="bg-white p-4 rounded-lg border border-purple-100">
                       <h4 className="font-bold text-purple-800 text-lg mb-2">🎯 Grammar Rules</h4>
-                      <p className="text-gray-700">Each level focuses on specific grammar concepts. You'll master sentence structure step by step.</p>
+                      <p className="text-gray-700">Each level focuses on specific grammar concepts. You&apos;ll master sentence structure step by step.</p>
                     </div>
                     <div className="bg-white p-4 rounded-lg border border-purple-100">
                       <h4 className="font-bold text-purple-800 text-lg mb-2">⚡ Instant Feedback</h4>
@@ -479,7 +479,7 @@ export default function HomePage() {
                     </div>
                     <div className="bg-white p-4 rounded-lg border border-purple-100">
                       <h4 className="font-bold text-purple-800 text-lg mb-2">📈 Progressive Learning</h4>
-                      <p className="text-gray-700">Start with simple sentences and advance to complex ones. Each level builds on grammar concepts you've learned.</p>
+                      <p className="text-gray-700">Start with simple sentences and advance to complex ones. Each level builds on grammar concepts you&apos;ve learned.</p>
                     </div>
                   </div>
                 </Card>

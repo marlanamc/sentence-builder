@@ -131,10 +131,10 @@ export class AnalyticsEngine {
     }
 
     // Update skill assessments
-    this.updateSkillAssessments(attempt);
+    this.updateSkillAssessments(fullAttempt);
 
     // Record learning metrics
-    this.recordLearningMetrics(attempt);
+    this.recordLearningMetrics(fullAttempt);
 
     return attemptId;
   }

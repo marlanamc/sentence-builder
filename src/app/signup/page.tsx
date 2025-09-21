@@ -62,7 +62,7 @@ export default function SignUpPage() {
 
         {/* Additional Info */}
         <div className="mt-6 p-4 bg-slate-800/50 border border-slate-700/50 rounded-lg">
-          <h3 className="text-white font-medium mb-2">What you'll get:</h3>
+          <h3 className="text-white font-medium mb-2">What you&apos;ll get:</h3>
           <ul className="text-slate-300 text-sm space-y-1">
             <li>• Access to 47 grammar levels</li>
             <li>• Track your progress and achievements</li>

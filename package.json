@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "import-grammar": "node scripts/import-grammar-patterns.js"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",

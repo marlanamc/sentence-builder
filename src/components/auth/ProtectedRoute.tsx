@@ -2,7 +2,6 @@
 
 import React from 'react'
 import { useAuth } from '@/lib/auth-context'
-import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Shield, LogIn } from 'lucide-react'
@@ -20,7 +19,6 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   fallback
 }) => {
   const { user, loading } = useAuth()
-  const router = useRouter()
 
   // Show loading state while checking authentication
   if (loading) {

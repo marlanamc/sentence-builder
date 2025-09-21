@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import {
   Home, Play, Target, Zap, Gift, Database, Settings,
-  CheckCircle, Star, Trophy, Users, Calendar, BookOpen,
+  CheckCircle, Trophy, BookOpen,
   BarChart3, Brain, Gamepad2
 } from 'lucide-react'
 

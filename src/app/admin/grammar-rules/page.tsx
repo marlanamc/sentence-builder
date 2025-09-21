@@ -6,7 +6,6 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface GrammarRule {
@@ -14,9 +13,9 @@ interface GrammarRule {
   level_id: number
   rule_type: string
   rule_name: string
-  conditions: any
-  validation_logic: any
-  error_messages: any
+  conditions: Record<string, unknown>
+  validation_logic: Record<string, unknown>
+  error_messages: Record<string, string>
   examples: string[]
   priority: number
   is_active: boolean
@@ -33,7 +32,7 @@ export default function GrammarRulesAdmin() {
       const response = await fetch('/api/admin/grammar-rules')
       const data = await response.json()
       if (data.success) {
-        setRules(data.data ? Object.values(data.data).flatMap((level: any) => level.rules) : [])
+        setRules(data.data ? Object.values(data.data).flatMap((level: { rules: GrammarRule[] }) => level.rules) : [])
       }
     } catch (error) {
       console.error('Error fetching rules:', error)
@@ -90,7 +89,7 @@ export default function GrammarRulesAdmin() {
   )
 }
 
-function RuleCard({ rule, onUpdate }: { rule: GrammarRule; onUpdate: () => void }) {
+function RuleCard({ rule }: { rule: GrammarRule }) {
   const [isEditing, setIsEditing] = useState(false)
 
   return (

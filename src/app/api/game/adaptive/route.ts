@@ -143,7 +143,7 @@ export async function PUT(request: NextRequest) {
 }
 
 // Helper functions
-function getDifficultyReasoning(difficulty: number, progress: any): string {
+function getDifficultyReasoning(difficulty: number): string {
   if (difficulty < 0.3) {
     return 'Starting with easier questions to build confidence';
   } else if (difficulty < 0.5) {
@@ -230,7 +230,7 @@ function getAdjustmentReasoning(adjustment: number, isCorrect: boolean, timeSpen
 function getNextQuestionRecommendations(
   difficulty: number,
   category: string,
-  userProgress: any
+  userProgress: Record<string, unknown>
 ): Array<{ questionId: string; reason: string }> {
   // Filter questions by difficulty range
   const targetQuestions = questionBank.filter(q => {
@@ -266,7 +266,7 @@ function getNextQuestionRecommendations(
   }));
 }
 
-function generateImmediateRecommendations(progress: any, insights: any[]): string[] {
+function generateImmediateRecommendations(progress: Record<string, unknown>, insights: Record<string, unknown>[]): string[] {
   const recommendations = [];
 
   if (progress.overallAccuracy < 0.6) {
@@ -291,7 +291,7 @@ function generateImmediateRecommendations(progress: any, insights: any[]): strin
   return recommendations.slice(0, 3);
 }
 
-function generateShortTermRecommendations(progress: any, insights: any[]): string[] {
+function generateShortTermRecommendations(): string[] {
   return [
     'Complete all levels in your strongest category',
     'Achieve 80% accuracy in at least 3 categories',
@@ -300,7 +300,7 @@ function generateShortTermRecommendations(progress: any, insights: any[]): strin
   ];
 }
 
-function generateLongTermRecommendations(progress: any, insights: any[]): string[] {
+function generateLongTermRecommendations(): string[] {
   return [
     'Complete all 45 grammar levels',
     'Achieve consistent 85%+ accuracy across all categories',
@@ -309,7 +309,7 @@ function generateLongTermRecommendations(progress: any, insights: any[]): string
   ];
 }
 
-function generateStudyRecommendations(progress: any, preferences: any): any {
+function generateStudyRecommendations(progress: Record<string, unknown>): Record<string, unknown> {
   const avgTimePerQuestion = progress.totalQuestions > 0
     ? progress.timeSpent / progress.totalQuestions / 1000
     : 30;
@@ -326,7 +326,7 @@ function generateStudyRecommendations(progress: any, preferences: any): any {
   };
 }
 
-function generateContentRecommendations(progress: any, insights: any[]): any {
+function generateContentRecommendations(progress: Record<string, unknown>): Record<string, unknown> {
   return {
     nextCategories: ['present-perfect', 'past-tense', 'future-tense'],
     recommendedLevels: [

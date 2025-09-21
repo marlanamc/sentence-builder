@@ -23,10 +23,8 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
   onCategorySelect, 
   userStats = { points: 0, completedLevels: [], totalPoints: 0, currentStreak: 0, totalSentences: 0, unlockedBadges: [], levelsAttempted: [], perfectSentences: 0 },
   showRecommendations = true,
-  compact = false,
   onShowGamification
 }) => {
-  const [isExpanded, setIsExpanded] = useState(!compact);
   const [showDetails, setShowDetails] = useState<Record<string, boolean>>({});
   
   const unlockedCategories = getUnlockedCategories(userStats.points);
@@ -49,7 +47,7 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
     return colors[difficulty] || 'bg-gray-100 text-gray-800';
   };
   
-  const CategoryCard: React.FC<{ category: any }> = ({ category }) => {
+  const CategoryCard: React.FC<{ category: { id: string; name: string; description: string } }> = ({ category }) => {
     const isUnlocked = unlockedCategories.some(cat => cat.id === category.id);
     const isSelected = selectedCategory === category.id;
     const isRecommended = recommendedCategory?.id === category.id;

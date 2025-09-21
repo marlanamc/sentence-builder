@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function generateSchemaRecommendations(currentSchema: any[], tableStatus: Record<string, boolean>) {
+function generateSchemaRecommendations(currentSchema: Record<string, unknown>[], tableStatus: Record<string, boolean>) {
   const recommendations = [];
 
   if (currentSchema.length === 0) {
@@ -170,7 +170,7 @@ function generateSchemaRecommendations(currentSchema: any[], tableStatus: Record
   return recommendations;
 }
 
-function compareWithComprehensiveSchema(currentSchema: any[]) {
+function compareWithComprehensiveSchema(currentSchema: Record<string, unknown>[]) {
   const comprehensive = getComprehensiveSchemaDefinition();
   const current = currentSchema.map(table => table.tableName);
 

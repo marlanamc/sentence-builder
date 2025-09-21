@@ -2,7 +2,7 @@ import { supabase as createClient } from '@/lib/supabase-client'
 import { NextRequest, NextResponse } from 'next/server'
 
 // GET /api/admin/grammar-rules - Fetch all grammar rules
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = createClient
 
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Group rules by level for easier frontend consumption
-    const rulesByLevel = rules?.reduce((acc: any, rule: any) => {
+    const rulesByLevel = rules?.reduce((acc: Record<number, { level: Record<string, unknown> | null; rules: Record<string, unknown>[] }>, rule: Record<string, unknown>) => {
       const levelId = rule.level_id
       if (!acc[levelId]) {
         acc[levelId] = {

@@ -1,20 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
 import {
-  CheckCircle, XCircle, RotateCcw, Home, BookOpen, Trophy,
-  Shuffle, Lightbulb, Users, Zap, Package,
-  Flame
+  Shuffle
 } from 'lucide-react'
 
 // Import enhanced systems from the complete version
-import { comprehensiveLevels45, getLevelById } from '@/data/comprehensiveLevels45'
 import { grammarEngine, WordToken } from '@/lib/grammar-engine'
 
 export default function EnhancedSentenceTilesPage() {
@@ -23,17 +18,11 @@ export default function EnhancedSentenceTilesPage() {
   const [selectedTiles, setSelectedTiles] = useState<Array<{ word: string; category: string; originalWord: string; id: string }>>([])
   const [feedback, setFeedback] = useState('')
   const [showFeedback, setShowFeedback] = useState(false)
-  const [showHint, setShowHint] = useState(false)
-  const [sentencesCompleted, setSentencesCompleted] = useState(0)
-  const [showConfetti, setShowConfetti] = useState(false)
 
   // User stats tracking removed for free play
 
   // No user stats tracking for free play
 
-  // Get current level data
-  const level = getLevelById(currentLevel) || comprehensiveLevels45[0]
-  const targetSentences = 5
 
   // Enhanced word categories with locked tiles
   const getWordCategories = () => {
@@ -138,7 +127,6 @@ export default function EnhancedSentenceTilesPage() {
     // Check word order first
     const subjectIndex = selectedTiles.findIndex(tile => tile.category === 'pronoun')
     const verbIndex = selectedTiles.findIndex(tile => tile.category === 'verb')
-    const objectIndex = selectedTiles.findIndex(tile => tile.category.includes('noun'))
 
     if (subjectIndex > verbIndex && verbIndex !== -1) {
       setFeedback('Try starting with the subject (I, you, she, etc.) 💡')
@@ -187,34 +175,7 @@ export default function EnhancedSentenceTilesPage() {
     setSelectedTiles(newTiles)
   }
 
-  const toggleHint = () => {
-    setShowHint(!showHint)
-  }
 
-  // Enhanced color coding with gradients
-  const getCategoryColor = (category: string, isLocked = false) => {
-    if (isLocked) {
-      return 'bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed'
-    }
-
-    const colors = {
-      'pronoun': 'bg-gradient-to-r from-blue-100 to-blue-200 border-blue-300 text-blue-800 hover:from-blue-200 hover:to-blue-300',
-      'verb': 'bg-gradient-to-r from-purple-100 to-purple-200 border-purple-300 text-purple-800 hover:from-purple-200 hover:to-purple-300',
-      'countable-noun': 'bg-gradient-to-r from-orange-100 to-orange-200 border-orange-300 text-orange-800 hover:from-orange-200 hover:to-orange-300',
-      'uncountable-noun': 'bg-gradient-to-r from-yellow-100 to-yellow-200 border-yellow-300 text-yellow-800 hover:from-yellow-200 hover:to-yellow-300'
-    }
-    return colors[category as keyof typeof colors] || 'bg-gray-100 border-gray-300 text-gray-800'
-  }
-
-  // Get category icon
-  const getCategoryIcon = (category: string) => {
-    const icons = {
-      'subjects': Users,
-      'verbs': Zap,
-      'objects': Package
-    }
-    return icons[category as keyof typeof icons] || Package
-  }
 
   return (
     <div className="min-h-screen bg-[#0B1528] text-white p-6">

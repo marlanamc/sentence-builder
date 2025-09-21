@@ -48,7 +48,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLog
       } else {
         onSuccess?.()
       }
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred')
     } finally {
       setLoading(false)

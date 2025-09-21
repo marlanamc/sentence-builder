@@ -11,7 +11,7 @@ interface TableStatus {
 }
 
 interface SchemaInfo {
-  currentSchema: any[];
+  currentSchema: Record<string, unknown>[];
   tableCount: number;
   expectedTables: TableStatus;
   missingTables: string[];
@@ -27,7 +27,7 @@ export default function AdminDashboard() {
   const [schemaInfo, setSchemaInfo] = useState<SchemaInfo | null>(null)
   const [loading, setLoading] = useState(false)
   const [migrating, setMigrating] = useState(false)
-  const [migrationResults, setMigrationResults] = useState<any>(null)
+  const [migrationResults, setMigrationResults] = useState<Record<string, unknown> | null>(null)
 
   const inspectSchema = async () => {
     setLoading(true)
@@ -234,7 +234,7 @@ export default function AdminDashboard() {
               {migrationResults.results && (
                 <div className="space-y-2">
                   <h4 className="font-medium">Detailed Results:</h4>
-                  {migrationResults.results.map((result: any, index: number) => (
+                  {migrationResults.results.map((result: { table: string; success: boolean; error?: string }, index: number) => (
                     <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                       <span className="font-mono text-sm">{result.table}</span>
                       <div className="flex items-center gap-2">
@@ -267,7 +267,7 @@ export default function AdminDashboard() {
                   </summary>
                   <div className="p-3 border-t bg-gray-50">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 text-sm">
-                      {table.columns?.map((col: any, colIndex: number) => (
+                      {table.columns?.map((col: { column_name: string; data_type: string }, colIndex: number) => (
                         <div key={colIndex} className="flex justify-between p-2 bg-white rounded">
                           <span className="font-mono">{col.column_name}</span>
                           <span className="text-gray-600">{col.data_type}</span>

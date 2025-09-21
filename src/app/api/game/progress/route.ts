@@ -176,39 +176,6 @@ export async function PUT(request: NextRequest) {
 }
 
 // Helper functions
-function getRecommendedNextLevel(progress: any): number {
-  // Simple logic to recommend next level based on current performance
-  const currentLevels = Object.keys(progress.levelProgress)
-    .map(level => parseInt(level.replace('level_', '')))
-    .filter(level => !isNaN(level));
-
-  if (currentLevels.length === 0) return 1;
-
-  const maxLevel = Math.max(...currentLevels);
-  const maxLevelAccuracy = progress.levelProgress[`level_${maxLevel}`] || 0;
-
-  // If user has good accuracy on current max level, recommend next level
-  if (maxLevelAccuracy >= 0.7) {
-    return Math.min(45, maxLevel + 1);
-  }
-
-  // Otherwise, recommend continuing current level
-  return maxLevel;
-}
-
-function getRecommendedStudyTime(progress: any): string {
-  const avgTimePerQuestion = progress.totalQuestions > 0
-    ? progress.timeSpent / progress.totalQuestions
-    : 30000; // Default 30 seconds
-
-  if (avgTimePerQuestion > 60000) { // More than 1 minute
-    return '15-20 minutes daily with focus on speed';
-  } else if (progress.overallAccuracy < 0.6) {
-    return '20-30 minutes daily with emphasis on accuracy';
-  } else {
-    return '15-25 minutes daily to maintain progress';
-  }
-}
 
 function getAchievementPoints(achievementId: string): number {
   const pointsMap: Record<string, number> = {

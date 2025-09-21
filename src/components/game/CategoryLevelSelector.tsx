@@ -5,21 +5,21 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, Lock, Star, CheckCircle, Target, Clock, BookOpen, Zap } from 'lucide-react';
+import { ArrowLeft, Lock, Star, CheckCircle, Target, Zap } from 'lucide-react';
 import { getCategoryById, getCategoryProgress } from '@/data/grammarCategories';
 import { getLevelsByCategory } from '@/data/comprehensiveLevels45';
 import { UserStats } from '@/data/types';
 
 interface CategoryLevelSelectorProps {
   categoryId: string;
-  userStats: UserStats = { points: 0, completedLevels: [], totalPoints: 0, currentStreak: 0, totalSentences: 0, unlockedBadges: [], levelsAttempted: [], perfectSentences: 0 };
+  userStats?: UserStats;
   onLevelSelect: (levelId: number) => void;
   onBack: () => void;
 }
 
 export const CategoryLevelSelector: React.FC<CategoryLevelSelectorProps> = ({
   categoryId,
-  userStats,
+  userStats = { points: 0, completedLevels: [], totalPoints: 0, currentStreak: 0, totalSentences: 0, unlockedBadges: [], levelsAttempted: [], perfectSentences: 0 },
   onLevelSelect,
   onBack
 }) => {
@@ -67,7 +67,7 @@ export const CategoryLevelSelector: React.FC<CategoryLevelSelectorProps> = ({
     return userStats.points >= level.unlockRequirement;
   };
 
-  const LevelCard: React.FC<{ level: any }> = ({ level }) => {
+  const LevelCard: React.FC<{ level: { id: number; name: string; pattern: string } }> = ({ level }) => {
     const status = getLevelStatus(level.id);
     const isUnlocked = isLevelUnlocked(level.id);
     const isSelected = selectedLevel === level.id;
