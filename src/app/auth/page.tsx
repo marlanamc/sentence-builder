@@ -106,6 +106,22 @@ export default function AuthPage() {
             </ul>
           </div>
         )}
+
+        {/* Demo Credentials */}
+        <div className="mt-8 text-center">
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+            <h3 className="font-semibold text-white mb-2">Demo Account</h3>
+            <p className="text-sm text-white/90 mb-1">
+              Email: testuser@example.com
+            </p>
+            <p className="text-sm text-white/90">
+              Password: demo123
+            </p>
+            <p className="text-xs text-white/70 mt-2">
+              Click "Sign in" (not sign up) and use these credentials
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   )

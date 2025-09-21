@@ -69,6 +69,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       email,
       password,
     })
+
+    // If demo user doesn't exist, create it
+    if (error && error.message === 'Invalid login credentials' && email === 'testuser@example.com') {
+      console.log('Creating demo user...')
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: 'testuser@example.com',
+        password: 'demo123',
+        options: {
+          data: {
+            username: 'testuser',
+          }
+        }
+      })
+
+      if (!signUpError) {
+        // Try to sign in again
+        const { error: retryError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        })
+        return { error: retryError }
+      }
+    }
+
     return { error }
   }
 
