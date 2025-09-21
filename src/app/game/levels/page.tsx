@@ -121,21 +121,21 @@ function GrammarLevelsContent() {
       </div>
 
       {/* Content Overlay */}
-      <div className="relative z-10 min-h-screen p-4">
-        <div className="max-w-6xl mx-auto space-y-6">
+      <div className="relative z-10 min-h-screen p-3 md:p-4">
+        <div className="max-w-6xl mx-auto space-y-4 md:space-y-6">
 
           {/* Header */}
           <Card className="bg-slate-800/90 backdrop-blur-sm shadow-lg border border-slate-700/50 rounded-2xl">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-4">
+            <div className="p-4 md:p-6">
+              <div className="flex items-center justify-between mb-3 md:mb-4">
+                <div className="flex items-center space-x-2 md:space-x-4">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => router.push('/')}
-                    className="flex items-center space-x-2 bg-slate-800/70 text-slate-200 border-slate-600/30 hover:bg-slate-700/70 rounded-2xl backdrop-blur-sm"
+                    className="flex items-center space-x-1 md:space-x-2 bg-slate-800/70 text-slate-200 border-slate-600/30 hover:bg-slate-700/70 rounded-2xl backdrop-blur-sm px-2 md:px-3 py-1 md:py-2 text-xs md:text-sm"
                   >
-                    <Home className="w-4 h-4" />
+                    <Home className="w-3 h-3 md:w-4 md:h-4" />
                     <span>Home</span>
                   </Button>
                 </div>
@@ -143,14 +143,14 @@ function GrammarLevelsContent() {
               </div>
 
               <div className="text-center">
-                <h1 className="text-4xl font-bold text-white mb-2">{pageTitle}</h1>
-                <p className="text-slate-300">{pageDescription}</p>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">{pageTitle}</h1>
+                <p className="text-slate-300 text-sm md:text-base px-2">{pageDescription}</p>
                 {selectedCategory && (
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => router.push('/game/levels')}
-                    className="mt-3 bg-slate-700/50 text-slate-200 border-slate-600/30 hover:bg-slate-600/50 rounded-xl"
+                    className="mt-3 bg-slate-700/50 text-slate-200 border-slate-600/30 hover:bg-slate-600/50 rounded-xl text-xs md:text-sm px-3 md:px-4 py-1 md:py-2"
                   >
                     ← View All Categories
                   </Button>
@@ -160,24 +160,24 @@ function GrammarLevelsContent() {
           </Card>
 
           {/* Categories */}
-          <div className="space-y-8">
+          <div className="space-y-6 md:space-y-8">
             {displayedCategories.map((category) => (
-              <Card key={category.id} className="p-6 bg-slate-800/90 backdrop-blur-sm shadow-lg border border-slate-700/50 rounded-2xl">
-                <div className="mb-6">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${category.color} flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform duration-300`}>
-                      <category.icon className="w-8 h-8 text-white" />
+              <Card key={category.id} className="p-4 md:p-6 bg-slate-800/90 backdrop-blur-sm shadow-lg border border-slate-700/50 rounded-2xl">
+                <div className="mb-4 md:mb-6">
+                  <div className="flex items-center gap-3 md:gap-4 mb-3 md:mb-4">
+                    <div className={`w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br ${category.color} flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform duration-300 flex-shrink-0`}>
+                      <category.icon className="w-6 h-6 md:w-8 md:h-8 text-white" />
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-2xl font-bold text-white">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-2">
+                        <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white">
                           {category.name}
                         </h3>
-                        <span className="text-sm text-slate-400 bg-slate-700/50 px-2 py-1 rounded-full">
+                        <span className="text-xs md:text-sm text-slate-400 bg-slate-700/50 px-2 py-1 rounded-full self-start sm:self-center">
                           {category.levels.length} levels
                         </span>
                       </div>
-                      <p className="text-slate-300 text-base">
+                      <p className="text-slate-300 text-sm md:text-base">
                         {category.description}
                       </p>
                     </div>
@@ -185,7 +185,7 @@ function GrammarLevelsContent() {
                 </div>
 
                 {/* Levels Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
                   {category.levels.map((level) => {
                     // In free-play mode, no level completion tracking
                     const completed = false
@@ -193,21 +193,21 @@ function GrammarLevelsContent() {
                     return (
                       <Card
                         key={level.id}
-                        className="p-4 cursor-pointer transition-all duration-300 transform hover:scale-105 border border-slate-600/30 rounded-2xl group bg-slate-700/60 hover:bg-slate-600/60 backdrop-blur-sm shadow-lg hover:shadow-xl"
+                        className="p-3 md:p-4 cursor-pointer transition-all duration-300 transform hover:scale-105 border border-slate-600/30 rounded-2xl group bg-slate-700/60 hover:bg-slate-600/60 backdrop-blur-sm shadow-lg hover:shadow-xl"
                         onClick={() => handleLevelSelect(level.id)}
                       >
-                        <div className="text-center space-y-3">
+                        <div className="text-center space-y-2 md:space-y-3">
                           <div className="flex items-center justify-center">
-                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-400/80 to-indigo-500/80 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
-                              <span className="text-white font-bold text-base">{level.id}</span>
+                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-gradient-to-br from-blue-400/80 to-indigo-500/80 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+                              <span className="text-white font-bold text-sm md:text-base">{level.id}</span>
                             </div>
                           </div>
 
                           <div>
-                            <h4 className="font-bold text-sm text-white mb-1 group-hover:text-white/90 transition-colors">
+                            <h4 className="font-bold text-xs md:text-sm text-white mb-1 group-hover:text-white/90 transition-colors leading-tight">
                               {level.name}
                             </h4>
-                            <p className="text-xs text-slate-300 leading-tight">
+                            <p className="text-xs text-slate-300 leading-tight line-clamp-2">
                               {level.shortDescription}
                             </p>
                           </div>
