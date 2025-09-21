@@ -1684,18 +1684,31 @@ function TimelineVisual({ category }: { category: string }) {
         /* Mobile-specific optimizations */
         @media (max-width: 1024px) {
           .word-toolbox {
-            max-height: 45vh !important;
+            max-height: 55vh !important;
             overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #4B5563 transparent;
           }
           .sentence-building-area {
-            position: sticky;
+            position: fixed;
             top: 0;
-            z-index: 15;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(8px);
-            margin-bottom: 1rem;
-            border-radius: 1rem;
+            left: 0;
+            right: 0;
+            z-index: 30;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(12px);
+            margin: 0;
+            border-radius: 0 0 1rem 1rem;
             padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border-bottom: 2px solid rgba(71, 85, 105, 0.5);
+          }
+          .mobile-content-wrapper {
+            padding-top: 180px !important;
+          }
+          .mobile-grammar-guide {
+            order: -2 !important;
+            margin-bottom: 1rem;
           }
           .main-game-container {
             gap: 0.75rem !important;
@@ -1713,27 +1726,38 @@ function TimelineVisual({ category }: { category: string }) {
             touch-action: manipulation;
           }
         }
-        
+
         @media (max-width: 768px) {
           .word-toolbox {
-            max-height: 40vh !important;
+            max-height: 60vh !important;
+            padding-bottom: 2rem;
           }
           .horizontal-layout {
             flex-direction: column !important;
             gap: 1rem !important;
           }
           .sentence-area-mobile {
-            order: -1;
-            position: sticky;
+            order: 99;
+            position: fixed;
             top: 0;
-            z-index: 20;
+            left: 0;
+            right: 0;
+            z-index: 35;
             background: rgba(15, 23, 42, 0.98);
-            backdrop-filter: blur(12px);
-            border: 2px solid rgba(71, 85, 105, 0.5);
-            border-radius: 1rem;
-            margin-bottom: 1rem;
+            backdrop-filter: blur(15px);
+            border: none;
+            border-radius: 0 0 1.5rem 1.5rem;
+            margin: 0;
             padding: 1rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
+          }
+          .mobile-content-wrapper {
+            padding-top: 200px !important;
+          }
+          .mobile-grammar-guide {
+            order: -1 !important;
+            margin-top: 0 !important;
+            margin-bottom: 1.5rem;
           }
           .word-tile {
             min-height: 48px !important;
@@ -1776,7 +1800,7 @@ function TimelineVisual({ category }: { category: string }) {
       )}
 
       {/* Content Overlay */}
-      <div className="relative z-10 min-h-screen p-2 sm:p-4 pt-16">
+      <div className="relative z-10 min-h-screen p-2 sm:p-4 pt-16 mobile-content-wrapper">
         <div className="max-w-5xl mx-auto space-y-3">
 
           {/* Header with navigation */}
@@ -1837,6 +1861,28 @@ function TimelineVisual({ category }: { category: string }) {
                   <span className="text-sm">How to use</span>
                 </Button>
               </div>
+
+          {/* Grammar Guide - Mobile First Position */}
+          <div className="lg:hidden mobile-grammar-guide">
+            <GrammarGuideCard
+              persistKey={`grammar-open-${levelId}`}
+              title="📚 Complete Grammar Guide"
+              sections={[
+                {
+                  label: "🎯 Pattern",
+                  content: `${level.formula} → ${level.pattern}`
+                },
+                {
+                  label: "📝 Examples",
+                  content: `Examples: ${level.example}`
+                },
+                {
+                  label: "💡 How to Use",
+                  content: level.explanation
+                }
+              ]}
+            />
+          </div>
 
           {/* Main Content Area with Horizontal Layout */}
           <div className="flex flex-col lg:flex-row gap-6 min-h-[600px] horizontal-layout main-game-container">
@@ -2022,23 +2068,23 @@ function TimelineVisual({ category }: { category: string }) {
                 )}
               </div>
 
-              {/* Consolidated Grammar Guide */}
-              <div className="mt-6 pt-4 border-t border-slate-600/30">
+              {/* Consolidated Grammar Guide - Desktop Only */}
+              <div className="hidden lg:block mt-6 pt-4 border-t border-slate-600/30">
                 <GrammarGuideCard
                   persistKey={`grammar-open-${levelId}`}
                   title="📚 Complete Grammar Guide"
                   sections={[
-                    { 
-                      label: "🎯 Pattern", 
-                      content: `${level.formula} → ${level.pattern}` 
+                    {
+                      label: "🎯 Pattern",
+                      content: `${level.formula} → ${level.pattern}`
                     },
-                    { 
-                      label: "📝 Examples", 
-                      content: `Examples: ${level.example}` 
+                    {
+                      label: "📝 Examples",
+                      content: `Examples: ${level.example}`
                     },
-                    { 
-                      label: "💡 How to Use", 
-                      content: level.explanation 
+                    {
+                      label: "💡 How to Use",
+                      content: level.explanation
                     }
                   ]}
                 />
