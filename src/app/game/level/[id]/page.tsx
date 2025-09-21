@@ -8,7 +8,6 @@ import { Badge } from '@/components/ui/badge'
 import { CheckCircle, RotateCcw, Home, BookOpen, ArrowLeft, ChevronDown, ChevronUp, HelpCircle, X, Heart, BookmarkPlus, Bookmark } from 'lucide-react'
 import { getLevelById } from '@/data/comprehensiveLevels45'
 import { grammarEngine } from '@/lib/grammar-engine-instance'
-import { PatternCard } from '@/components/game/PatternCard'
 import { GrammarGuideCard } from '@/components/game/GrammarGuideCard'
 import { WordCategoryList, ShuffledWordGrid } from '@/components/game/WordLists'
 
@@ -2023,80 +2022,26 @@ function TimelineVisual({ category }: { category: string }) {
                 )}
               </div>
 
-              {/* Pattern and Quick Grammar Guide - Moved from top */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 items-start gap-3 mt-6 pt-4 border-t border-slate-600/30">
-                        {(() => {
-                          const category = detectLevelCategory()
-                          const info: Record<string, { what: string; why: string }> = {
-                            conditional: {
-                              what: 'An if-clause plus a result clause using present forms.',
-                              why: 'To show cause → result, general truths, or likely outcomes.'
-                            },
-                            continuous: {
-                              what: 'Present Continuous: be + V-ing (am/is/are + V-ing).',
-                              why: 'An action happening now or around now; temporary situations.'
-                            },
-                            'perfect-continuous': {
-                              what: 'Perfect Continuous: have/has been + V-ing.',
-                              why: 'An action that started in the past and continues to now.'
-                            },
-                            future: {
-                              what: 'Future with will/going to + base verb.',
-                              why: 'Decisions, predictions, plans and promises about the future.'
-                            },
-                            past: {
-                              what: 'Past Simple (V2) for finished actions at a specific time.',
-                              why: 'To talk about completed events and sequences in the past.'
-                            },
-                            perfect: {
-                              what: 'Present Perfect: have/has + V3 (past participle).',
-                              why: 'Links past to now: experiences, recent results, since/for duration.'
-                            },
-                            modal: {
-                              what: 'Modal + base verb (can/should/must...).',
-                              why: 'Express ability, advice, obligation, possibility or permission.'
-                            },
-                            passive: {
-                              what: 'Be (am/is/are) + V3; focus on the action/result.',
-                              why: 'Use when the doer is unknown/unimportant or to sound formal.'
-                            },
-                            default: {
-                              what: 'Present Simple: subject + base verb / +s for he/she/it.',
-                              why: 'Facts, routines, schedules and general truths.'
-                            }
-                          }
-                          const chosen = info[category.split('-')[1] as keyof typeof info] || info[category as keyof typeof info] || info.default
-                          return (
-                            <PatternCard
-                              persistKey={`pattern-open-${levelId}`}
-                              pill={
-                                <button onClick={handlePatternPillClick} className={`px-2 py-1 rounded-full text-xs font-bold border ${getPatternPillClass()} transition-colors hover:opacity-90`} title="Click to copy. Shift+Click to auto-insert an example sentence.">
-                        {level.formula}
-                  </button>
-                              }
-                              toast={pillToast}
-                              info={chosen}
-                              visual={<TimelineVisual category={category} />}
-                            />
-                          )
-                        })()}
-                        <GrammarGuideCard
-                          persistKey={`grammar-open-${levelId}`}
-                          sections={[
-                            { 
-                              label: "📋 Pattern", 
-                              content: level.pattern 
-                            },
-                            { 
-                              label: "📝 Examples", 
-                              content: `Examples: ${level.example}` 
-                            },
-                            { 
-                              label: "💡 Grammar Rules", 
-                              content: level.explanation 
-                            }
-                          ]}
-                        />
+              {/* Consolidated Grammar Guide */}
+              <div className="mt-6 pt-4 border-t border-slate-600/30">
+                <GrammarGuideCard
+                  persistKey={`grammar-open-${levelId}`}
+                  title="📚 Complete Grammar Guide"
+                  sections={[
+                    { 
+                      label: "🎯 Pattern", 
+                      content: `${level.formula} → ${level.pattern}` 
+                    },
+                    { 
+                      label: "📝 Examples", 
+                      content: `Examples: ${level.example}` 
+                    },
+                    { 
+                      label: "💡 How to Use", 
+                      content: level.explanation 
+                    }
+                  ]}
+                />
               </div>
 
             </div>
