@@ -112,143 +112,39 @@ export default function LevelPage() {
         const cached = sessionStorage.getItem(cacheKey)
 
         if (cached) {
+          const pattern = JSON.parse(cached)
+          setCurrentGrammarPattern(pattern)
+          setGrammarPatternLoading(false)
+          return
+        }
 
-// Verb System Guide Modal
-function VerbSystemGuide({ open, onClose }: { open: boolean; onClose: () => void }) {
-  if (!open) return null
-  return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-      <div className="bg-slate-800 rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-hidden shadow-2xl">
-        <div className="px-6 py-4 border-b border-slate-600 flex items-center justify-between bg-gradient-to-r from-indigo-500/15 to-blue-500/15">
-          <h2 className="text-xl font-bold text-white flex items-center">
-            <BookOpen className="w-5 h-5 mr-2 text-indigo-300" /> Verb System Guide
-          </h2>
-          <Button onClick={onClose} variant="ghost" className="text-slate-300 hover:text-white hover:bg-slate-700/60 p-2 rounded-full">
-            <X className="w-5 h-5" />
-          </Button>
-        </div>
-        <div className="p-6 overflow-y-auto max-h-[70vh] space-y-6 text-slate-100">
-          <div>
-            <h3 className="font-bold text-lg mb-2">Forms</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div className="bg-slate-700/40 rounded-lg p-3 border border-slate-600/40">
-                <p className="text-sm font-semibold mb-1 text-blue-200">V1 (base)</p>
-                <p className="text-sm">eat, play, go</p>
-              </div>
-              <div className="bg-slate-700/40 rounded-lg p-3 border border-slate-600/40">
-                <p className="text-sm font-semibold mb-1 text-purple-200">V1-3rd (he/she/it)</p>
-                <p className="text-sm">eats, plays, goes</p>
-              </div>
-              <div className="bg-slate-700/40 rounded-lg p-3 border border-slate-600/40">
-                <p className="text-sm font-semibold mb-1 text-emerald-200">V-ing (continuous)</p>
-                <p className="text-sm">eating, playing, going</p>
-              </div>
-              <div className="bg-slate-700/40 rounded-lg p-3 border border-slate-600/40">
-                <p className="text-sm font-semibold mb-1 text-pink-200">V2 (past)</p>
-                <p className="text-sm">ate, played, went</p>
-              </div>
-              <div className="bg-slate-700/40 rounded-lg p-3 border border-slate-600/40">
-                <p className="text-sm font-semibold mb-1 text-yellow-200">V3 (past participle)</p>
-                <p className="text-sm">eaten, played, gone</p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <h3 className="font-bold text-lg mb-2">Tips</h3>
-            <ul className="list-disc list-inside space-y-1 text-sm text-slate-200/90">
-              <li>Use V1-3rd with he/she/it in present simple: She plays.</li>
-              <li>Use be + V-ing for continuous: They are playing.</li>
-              <li>Use did + V1 for past questions/negatives: Did you play?</li>
-              <li>Use have/has + V3 for present perfect: He has eaten.</li>
-              <li>Use be + V3 for passive: The pizza is eaten.</li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-bold text-lg mb-2">Irregular Cheat Sheet</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
-              {[['go','went','gone'],['see','saw','seen'],['make','made','made'],['have','had','had'],['do','did','done']].map(([b,p,pp]) => (
-                <div key={b} className="bg-slate-700/40 rounded-lg p-2 border border-slate-600/40">
-                  <div className="font-bold text-white">{b}</div>
-                  <div className="text-slate-300">V2: <span className="text-white font-semibold">{p}</span></div>
-                  <div className="text-slate-300">V3: <span className="text-white font-semibold">{pp}</span></div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+        // Load from Supabase
+        const pattern = await loadGrammarPatternByLevel(levelId.toString())
+        if (pattern) {
+          setCurrentGrammarPattern(pattern)
+          // Cache for session
+          sessionStorage.setItem(cacheKey, JSON.stringify(pattern))
+        } else {
+          // Use fallback pattern if available
+          const fallback = fallbackPatterns[levelId.toString()]
+          if (fallback) {
+            setCurrentGrammarPattern(fallback)
+          }
+        }
+      } catch (error) {
+        console.error('Error loading grammar pattern:', error)
+        // Use fallback pattern
+        const fallback = fallbackPatterns[levelId.toString()]
+        if (fallback) {
+          setCurrentGrammarPattern(fallback)
+        }
+      } finally {
+        setGrammarPatternLoading(false)
+      }
+    }
+    loadPattern()
+  }, [levelId])
 
-// Simple tense timeline visual inspired by classroom timelines
-function TimelineVisual({ category }: { category: string }) {
-  // Map our category to a visual variant
-  const variant = ((): string => category)()
-
-  return (
-    <div className="mt-3 p-3 rounded-md bg-slate-900/20 border border-blue-400/20">
-      <div className="flex items-center justify-center">
-        <svg width="320" height="80" viewBox="0 0 320 80" className="text-blue-200">
-          {/* Axis */}
-          <line x1="16" y1="40" x2="304" y2="40" stroke="currentColor" strokeWidth="2" />
-          {/* Present marker */}
-          <line x1="160" y1="18" x2="160" y2="62" stroke="currentColor" strokeWidth="2" />
-
-          {/* Past / Present / Future labels */}
-          <text x="24" y="72" fontSize="10" fill="currentColor">Past</text>
-          <text x="148" y="72" fontSize="10" fill="currentColor">Present</text>
-          <text x="260" y="72" fontSize="10" fill="currentColor">Future</text>
-
-          {/* Variant markers */}
-          {variant === 'past' && (
-            <g>
-              <text x="90" y="28" fontSize="16" fill="#60a5fa">✕</text>
-            </g>
-          )}
-          {(variant === 'present' || variant === 'default') && (
-            <g>
-              {[140, 146, 152, 158, 164, 170, 176].map((x, i) => (
-                <text key={i} x={x} y="28" fontSize="12" fill="#38bdf8">✕</text>
-              ))}
-            </g>
-          )}
-          {variant === 'future' && (
-            <g>
-              <text x="230" y="28" fontSize="16" fill="#22d3ee">✕</text>
-            </g>
-          )}
-          {variant.endsWith('perfect') && (
-            <g>
-              {/* Oval around present to show link past↔now */}
-              <ellipse cx="200" cy="56" rx="28" ry="10" fill="none" stroke="#fde68a" strokeWidth="2" />
-              <ellipse cx="120" cy="56" rx="28" ry="10" fill="none" stroke="#fde68a" strokeWidth="2" />
-              <text x="152" y="28" fontSize="14" fill="#fde68a">↔</text>
-            </g>
-          )}
-          {variant.endsWith('continuous') && !variant.includes('perfect') && (
-            <g>
-              {/* Arc centered on present */}
-              <path d="M 100 52 Q 160 10 220 52" fill="none" stroke="#34d399" strokeWidth="3" strokeDasharray="4 3" />
-            </g>
-          )}
-          {variant.includes('perfect-continuous') && (
-            <g>
-              {/* Arc starting in past moving toward present */}
-              <path d="M 60 58 Q 140 8 220 58" fill="none" stroke="#a7f3d0" strokeWidth="3" strokeDasharray="5 3" />
-              <ellipse cx="120" cy="56" rx="22" ry="8" fill="none" stroke="#fde68a" strokeWidth="2" />
-            </g>
-          )}
-          {variant === 'default' && (
-            <g>
-              <circle cx="160" cy="28" r="4" fill="#93c5fd" />
-            </g>
-          )}
-        </svg>
-      </div>
-    </div>
-  )
-}
   // Enhanced word categories for this level with pronoun elimination
   const getWordCategories = () => {
     const allPronouns = [
@@ -926,49 +822,6 @@ function TimelineVisual({ category }: { category: string }) {
       return part
     })
   }
-
-  // Load enhanced grammar pattern from Supabase with caching
-  useEffect(() => {
-    const loadPattern = async () => {
-      setGrammarPatternLoading(true)
-      try {
-        // Try to get from cache first
-        const cacheKey = `grammar-pattern-${levelId}`
-        const cached = sessionStorage.getItem(cacheKey)
-
-        if (cached) {
-          const pattern = JSON.parse(cached)
-          setCurrentGrammarPattern(pattern)
-          setGrammarPatternLoading(false)
-          return
-        }
-
-        // Load from Supabase
-        const pattern = await loadGrammarPatternByLevel(levelId.toString())
-        if (pattern) {
-          setCurrentGrammarPattern(pattern)
-          // Cache for session
-          sessionStorage.setItem(cacheKey, JSON.stringify(pattern))
-        } else {
-          // Use fallback pattern if available
-          const fallback = fallbackPatterns[levelId.toString()]
-          if (fallback) {
-            setCurrentGrammarPattern(fallback)
-          }
-        }
-      } catch (error) {
-        console.error('Error loading grammar pattern:', error)
-        // Use fallback pattern
-        const fallback = fallbackPatterns[levelId.toString()]
-        if (fallback) {
-          setCurrentGrammarPattern(fallback)
-        }
-      } finally {
-        setGrammarPatternLoading(false)
-      }
-    }
-    loadPattern()
-  }, [levelId])
 
   // Save sentence functionality
   const saveSentence = () => {
@@ -1903,10 +1756,10 @@ function TimelineVisual({ category }: { category: string }) {
               <div className="flex-1 mx-3 bg-slate-700/50 rounded-full h-1.5">
                 <div
                   className="h-1.5 rounded-full transition-all duration-500 bg-[linear-gradient(90deg,#22D3EE,#A78BFA,#F472B6,#34D399)] bg-[length:200%_100%] animate-[progressGlow_3s_linear_infinite]"
-                  style={{ width: `${(level.id / 47) * 100}%` }}
+                  style={{ width: `${((level.id / 47) * 100)}%` }}
                 />
               </div>
-              <span className="text-xs text-slate-400">{Math.round((level.id / 47) * 100)}%</span>
+              <span className="text-xs text-slate-400">{Math.round(((level.id / 47) * 100))}%</span>
             </div>
           </div>
 
@@ -1971,8 +1824,8 @@ function TimelineVisual({ category }: { category: string }) {
                     </span>
                     <span>
                       {learningMode === 'categorized'
-                        ? `${categorizedCorrect}/5 correct`
-                        : `${shuffledCorrect}/3 correct`}
+                        ? `${categorizedCorrect} / 5 correct`
+                        : `${shuffledCorrect} / 3 correct`}
                     </span>
                   </div>
                   <div className={`bg-slate-700/50 rounded-full h-1.5 transition-all duration-300 ${
@@ -1985,10 +1838,10 @@ function TimelineVisual({ category }: { category: string }) {
                           : 'bg-gradient-to-r from-purple-400 to-purple-500'
                       }`}
                       style={{
-                        width: `${learningMode === 'categorized'
-                          ? (categorizedCorrect / 5) * 100
-                          : (shuffledCorrect / 3) * 100}%`
-                      }}
+                        width: learningMode === 'categorized'
+                          ? `${(categorizedCorrect * 20)}%`
+                          : `${(shuffledCorrect * 33.33)}%`
+                      }}>
                   </div>
                   </div>
 
@@ -2159,9 +2012,8 @@ function TimelineVisual({ category }: { category: string }) {
                   />
                 )}
               </div>
-
-            </div>
-          </Card>
+              </div>
+            </Card>
             </div>
 
             {/* Right Side - Word Categories Toolbox */}
@@ -2257,10 +2109,10 @@ function TimelineVisual({ category }: { category: string }) {
               </div>
             </div>
           </div>
-            </div>
-          </Card>
 
           {/* duplicate content fully removed */}
+          </div>
+          </Card>
         </div>
       </div>
 
@@ -2523,5 +2375,4 @@ function TimelineVisual({ category }: { category: string }) {
       )}
     </div>
   )
-}
 }
