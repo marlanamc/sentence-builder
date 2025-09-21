@@ -2084,8 +2084,16 @@ function TimelineVisual({ category }: { category: string }) {
                           persistKey={`grammar-open-${levelId}`}
                           sections={[
                             { 
-                              label: level.name, 
-                              content: `${level.pattern}\n\nExamples: ${level.example}\n\n${level.explanation}` 
+                              label: "📋 Pattern", 
+                              content: level.pattern 
+                            },
+                            { 
+                              label: "📝 Examples", 
+                              content: `Examples: ${level.example}` 
+                            },
+                            { 
+                              label: "💡 Grammar Rules", 
+                              content: level.explanation 
                             }
                           ]}
                         />
