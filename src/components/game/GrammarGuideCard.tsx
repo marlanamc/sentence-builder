@@ -69,7 +69,7 @@ export function GrammarGuideCard({ title = 'Quick Grammar Guide', persistKey, he
     }
 
     return (
-      <span className={`inline-block px-3 py-1.5 rounded-lg text-sm font-medium border shadow-sm ${colorMap[type]}`}>
+      <span className={`inline-block px-2 py-1 rounded-lg text-xs font-medium border shadow-sm ${colorMap[type]}`}>
         {word}
       </span>
     )
@@ -153,7 +153,7 @@ export function GrammarGuideCard({ title = 'Quick Grammar Guide', persistKey, he
                               const cleanWord = word.replace(/[.,!?]/, '')
                               let type: 'subject' | 'verb' | 'object' | 'article' | 'auxiliary' | 'negation' | 'question' | 'time' | 'preposition' | 'adverb' = 'object'
 
-                              if (['I', 'you', 'we', 'they', 'he', 'she', 'it', 'They', 'She', 'He'].includes(cleanWord)) type = 'subject'
+                              if (['I', 'you', 'we', 'they', 'he', 'she', 'it', 'They', 'She', 'He', 'We', 'You'].includes(cleanWord)) type = 'subject'
                               else if (['eat', 'eats', 'play', 'plays', 'drink', 'drinks', 'like', 'likes', 'study', 'studies'].includes(cleanWord)) type = 'verb'
                               else if (['a', 'an', 'the'].includes(cleanWord)) type = 'article'
                               else if (['am', 'is', 'are', 'have', 'has', 'do', 'does'].includes(cleanWord)) type = 'auxiliary'
@@ -175,15 +175,22 @@ export function GrammarGuideCard({ title = 'Quick Grammar Guide', persistKey, he
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {section.content.split('•').filter(Boolean).map((point, idx) => (
-                      <div key={idx} className="flex items-start gap-2">
-                        <span className="text-emerald-600 font-bold mt-0.5">•</span>
-                        <span className="text-gray-800 leading-relaxed">{point.trim()}</span>
-                      </div>
-                    ))}
-                    {!section.content.includes('•') && (
-                      <div className="text-gray-800 leading-relaxed bg-white/70 rounded-lg p-3 border border-emerald-200">
-                        {section.content}
+                    {section.content.includes('•') ? (
+                      // Handle bullet points
+                      section.content.split('•').filter(Boolean).map((point, idx) => (
+                        <div key={idx} className="flex items-start gap-2">
+                          <span className="text-emerald-600 font-bold mt-0.5">•</span>
+                          <span className="text-gray-800 leading-relaxed text-sm">{point.trim()}</span>
+                        </div>
+                      ))
+                    ) : (
+                      // Handle plain text content (remove any duplicate sentences)
+                      <div className="text-gray-800 leading-relaxed bg-white/70 rounded-lg p-3 border border-emerald-200 text-sm">
+                        {(() => {
+                          const sentences = section.content.split('. ').filter(sentence => sentence.trim().length > 0)
+                          const uniqueSentences = [...new Set(sentences)]
+                          return uniqueSentences.join('. ') + (uniqueSentences.length > 0 && !section.content.endsWith('.') ? '.' : '')
+                        })()}
                       </div>
                     )}
                   </div>
