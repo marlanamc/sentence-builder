@@ -117,6 +117,13 @@ export default function DashboardPage() {
     return categories.map(cat => categoryMap[cat] || cat)
   }
 
+  const getTimeBasedGreeting = () => {
+    const hour = new Date().getHours()
+    if (hour < 12) return "Good morning"
+    if (hour < 18) return "Good afternoon"
+    return "Good evening"
+  }
+
   if (loading || loadingData) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
@@ -163,10 +170,48 @@ export default function DashboardPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Welcome Section */}
+        <div className="mb-8">
+          <div className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl p-8 text-white shadow-xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                  👋 {getTimeBasedGreeting()}, {userProfile?.username || user?.email?.split('@')[0] || 'Student'}!
+                </h1>
+                <p className="text-blue-100 text-lg mb-4">
+                  {userProgress?.last_activity
+                    ? `Welcome back! Ready to continue learning?`
+                    : `Welcome to your English learning journey!`
+                  }
+                </p>
+                <div className="flex items-center space-x-6 text-sm">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span>Level {userProgress?.current_level || 1}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Trophy className="w-4 h-4" />
+                    <span>{userProgress?.total_xp || 0} XP</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Flame className="w-4 h-4" />
+                    <span>{userProgress?.current_streak || 0} day streak</span>
+                  </div>
+                </div>
+              </div>
+              <div className="hidden md:block">
+                <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                  <BookOpen className="w-12 h-12 text-white" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Quick Actions */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-gray-900">Quick Actions</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Continue Learning</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Button
@@ -193,6 +238,31 @@ export default function DashboardPage() {
               View Progress
             </Button>
           </div>
+        </div>
+
+        {/* Motivational Message */}
+        <div className="mb-8">
+          <Card className="p-6 bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                <Star className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {userProgress?.current_streak && userProgress.current_streak > 0
+                    ? `Amazing! You're on a ${userProgress.current_streak} day streak! 🔥`
+                    : "Ready to start your learning journey? 🚀"
+                  }
+                </h3>
+                <p className="text-gray-600">
+                  {userProgress?.current_level && userProgress.current_level > 1
+                    ? `You've completed ${userProgress.current_level - 1} levels! Keep going!`
+                    : "Start with Level 1 to build your first sentences!"
+                  }
+                </p>
+              </div>
+            </div>
+          </Card>
         </div>
 
         {/* Stats Overview */}

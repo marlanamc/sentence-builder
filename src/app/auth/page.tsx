@@ -15,14 +15,14 @@ export default function AuthPage() {
   const handleLoginSuccess = () => {
     setShowSuccess(true)
     setTimeout(() => {
-      router.push('/game/levels')
+      router.push('/dashboard')
     }, 1500)
   }
 
   const handleSignUpSuccess = () => {
     setShowSuccess(true)
     setTimeout(() => {
-      router.push('/game/levels')
+      router.push('/dashboard')
     }, 2000)
   }
 
