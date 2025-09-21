@@ -806,15 +806,16 @@ function TimelineVisual({ category }: { category: string }) {
   const getShuffledWords = () => {
     const allWords: Array<{ word: string; category: string; originalWord: string; toggleable?: boolean }> = []
 
-    // Collect all words from union of required + derived categories
-    const categories = (activeRequiredCategories as string[])
+    // Use only the required categories from the level (not all active categories)
+    const categories = level.requiredCategories || []
     categories.forEach(categoryName => {
       const categoryWordsRaw = wordCategories[categoryName as keyof typeof wordCategories] || []
       const categoryWords = (categoryWordsRaw as any[]).map((w) => ({
         ...w,
         originalWord: w.originalWord ?? w.word
       }))
-      allWords.push(...categoryWords)
+      // Limit to 10 words per category for mobile optimization
+      allWords.push(...categoryWords.slice(0, 10))
     })
 
     // Shuffle the array
@@ -2130,13 +2131,13 @@ function TimelineVisual({ category }: { category: string }) {
             {/* Vertical Stacked Word Categories */}
             {learningMode === 'categorized' ? (
                   <WordCategoryList
-                    categoriesToShow={[...new Set(['subjects','verbs','articles','objects','helpers','negatives','question-words','modals','conjunctions','prepositions','adjectives','adverbs','time','places','determiners'])]
-                      .filter((categoryName) => (activeRequiredCategories as string[]).includes(categoryName))}
+                    categoriesToShow={level.requiredCategories || []}
                     wordCategories={wordCategories as any}
                     getCategoryIcon={getCategoryIcon as any}
                     getCategoryColor={getCategoryColor as any}
                     getChallengeWordDisplay={(w: any) => getChallengeWordDisplay(mapVerbForLevel(w))}
                     onTileClick={handleTileClick}
+                    limitWordsPerCategory={10}
                   />
                 ) : (
               <Card className="bg-slate-800/90 backdrop-blur-sm shadow-lg border-0 rounded-2xl overflow-hidden border border-slate-700/50">

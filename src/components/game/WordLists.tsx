@@ -11,13 +11,17 @@ type CategorizedProps = {
   getCategoryColor: (category: string) => string
   getChallengeWordDisplay: (w: WordObj) => string
   onTileClick: (word: string, category: string) => void
+  limitWordsPerCategory?: number
 }
 
-export function WordCategoryList({ categoriesToShow, wordCategories, getCategoryIcon, getCategoryColor, getChallengeWordDisplay, onTileClick }: CategorizedProps) {
+export function WordCategoryList({ categoriesToShow, wordCategories, getCategoryIcon, getCategoryColor, getChallengeWordDisplay, onTileClick, limitWordsPerCategory }: CategorizedProps) {
   return (
     <div className="space-y-4 pt-2">
       {categoriesToShow.map((categoryName) => {
-        const categoryWords = (wordCategories[categoryName] || []) as WordObj[]
+        const allCategoryWords = (wordCategories[categoryName] || []) as WordObj[]
+        const categoryWords = limitWordsPerCategory 
+          ? allCategoryWords.slice(0, limitWordsPerCategory)
+          : allCategoryWords
         if (categoryWords.length === 0) return null
         const categoryColor = categoryName === 'subjects' ? 'from-sky-200/60 to-sky-300/60' :
                               categoryName === 'verbs' ? 'from-purple-200/60 to-purple-300/60' :
