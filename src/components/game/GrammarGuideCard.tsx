@@ -53,6 +53,28 @@ export function GrammarGuideCard({ title = 'Quick Grammar Guide', persistKey, he
     }
   }
 
+  // Create colored word bubbles that match the toolbox
+  const createWordBubble = (word: string, type: 'subject' | 'verb' | 'object' | 'article' | 'auxiliary' | 'negation' | 'question' | 'time' | 'preposition' | 'adverb') => {
+    const colorMap = {
+      subject: 'bg-sky-200/90 border-sky-300/60 text-gray-900',
+      verb: 'bg-purple-200/90 border-purple-300/60 text-gray-900',
+      object: 'bg-orange-200/90 border-orange-300/60 text-gray-900',
+      article: 'bg-pink-200/90 border-pink-300/60 text-gray-900',
+      auxiliary: 'bg-violet-200/90 border-violet-300/60 text-gray-900',
+      negation: 'bg-red-200/90 border-red-300/60 text-gray-900',
+      question: 'bg-emerald-200/90 border-emerald-300/60 text-gray-900',
+      time: 'bg-sky-200/90 border-sky-300/60 text-gray-900',
+      preposition: 'bg-cyan-200/90 border-cyan-300/60 text-gray-900',
+      adverb: 'bg-amber-200/90 border-amber-300/60 text-gray-900'
+    }
+
+    return (
+      <span className={`inline-block px-3 py-1.5 rounded-lg text-sm font-medium border shadow-sm ${colorMap[type]}`}>
+        {word}
+      </span>
+    )
+  }
+
   return (
     <div className={`rounded-xl border overflow-hidden transition-all duration-200 ${open ? 'bg-green-500/10 border-green-400/30' : 'bg-slate-800/40 border-slate-600/30'}`}>
       <button onClick={() => setOpen(!open)} className={`w-full p-3 flex items-center justify-between transition-colors ${open ? 'hover:bg-green-500/20' : 'hover:bg-slate-700/30'}`}>
@@ -78,28 +100,78 @@ export function GrammarGuideCard({ title = 'Quick Grammar Guide', persistKey, he
                 </div>
 
                 {section.label.includes('Pattern') ? (
-                  <div className="space-y-2">
-                    <div className="text-lg font-mono text-gray-800 bg-white/70 rounded-lg p-3 border border-amber-200">
-                      → {section.content.replace(/.*→\s*/, '')}
-                    </div>
-                    <div className="space-y-1 text-gray-700 text-sm">
-                      <div className="flex items-center gap-2">
-                        <span>→</span>
-                        <span>With 'he/she/it': Verb + -s/-es</span>
+                  <div className="space-y-3">
+                    <div className="bg-white/70 rounded-lg p-4 border border-amber-200">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-lg">→</span>
+                        {createWordBubble('Subject', 'subject')}
+                        <span className="text-gray-600">+</span>
+                        {createWordBubble('Verb', 'verb')}
+                        <span className="text-gray-600">+</span>
+                        {createWordBubble('Object', 'object')}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span>→</span>
-                        <span>With 'I/you/we/they': Verb in base form</span>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <div className="bg-white/50 rounded-lg p-3 border border-amber-100">
+                        <div className="flex items-center gap-2 flex-wrap mb-2">
+                          <span>→</span>
+                          <span className="font-medium text-gray-700">With 'he/she/it':</span>
+                        </div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {createWordBubble('She', 'subject')}
+                          <span className="text-gray-600">+</span>
+                          {createWordBubble('eats', 'verb')}
+                          <span className="text-gray-600">+</span>
+                          {createWordBubble('pizza', 'object')}
+                        </div>
+                      </div>
+                      <div className="bg-white/50 rounded-lg p-3 border border-amber-100">
+                        <div className="flex items-center gap-2 flex-wrap mb-2">
+                          <span>→</span>
+                          <span className="font-medium text-gray-700">With 'I/you/we/they':</span>
+                        </div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {createWordBubble('I', 'subject')}
+                          <span className="text-gray-600">+</span>
+                          {createWordBubble('eat', 'verb')}
+                          <span className="text-gray-600">+</span>
+                          {createWordBubble('pizza', 'object')}
+                        </div>
                       </div>
                     </div>
                   </div>
                 ) : section.label.includes('Examples') ? (
                   <div className="space-y-2">
-                    {section.content.replace('Examples: ', '').split(' / ').map((example, exIdx) => (
-                      <div key={exIdx} className="text-lg font-medium text-gray-800 bg-white/70 rounded-lg p-3 border border-purple-200">
-                        {example.trim()}
-                      </div>
-                    ))}
+                    {section.content.replace('Examples: ', '').split(' / ').map((example, exIdx) => {
+                      // Parse example sentences and create colored bubbles
+                      const words = example.trim().split(' ')
+                      return (
+                        <div key={exIdx} className="bg-white/70 rounded-lg p-3 border border-purple-200">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {words.map((word, wordIdx) => {
+                              // Basic word type detection for common patterns
+                              const cleanWord = word.replace(/[.,!?]/, '')
+                              let type: 'subject' | 'verb' | 'object' | 'article' | 'auxiliary' | 'negation' | 'question' | 'time' | 'preposition' | 'adverb' = 'object'
+
+                              if (['I', 'you', 'we', 'they', 'he', 'she', 'it', 'They', 'She', 'He'].includes(cleanWord)) type = 'subject'
+                              else if (['eat', 'eats', 'play', 'plays', 'drink', 'drinks', 'like', 'likes', 'study', 'studies'].includes(cleanWord)) type = 'verb'
+                              else if (['a', 'an', 'the'].includes(cleanWord)) type = 'article'
+                              else if (['am', 'is', 'are', 'have', 'has', 'do', 'does'].includes(cleanWord)) type = 'auxiliary'
+                              else if (['not', "don't", "doesn't", "haven't", "hasn't"].includes(cleanWord)) type = 'negation'
+                              else if (['what', 'where', 'when', 'who', 'how'].includes(cleanWord.toLowerCase())) type = 'question'
+                              else if (['today', 'yesterday', 'tomorrow', 'now', 'always', 'never', 'often'].includes(cleanWord.toLowerCase())) type = 'time'
+                              else if (['with', 'for', 'at', 'in', 'on', 'by'].includes(cleanWord.toLowerCase())) type = 'preposition'
+
+                              return (
+                                <span key={wordIdx}>
+                                  {createWordBubble(word, type)}
+                                </span>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
                 ) : (
                   <div className="space-y-2">
