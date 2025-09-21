@@ -187,9 +187,9 @@ export function GrammarGuideCard({ title = 'Quick Grammar Guide', persistKey, he
                               let type: 'subject' | 'verb' | 'object' | 'article' | 'auxiliary' | 'negation' | 'question' | 'time' | 'preposition' | 'adverb' = 'object'
 
                               if (['I', 'you', 'we', 'they', 'he', 'she', 'it', 'They', 'She', 'He', 'We', 'You'].includes(cleanWord)) type = 'subject'
+                              else if (['do', 'does', 'Do', 'Does', 'am', 'is', 'are', 'have', 'has', 'will', 'would', 'can', 'could', 'should', 'shall'].includes(cleanWord)) type = 'auxiliary'
                               else if (['eat', 'eats', 'play', 'plays', 'drink', 'drinks', 'like', 'likes', 'study', 'studies'].includes(cleanWord)) type = 'verb'
                               else if (['a', 'an', 'the'].includes(cleanWord)) type = 'article'
-                              else if (['am', 'is', 'are', 'have', 'has', 'do', 'does'].includes(cleanWord)) type = 'auxiliary'
                               else if (['not', "don't", "doesn't", "haven't", "hasn't"].includes(cleanWord)) type = 'negation'
                               else if (['what', 'where', 'when', 'who', 'how'].includes(cleanWord.toLowerCase())) type = 'question'
                               else if (['today', 'yesterday', 'tomorrow', 'now', 'always', 'never', 'often'].includes(cleanWord.toLowerCase())) type = 'time'
