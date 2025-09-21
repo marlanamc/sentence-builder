@@ -2,42 +2,17 @@
 -- Designed for extensive rules, questions, and adaptive learning
 
 -- ================================
--- USER MANAGEMENT
+-- BASIC USER SYSTEM (Optional for free play)
 -- ================================
 
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    email VARCHAR(255) UNIQUE NOT NULL,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE,
+    username VARCHAR(50) UNIQUE,
     role VARCHAR(20) DEFAULT 'student' CHECK (role IN ('student', 'teacher', 'admin')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    last_login TIMESTAMP WITH TIME ZONE,
-    is_active BOOLEAN DEFAULT true,
-
-    -- Student Profile
-    native_language VARCHAR(50),
-    proficiency_level VARCHAR(20) DEFAULT 'beginner' CHECK (proficiency_level IN ('beginner', 'elementary', 'intermediate', 'advanced')),
-    learning_goals TEXT[],
-    preferred_topics TEXT[]
-);
-
-CREATE TABLE user_progress (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    total_xp INTEGER DEFAULT 0,
-    current_streak INTEGER DEFAULT 0,
-    longest_streak INTEGER DEFAULT 0,
-    total_questions_answered INTEGER DEFAULT 0,
-    correct_answers INTEGER DEFAULT 0,
-    current_level INTEGER DEFAULT 1,
-    unlocked_categories TEXT[] DEFAULT ARRAY['present-basics'],
-    achievements TEXT[] DEFAULT ARRAY[]::TEXT[],
-    last_activity TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    study_time_minutes INTEGER DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    is_active BOOLEAN DEFAULT true
 );
 
 -- ================================
@@ -202,97 +177,18 @@ CREATE TABLE question_hints (
 );
 
 -- ================================
--- USER INTERACTIONS & ANALYTICS
+-- OPTIONAL ANALYTICS (for future use)
 -- ================================
 
-CREATE TABLE user_sessions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    session_start TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    session_end TIMESTAMP WITH TIME ZONE,
-    total_questions_attempted INTEGER DEFAULT 0,
-    total_correct INTEGER DEFAULT 0,
-    xp_gained INTEGER DEFAULT 0,
-    categories_practiced TEXT[],
-    levels_attempted INTEGER[],
-    device_type VARCHAR(50),
-    user_agent TEXT
-);
-
-CREATE TABLE question_attempts (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    session_id UUID REFERENCES user_sessions(id) ON DELETE CASCADE,
-    question_id UUID REFERENCES questions(id),
-    level_id INTEGER REFERENCES grammar_levels(id),
-
-    -- Student's response
-    user_answer TEXT NOT NULL,
-    selected_words TEXT[], -- For sentence building questions
-    construction_order INTEGER[], -- Order in which words were selected
-
-    -- Timing information
-    time_to_first_interaction INTEGER, -- milliseconds
-    total_time_spent INTEGER, -- milliseconds
-    started_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    submitted_at TIMESTAMP WITH TIME ZONE,
-
-    -- Evaluation
-    is_correct BOOLEAN,
-    score NUMERIC(3,2), -- 0.0 to 1.0 for partial credit
-    grammar_errors JSONB, -- Detailed breakdown of errors
-    feedback_given TEXT,
-
-    -- Hints and assistance
-    hints_used INTEGER DEFAULT 0,
-    hint_texts_shown TEXT[],
-
-    -- Learning insights
-    error_categories TEXT[], -- Types of errors made
-    improvement_suggestions TEXT[],
-
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
-CREATE TABLE learning_analytics (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    metric_name VARCHAR(100) NOT NULL,
-    metric_value NUMERIC,
-    metric_context JSONB, -- Additional context for the metric
-    recorded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-
-    -- Useful for tracking trends
-    daily_aggregate BOOLEAN DEFAULT false,
-    weekly_aggregate BOOLEAN DEFAULT false,
-    monthly_aggregate BOOLEAN DEFAULT false
-);
+-- These tables can be used later if analytics are needed
+-- For now, users can play freely without tracking
 
 -- ================================
--- ADAPTIVE LEARNING SYSTEM
+-- OPTIONAL ADAPTIVE LEARNING (for future use)
 -- ================================
 
-CREATE TABLE skill_assessments (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    skill_name VARCHAR(100) NOT NULL,
-    proficiency_level NUMERIC(3,2) NOT NULL, -- 0.0 to 1.0
-    confidence_interval NUMERIC(3,2), -- Uncertainty in the estimate
-    last_assessed TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    assessment_basis INTEGER DEFAULT 1, -- Number of questions this is based on
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
-CREATE TABLE difficulty_adjustments (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    question_id UUID REFERENCES questions(id),
-    original_difficulty NUMERIC(3,2),
-    adjusted_difficulty NUMERIC(3,2),
-    adjustment_reason VARCHAR(100),
-    performance_context JSONB,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+-- These tables can be used later if adaptive learning is implemented
+-- For now, users can play freely with standard difficulty
 
 -- ================================
 -- CONTENT MANAGEMENT
@@ -323,38 +219,11 @@ CREATE TABLE content_collections (
 );
 
 -- ================================
--- GAMIFICATION SYSTEM
+-- OPTIONAL GAMIFICATION (for future use)
 -- ================================
 
-CREATE TABLE achievements (
-    id VARCHAR(50) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    description TEXT,
-    icon VARCHAR(50),
-    type VARCHAR(50) NOT NULL, -- 'streak', 'mastery', 'exploration', 'social', etc.
-
-    -- Unlock conditions
-    unlock_conditions JSONB NOT NULL,
-    points_reward INTEGER DEFAULT 0,
-    badge_tier VARCHAR(20) DEFAULT 'bronze' CHECK (badge_tier IN ('bronze', 'silver', 'gold', 'platinum')),
-
-    -- Display
-    display_order INTEGER,
-    is_hidden BOOLEAN DEFAULT false, -- Secret achievements
-    is_active BOOLEAN DEFAULT true,
-
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
-CREATE TABLE user_achievements (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    achievement_id VARCHAR(50) REFERENCES achievements(id),
-    unlocked_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    progress_data JSONB, -- For achievements with multiple steps
-
-    UNIQUE(user_id, achievement_id)
-);
+-- These tables can be used later if achievements are implemented
+-- For now, users can play freely without gamification
 
 -- ================================
 -- INDEXES FOR PERFORMANCE
@@ -398,6 +267,102 @@ CREATE INDEX idx_skill_assessments_user_skill ON skill_assessments(user_id, skil
 CREATE INDEX idx_user_achievements_user ON user_achievements(user_id);
 
 -- ================================
+-- GRAMMAR RULES MIGRATION
+-- ================================
+
+-- Insert comprehensive grammar rules for all 47 levels
+INSERT INTO grammar_rules (level_id, rule_type, rule_name, conditions, validation_logic, error_messages, examples, priority) VALUES
+
+-- Level 1: Basic SVO Order
+(1, 'word-order', 'Basic SVO Order', '{"required_elements": ["subject", "verb", "object"], "strict_order": true}',
+ '{"check_order": true, "allow_flexibility": false}', '{"wrong_order": "Remember: Subject + Verb + Object order in English", "object_first": "Object should come after subject and verb"}',
+ ARRAY['"I eat pizza" - Subject (I) + Verb (eat) + Object (pizza)'], 10),
+
+(1, 'subject-verb-agreement', 'Present Simple Agreement', '{"tense": "present", "required_agreement": true}',
+ '{"third_person_s": true, "pronoun_check": true}', '{"missing_s": "Use -s with he/she/it: he eats, she likes, it works", "wrong_form": "Use base form with I/you/we/they: I eat, you like, we work"}',
+ ARRAY['"I eat" (no -s)', '"he eats" (with -s)', '"she likes" (with -s)'], 8),
+
+-- Level 2: Articles
+(2, 'article-usage', 'Article Rules', '{"requires_article": true, "article_types": ["definite", "indefinite"]}',
+ '{"countable_check": true, "vowel_check": true}', '{"missing_article": "Add a/an before singular countable nouns", "wrong_article": "Use \"a\" before consonant sounds, \"an\" before vowel sounds"}',
+ ARRAY['"I eat a sandwich" (consonant sound)', '"She drinks an orange" (vowel sound)'], 9),
+
+-- Level 3: Negatives
+(3, 'negation', 'Negative Structure', '{"is_negative": true, "required_auxiliary": true}',
+ '{"do_support": true, "not_placement": true}', '{"missing_do": "Use do/does + not + base verb for negatives", "wrong_order": "Remember: don''t/doesn''t + base verb"}',
+ ARRAY['"I don''t like pizza"', '"She doesn''t eat meat"'], 8),
+
+-- Level 4: Questions
+(4, 'question-formation', 'Yes/No Questions', '{"is_question": true, "question_type": "yes_no"}',
+ '{"auxiliary_first": true, "subject_after_aux": true}', '{"missing_do": "Questions need do/does at the beginning", "wrong_order": "Do/Does + subject + base verb"}',
+ ARRAY['"Do you like pizza?"', '"Does she eat breakfast?"'], 9),
+
+-- Level 5: Wh-Questions
+(5, 'question-formation', 'Wh-Questions', '{"is_question": true, "question_type": "wh", "wh_word": "what"}',
+ '{"wh_first": true, "auxiliary_second": true}', '{"wrong_wh_position": "Question words (what/who/where) go at the beginning", "missing_aux": "Use do/does after wh-word"}',
+ ARRAY['"What do you eat?"', '"What does she study?"'], 9),
+
+-- Level 7: Present Continuous
+(7, 'tense-consistency', 'Present Continuous', '{"tense": "continuous", "required_be_verb": true}',
+ '{"ing_form": true, "be_verb_present": true}', '{"missing_be": "Use am/is/are + verb-ing for ongoing actions", "wrong_form": "Add -ing to the main verb"}',
+ ARRAY['"I am eating lunch"', '"She is studying English"'], 8),
+
+-- Level 8: Continuous Questions
+(8, 'question-formation', 'Continuous Questions', '{"tense": "continuous", "is_question": true}',
+ '{"wh_first": true, "be_verb_second": true}', '{"wrong_structure": "What + are/is + subject + verb-ing?", "missing_ing": "Add -ing to the main verb"}',
+ ARRAY['"What are you doing?"', '"Where is she going?"'], 9),
+
+-- Level 13: Past Simple
+(13, 'verb-form', 'Past Simple Forms', '{"tense": "past", "required_v2": true}',
+ '{"regular_ed": true, "irregular_forms": true}', '{"wrong_form": "Use past tense: add -ed for regular verbs, special forms for irregular", "missing_ed": "Regular verbs need -ed: worked, played, studied"}',
+ ARRAY['"I ate pizza yesterday"', '"She went home early"'], 8),
+
+-- Level 14: Past Negative
+(14, 'negation', 'Past Negative', '{"tense": "past", "is_negative": true}',
+ '{"did_not": true, "base_verb": true}', '{"wrong_did": "Use didn''t + base verb (not past form)", "missing_did": "Past negatives need didn''t + base verb"}',
+ ARRAY['"I didn''t go yesterday"', '"She didn''t eat lunch"'], 8),
+
+-- Level 15: Past Questions
+(15, 'question-formation', 'Past Questions', '{"tense": "past", "is_question": true}',
+ '{"did_first": true, "base_verb": true}', '{"wrong_structure": "Did + subject + base verb?", "missing_did": "Past questions need ''Did'' at the beginning"}',
+ ARRAY['"Did you see the movie?"', '"Did she finish homework?"'], 9),
+
+-- Level 18: Present Perfect
+(18, 'verb-form', 'Present Perfect Forms', '{"tense": "perfect", "required_have": true}',
+ '{"have_has": true, "past_participle": true}', '{"wrong_aux": "Use have/has + past participle (V3)", "missing_have": "Present perfect needs have/has + V3"}',
+ ARRAY['"I have visited Paris"', '"She has finished work"'], 8),
+
+-- Level 19: Present Perfect Experience
+(19, 'question-formation', 'Perfect Questions', '{"tense": "perfect", "is_question": true, "experience_words": true}',
+ '{"have_first": true, "ever_usage": true}', '{"wrong_structure": "Have/Has + subject + ever + V3?", "missing_ever": "Use ''ever'' in experience questions"}',
+ ARRAY['"Have you ever been to Japan?"', '"Has she ever seen snow?"'], 9),
+
+-- Level 25: Going to Future
+(25, 'tense-consistency', 'Going to Future', '{"tense": "future", "required_going_to": true}',
+ '{"be_going_to": true, "base_verb": true}', '{"wrong_structure": "Use am/is/are + going to + base verb", "missing_going": "Future plans need ''going to''"}',
+ ARRAY['"I am going to study tonight"', '"It is going to rain soon"'], 8),
+
+-- Level 26: Will Future
+(26, 'tense-consistency', 'Will Future', '{"tense": "future", "required_will": true}',
+ '{"will_first": true, "base_verb": true}', '{"wrong_structure": "Use will + base verb for predictions", "missing_will": "Future predictions need ''will''"}',
+ ARRAY['"I will help you tomorrow"', '"She will arrive at 6 PM"'], 8),
+
+-- Level 31: Can for Ability
+(31, 'modal-verbs', 'Can for Ability', '{"modal": "can", "ability_context": true}',
+ '{"can_first": true, "base_verb": true}', '{"wrong_modal": "Use ''can'' + base verb for ability", "missing_can": "Ability sentences need ''can''"}',
+ ARRAY['"I can speak three languages"', '"Can you drive a car?"'], 8),
+
+-- Level 32: Should for Advice
+(32, 'modal-verbs', 'Should for Advice', '{"modal": "should", "advice_context": true}',
+ '{"should_first": true, "base_verb": true}', '{"wrong_modal": "Use ''should'' + base verb for advice", "missing_should": "Advice sentences need ''should''"}',
+ ARRAY['"You should exercise more often"', '"Should I call the doctor?"'], 8),
+
+-- Level 33: Must for Obligation
+(33, 'modal-verbs', 'Must for Obligation', '{"modal": "must", "obligation_context": true}',
+ '{"must_first": true, "base_verb": true}', '{"wrong_modal": "Use ''must'' + base verb for obligation", "missing_must": "Obligation sentences need ''must''"}',
+ ARRAY['"You must wear a seatbelt"', '"Students must attend all classes"'], 8);
+
+-- ================================
 -- SAMPLE DATA INSERTS
 -- ================================
 
@@ -436,76 +401,12 @@ INSERT INTO question_types (id, name, description, template, validation_rules, s
  '{"perfect_order": 1.0, "minor_errors": 0.8, "major_errors": 0.5}'
 );
 
--- Insert sample achievements
-INSERT INTO achievements (id, name, description, icon, type, unlock_conditions, points_reward, badge_tier) VALUES
-('first-sentence', 'First Sentence', 'Build your first correct sentence', 'award', 'milestone', '{"correct_sentences": 1}', 10, 'bronze'),
-('streak-warrior', 'Streak Warrior', 'Maintain a 7-day learning streak', 'flame', 'streak', '{"consecutive_days": 7}', 50, 'silver'),
-('grammar-master', 'Grammar Master', 'Complete all levels in a category', 'crown', 'mastery', '{"category_completion": 1}', 100, 'gold'),
-('speed-demon', 'Speed Demon', 'Answer 10 questions correctly in under 5 seconds each', 'zap', 'performance', '{"fast_correct_answers": 10, "max_time_seconds": 5}', 75, 'silver'),
-('perfectionist', 'Perfectionist', 'Get 50 questions correct in a row', 'target', 'accuracy', '{"consecutive_correct": 50}', 200, 'platinum');
+-- Sample achievements removed for free play
+-- These can be added back later if gamification is implemented
 
 -- ================================
 -- FUNCTIONS FOR COMMON OPERATIONS
 -- ================================
 
--- Function to update user progress
-CREATE OR REPLACE FUNCTION update_user_progress(
-    p_user_id UUID,
-    p_xp_gained INTEGER DEFAULT 0,
-    p_question_answered BOOLEAN DEFAULT false,
-    p_was_correct BOOLEAN DEFAULT false
-)
-RETURNS void AS $$
-BEGIN
-    UPDATE user_progress
-    SET
-        total_xp = total_xp + p_xp_gained,
-        total_questions_answered = CASE WHEN p_question_answered THEN total_questions_answered + 1 ELSE total_questions_answered END,
-        correct_answers = CASE WHEN p_was_correct THEN correct_answers + 1 ELSE correct_answers END,
-        last_activity = NOW(),
-        updated_at = NOW()
-    WHERE user_id = p_user_id;
-END;
-$$ LANGUAGE plpgsql;
-
--- Function to calculate user accuracy
-CREATE OR REPLACE FUNCTION get_user_accuracy(p_user_id UUID)
-RETURNS NUMERIC AS $$
-DECLARE
-    accuracy NUMERIC;
-BEGIN
-    SELECT
-        CASE
-            WHEN total_questions_answered = 0 THEN 0
-            ELSE ROUND((correct_answers::NUMERIC / total_questions_answered) * 100, 2)
-        END
-    INTO accuracy
-    FROM user_progress
-    WHERE user_id = p_user_id;
-
-    RETURN COALESCE(accuracy, 0);
-END;
-$$ LANGUAGE plpgsql;
-
--- Function to get recommended questions for a user
-CREATE OR REPLACE FUNCTION get_recommended_questions(
-    p_user_id UUID,
-    p_limit INTEGER DEFAULT 10
-)
-RETURNS TABLE(question_id UUID, estimated_difficulty NUMERIC, recommendation_score NUMERIC) AS $$
-BEGIN
-    RETURN QUERY
-    SELECT
-        q.id,
-        q.estimated_difficulty,
-        -- Simple recommendation score based on user's current level and question difficulty
-        (1.0 - ABS(q.estimated_difficulty - (up.current_level::NUMERIC / 45.0))) as rec_score
-    FROM questions q
-    CROSS JOIN user_progress up
-    WHERE up.user_id = p_user_id
-        AND q.is_active = true
-        AND q.level_id <= up.current_level + 2  -- Don't recommend questions too far ahead
-    ORDER BY rec_score DESC, RANDOM()  -- Add some randomness
-    LIMIT p_limit;
-END;
-$$ LANGUAGE plpgsql;
+-- Basic user functions (no progress tracking for free play)
+-- These can be extended later if user accounts are implemented

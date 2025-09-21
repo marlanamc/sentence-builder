@@ -11,11 +11,11 @@ export const CategoryLevelSelector = ({
   levels, 
   currentLevel, 
   onLevelSelect, 
-  userStats = { points: 0, completedLevels: [] },
+  userStats = { points: 0, completedLevels: [], totalPoints: 0, currentStreak: 0, totalSentences: 0, unlockedBadges: [], levelsAttempted: [], perfectSentences: 0 },
   onBackToCategories 
 }) => {
   const category = getCategoryById(categoryId)
-  const progress = getCategoryProgress(categoryId, userStats.completedLevels)
+  const progress = getCategoryProgress(categoryId) // No user stats in free-play mode
   
   if (!category) {
     return (

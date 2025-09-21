@@ -7,7 +7,7 @@ import { Trophy, Star, Zap, Target, Award, TrendingUp } from 'lucide-react'
 import { achievementSystem, pointsSystem } from '../data/verbDatabase.js'
 
 export function GamificationSystem({ 
-  userStats, 
+  userStats = { points: 0, completedLevels: [], totalPoints: 0, currentStreak: 0, totalSentences: 0, unlockedBadges: [], levelsAttempted: [], perfectSentences: 0 }, 
   onStatsUpdate, 
   currentLevel, 
   onLevelSelect,
@@ -297,9 +297,7 @@ export function useGameStats() {
     }
   })
 
-  useEffect(() => {
-    localStorage.setItem('sentenceBuilderStats', JSON.stringify(userStats))
-  }, [userStats])
+  // No user stats saving for free play
 
   return [userStats, setUserStats]
 }

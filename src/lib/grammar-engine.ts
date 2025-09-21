@@ -1,5 +1,5 @@
 // Comprehensive Grammar Rules Engine for ESOL Learning
-// Advanced validation system with detailed feedback
+// Advanced validation system with detailed feedback and database integration
 
 export interface WordToken {
   word: string;
@@ -8,6 +8,19 @@ export interface WordToken {
   forms?: string[];
   features?: Record<string, any>;
   index?: number;
+}
+
+export interface DatabaseRule {
+  id: string;
+  level_id: number;
+  rule_type: string;
+  rule_name: string;
+  conditions: any;
+  validation_logic: any;
+  error_messages: any;
+  examples: string[];
+  priority: number;
+  is_active: boolean;
 }
 
 export interface GrammarRule {
@@ -41,14 +54,107 @@ export interface GrammarError {
 export class AdvancedGrammarEngine {
   private rules: Map<string, GrammarRule[]> = new Map();
   private vocabulary: Map<string, WordToken> = new Map();
+  private rulesLoaded: boolean = false;
+  private currentLevelId: number | null = null;
 
   constructor() {
-    this.initializeRules();
     this.initializeVocabulary();
   }
 
+  // Load rules from database for a specific level
+  async loadRulesForLevel(levelId: number): Promise<void> {
+    if (this.currentLevelId === levelId && this.rulesLoaded) {
+      return; // Rules already loaded
+    }
+
+    try {
+      const response = await fetch(`/api/grammar-rules/${levelId}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch rules for level ${levelId}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success && data.data) {
+        this.rules.clear();
+        this.initializeRulesFromDatabase(data.data);
+        this.currentLevelId = levelId;
+        this.rulesLoaded = true;
+      }
+    } catch (error) {
+      console.error('Error loading rules from database:', error);
+      // Fallback to hardcoded rules if database fails
+      this.initializeRules();
+      this.rulesLoaded = true;
+    }
+  }
+
+  private initializeRulesFromDatabase(rules: DatabaseRule[]): void {
+    // Group rules by type
+    const rulesByType: { [key: string]: DatabaseRule[] } = {};
+
+    rules.forEach(rule => {
+      if (!rulesByType[rule.rule_type]) {
+        rulesByType[rule.rule_type] = [];
+      }
+      rulesByType[rule.rule_type].push(rule);
+    });
+
+    // Add each rule type to the rules map
+    Object.entries(rulesByType).forEach(([ruleType, rulesList]) => {
+      const grammarRules: GrammarRule[] = rulesList.map(rule => ({
+        id: rule.id,
+        name: rule.rule_name,
+        type: rule.rule_type,
+        priority: rule.priority,
+        conditions: rule.conditions,
+        validation: this.createValidationFunction(rule),
+        errorMessage: rule.error_messages,
+        suggestions: rule.examples
+      }));
+      this.rules.set(ruleType, grammarRules);
+    });
+  }
+
+  private createValidationFunction(rule: DatabaseRule): (tokens: WordToken[], context?: any) => ValidationResult {
+    // Create validation function based on rule type and conditions
+    return (tokens: WordToken[], context?: any): ValidationResult => {
+      const errors: GrammarError[] = [];
+      let score = 1;
+
+      // Apply validation logic based on rule type
+      switch (rule.rule_type) {
+        case 'word-order':
+          return this.validateWordOrder(tokens, rule);
+        case 'subject-verb-agreement':
+          return this.validateSubjectVerbAgreement(tokens, rule);
+        case 'article-usage':
+          return this.validateArticleUsage(tokens, rule);
+        case 'negation':
+          return this.validateNegation(tokens, rule);
+        case 'question-formation':
+          return this.validateQuestionFormation(tokens, rule);
+        case 'tense-consistency':
+          return this.validateTenseConsistency(tokens, rule);
+        case 'verb-form':
+          return this.validateVerbForm(tokens, rule);
+        case 'modal-verbs':
+          return this.validateModalVerbs(tokens, rule);
+        default:
+          return {
+            isValid: true,
+            score: 1,
+            errors: [],
+            suggestions: [],
+            feedback: 'Rule validation not implemented',
+            appliedRules: []
+          };
+      }
+    };
+  }
+
   private initializeRules() {
-    // Subject-Verb Agreement Rules
+    // Subject-Verb Agreement Rules (fallback)
     this.addRule('subject-verb-agreement', {
       id: 'sva-present-simple',
       name: 'Present Simple Subject-Verb Agreement',
@@ -210,10 +316,10 @@ export class AdvancedGrammarEngine {
         const errors: GrammarError[] = [];
         let score = 1;
 
-        // Basic SVO order check
+        // Basic SVO order check (also check for noun categories as objects)
         const subjectIndex = tokens.findIndex(t => t.pos === 'subject' || t.category === 'pronoun');
         const verbIndex = tokens.findIndex(t => t.pos === 'verb' || t.category === 'verb');
-        const objectIndex = tokens.findIndex(t => t.pos === 'object' || t.category === 'object');
+        const objectIndex = tokens.findIndex(t => t.pos === 'object' || t.category.includes('noun'));
 
         if (subjectIndex !== -1 && verbIndex !== -1) {
           if (subjectIndex > verbIndex) {
@@ -225,6 +331,20 @@ export class AdvancedGrammarEngine {
               suggestions: ['Move the subject before the verb']
             });
             score = 0.4;
+          }
+        }
+
+        // Check if object comes before subject (very wrong order)
+        if (subjectIndex !== -1 && objectIndex !== -1) {
+          if (objectIndex < subjectIndex) {
+            errors.push({
+              type: 'word-order',
+              position: objectIndex,
+              message: 'Object should come after subject and verb in English sentences',
+              severity: 'error',
+              suggestions: ['Move the object to the end of the sentence (Subject + Verb + Object)']
+            });
+            score = 0.2;
           }
         }
 
@@ -444,32 +564,59 @@ export class AdvancedGrammarEngine {
     this.rules.get(category)!.push(rule);
   }
 
-  public validateSentence(tokens: WordToken[], context?: any): ValidationResult {
+  public async validateSentence(tokens: WordToken[], context?: any): Promise<ValidationResult> {
+    // Ensure rules are loaded for the current level
+    if (context?.levelId && !this.rulesLoaded) {
+      await this.loadRulesForLevel(context.levelId);
+    }
+
     // Basic validation - check for minimum sentence structure
     const subject = tokens.find(t => t.pos === 'subject' || t.category === 'pronoun');
     const verb = tokens.find(t => t.pos === 'verb' || t.category === 'verb');
     const hasObject = tokens.some(t => t.pos === 'object' || t.category.includes('noun'));
 
-    // If we have subject + verb + object, check basic grammar
-    if (subject && verb && hasObject) {
-      // Apply subject-verb agreement rule
-      const svaRule = this.rules.get('subject-verb-agreement')?.[0];
-      if (svaRule) {
-        const result = svaRule.validation(tokens, context);
+    // Apply rules in priority order
+    const appliedRules: string[] = [];
+    const allErrors: GrammarError[] = [];
 
-        if (result.isValid) {
+    // Get all rule types and apply them in priority order
+    for (const [ruleType, rules] of this.rules.entries()) {
+      // Sort rules by priority within each type
+      const sortedRules = rules.sort((a, b) => b.priority - a.priority);
+
+      for (const rule of sortedRules) {
+        const result = rule.validation(tokens, context);
+
+        if (!result.isValid) {
+          allErrors.push(...result.errors);
+        }
+
+        appliedRules.push(rule.id);
+
+        // If this is a high-priority rule that failed, return early
+        if (!result.isValid && rule.priority > 5) {
           return {
-            isValid: true,
-            score: 1,
-            errors: [],
-            suggestions: [],
-            feedback: this.generatePositiveFeedback(tokens, 1),
-            appliedRules: ['basic-validation']
+            isValid: false,
+            score: result.score,
+            errors: result.errors,
+            suggestions: result.suggestions,
+            feedback: result.feedback,
+            appliedRules
           };
-        } else {
-          return result;
         }
       }
+    }
+
+    // If we have subject + verb + object, check basic grammar
+    if (subject && verb && hasObject) {
+      return {
+        isValid: allErrors.length === 0,
+        score: allErrors.length === 0 ? 1 : 0.5,
+        errors: allErrors,
+        suggestions: allErrors.map(e => e.suggestions || []).flat(),
+        feedback: allErrors.length === 0 ? this.generatePositiveFeedback(tokens, 1) : allErrors[0].message,
+        appliedRules
+      };
     }
 
     // If missing components, provide guidance
@@ -478,18 +625,33 @@ export class AdvancedGrammarEngine {
     if (!verb) missingComponents.push('verb');
     if (!hasObject) missingComponents.push('object');
 
+    // Even with missing components, check word order if we have multiple components
+    let wordOrderErrors: GrammarError[] = [];
+    if (tokens.length > 1) {
+      const wordOrderRule = this.rules.get('word-order')?.[0];
+      if (wordOrderRule) {
+        const wordOrderResult = wordOrderRule.validation(tokens, context);
+        if (!wordOrderResult.isValid) {
+          wordOrderErrors = wordOrderResult.errors;
+        }
+      }
+    }
+
     if (missingComponents.length > 0) {
       return {
         isValid: false,
         score: 0.3,
         errors: [{
           type: 'incomplete-sentence',
-          message: `Missing ${missingComponents.join(', ')} in your sentence. Remember: Use V1 (base form) with I, you, we, they. Use V1-3rd (adds -s/-es) with he, she, it.`,
+          message: `Missing ${missingComponents.join(', ')} in your sentence. ${wordOrderErrors.length > 0 ? wordOrderErrors[0].message + '. ' : ''}Remember: Use V1 (base form) with I, you, we, they. Use V1-3rd (adds -s/-es) with he, she, it.`,
           severity: 'error' as const
         }],
-        suggestions: [`Add ${missingComponents.join(', ')} to complete your sentence`],
-        feedback: `Missing ${missingComponents.join(', ')} in your sentence. Remember: Use V1 (base form) with I, you, we, they. Use V1-3rd (adds -s/-es) with he, she, it.`,
-        appliedRules: ['basic-validation']
+        suggestions: [
+          `Add ${missingComponents.join(', ')} to complete your sentence`,
+          ...(wordOrderErrors.map(e => e.suggestions || []).flat())
+        ],
+        feedback: `Missing ${missingComponents.join(', ')} in your sentence. ${wordOrderErrors.length > 0 ? wordOrderErrors[0].message + '. ' : ''}Remember: Use V1 (base form) with I, you, we, they. Use V1-3rd (adds -s/-es) with he, she, it.`,
+        appliedRules: ['basic-validation', 'word-order']
       };
     }
 

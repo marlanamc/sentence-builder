@@ -9,7 +9,7 @@ import { grammarCategories, getCategoryProgress, getUnlockedCategories, getNextR
 export const CategorySelector = ({ 
   selectedCategory, 
   onCategorySelect, 
-  userStats = { points: 0, completedLevels: [] },
+  userStats = { points: 0, completedLevels: [], totalPoints: 0, currentStreak: 0, totalSentences: 0, unlockedBadges: [], levelsAttempted: [], perfectSentences: 0 },
   showRecommendations = true,
   compact = false 
 }) => {
@@ -40,7 +40,7 @@ export const CategorySelector = ({
     const isUnlocked = unlockedCategories.some(cat => cat.id === category.id)
     const isSelected = selectedCategory === category.id
     const isRecommended = recommendedCategory?.id === category.id
-    const progress = getCategoryProgress(category.id, userStats.completedLevels)
+    const progress = getCategoryProgress(category.id) // No user stats in free-play mode
     const isDetailsOpen = showDetails[category.id]
     
     return (

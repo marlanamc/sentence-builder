@@ -10,7 +10,7 @@ import { UserStats } from '@/data/types';
 
 interface RapidFireQuizProps {
   currentLevel: number;
-  userStats: UserStats;
+  userStats: UserStats = { points: 0, completedLevels: [], totalPoints: 0, currentStreak: 0, totalSentences: 0, unlockedBadges: [], levelsAttempted: [], perfectSentences: 0 };
   onClose: () => void;
   onUpdateStats: (stats: UserStats) => void;
 }

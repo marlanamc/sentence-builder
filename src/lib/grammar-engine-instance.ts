@@ -62,6 +62,14 @@ export const grammarEngine = {
         feedback: tokens.length > 0 ? 'Sentence looks good!' : 'Please build a sentence first.'
       };
     }
+  },
+
+  // Load rules for a specific level (rules are already loaded, this is a no-op)
+  async loadRulesForLevel(levelId: number): Promise<void> {
+    // Rules are loaded globally, no need to load per level
+    // This method exists for compatibility but does nothing
+    console.log(`Rules for level ${levelId} are already loaded`);
+    return Promise.resolve();
   }
 };
 

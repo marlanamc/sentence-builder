@@ -1,13 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { CheckCircle, RotateCcw, Home, BookOpen, ArrowLeft, ChevronDown } from 'lucide-react'
+import { CheckCircle, RotateCcw, Home, BookOpen, ArrowLeft, ChevronDown, ChevronUp, HelpCircle, X, Heart, BookmarkPlus, Bookmark } from 'lucide-react'
 import { getLevelById } from '@/data/comprehensiveLevels45'
 import { grammarEngine } from '@/lib/grammar-engine-instance'
+import { PatternCard } from '@/components/game/PatternCard'
+import { GrammarGuideCard } from '@/components/game/GrammarGuideCard'
+import { WordCategoryList, ShuffledWordGrid } from '@/components/game/WordLists'
 
 export default function LevelPage() {
   const router = useRouter()
@@ -17,31 +20,26 @@ export default function LevelPage() {
   const [selectedTiles, setSelectedTiles] = useState<Array<{ word: string; category: string; originalWord: string }>>([])
   const [feedback, setFeedback] = useState('')
   const [showFeedback, setShowFeedback] = useState(false)
-  const [userStats, setUserStats] = useState({
-    points: 180,
-    streak: 3,
-    correctAnswers: 11,
-    completedLevels: [1, 2], // Include levels 1-2 as completed for users who reached level 3
-    currentStreak: 3
-  })
-  const [levelProgress, setLevelProgress] = useState(0) // Track correct sentences for current level
+  // User stats tracking removed for free play
+  // removed unused levelProgress state
   const [showLevelComplete, setShowLevelComplete] = useState(false) // Show completion animation
   const [grammarTipOpen, setGrammarTipOpen] = useState(false) // Control grammar tip visibility
   const [patternOpen, setPatternOpen] = useState(false) // Control pattern box visibility
   const [isEvaluating, setIsEvaluating] = useState(false) // Show evaluation animation
   const [usedPronouns, setUsedPronouns] = useState<string[]>([]) // Track used pronouns for variety
+  // Removed unused custom scrollbar state/refs
   const [lastCheckTime, setLastCheckTime] = useState(0) // Prevent double-checking
   const [categorizedCorrect, setCategorizedCorrect] = useState(0) // Track correct sentences in categorized mode
   const [shuffledCorrect, setShuffledCorrect] = useState(0) // Track correct sentences in shuffled mode
   const [learningMode, setLearningMode] = useState<'categorized' | 'shuffled'>('categorized') // Current learning mode
+  const [showHelpModal, setShowHelpModal] = useState(false) // Control help modal visibility
+  const [showVerbGuide, setShowVerbGuide] = useState(false) // Verb system guide modal
+  const [savedSentences, setSavedSentences] = useState<Array<{ id: string; sentence: string; level: number; timestamp: number }>>([]) // Saved sentences
+  const [showSavedModal, setShowSavedModal] = useState(false) // Control saved sentences modal
+  const [justSaved, setJustSaved] = useState(false) // Show temporary save confirmation
+  const [csvVerbs, setCsvVerbs] = useState<Array<{ base: string; third: string; ing: string; v2: string; v3: string }>>([])
 
-  // Load user stats
-  useEffect(() => {
-    const savedStats = localStorage.getItem('userStats')
-    if (savedStats) {
-      setUserStats(JSON.parse(savedStats))
-    }
-  }, [])
+  // No user stats tracking for free play
 
   // Get current level data
   const level = getLevelById(levelId)
@@ -60,6 +58,142 @@ export default function LevelPage() {
     )
   }
 
+// Verb System Guide Modal
+function VerbSystemGuide({ open, onClose }: { open: boolean; onClose: () => void }) {
+  if (!open) return null
+  return (
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+      <div className="bg-slate-800 rounded-2xl max-w-3xl w-full max-h-[85vh] overflow-hidden shadow-2xl">
+        <div className="px-6 py-4 border-b border-slate-600 flex items-center justify-between bg-gradient-to-r from-indigo-500/15 to-blue-500/15">
+          <h2 className="text-xl font-bold text-white flex items-center">
+            <BookOpen className="w-5 h-5 mr-2 text-indigo-300" /> Verb System Guide
+          </h2>
+          <Button onClick={onClose} variant="ghost" className="text-slate-300 hover:text-white hover:bg-slate-700/60 p-2 rounded-full">
+            <X className="w-5 h-5" />
+          </Button>
+        </div>
+        <div className="p-6 overflow-y-auto max-h-[70vh] space-y-6 text-slate-100">
+          <div>
+            <h3 className="font-bold text-lg mb-2">Forms</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="bg-slate-700/40 rounded-lg p-3 border border-slate-600/40">
+                <p className="text-sm font-semibold mb-1 text-blue-200">V1 (base)</p>
+                <p className="text-sm">eat, play, go</p>
+              </div>
+              <div className="bg-slate-700/40 rounded-lg p-3 border border-slate-600/40">
+                <p className="text-sm font-semibold mb-1 text-purple-200">V1-3rd (he/she/it)</p>
+                <p className="text-sm">eats, plays, goes</p>
+              </div>
+              <div className="bg-slate-700/40 rounded-lg p-3 border border-slate-600/40">
+                <p className="text-sm font-semibold mb-1 text-emerald-200">V-ing (continuous)</p>
+                <p className="text-sm">eating, playing, going</p>
+              </div>
+              <div className="bg-slate-700/40 rounded-lg p-3 border border-slate-600/40">
+                <p className="text-sm font-semibold mb-1 text-pink-200">V2 (past)</p>
+                <p className="text-sm">ate, played, went</p>
+              </div>
+              <div className="bg-slate-700/40 rounded-lg p-3 border border-slate-600/40">
+                <p className="text-sm font-semibold mb-1 text-yellow-200">V3 (past participle)</p>
+                <p className="text-sm">eaten, played, gone</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h3 className="font-bold text-lg mb-2">Tips</h3>
+            <ul className="list-disc list-inside space-y-1 text-sm text-slate-200/90">
+              <li>Use V1-3rd with he/she/it in present simple: She plays.</li>
+              <li>Use be + V-ing for continuous: They are playing.</li>
+              <li>Use did + V1 for past questions/negatives: Did you play?</li>
+              <li>Use have/has + V3 for present perfect: He has eaten.</li>
+              <li>Use be + V3 for passive: The pizza is eaten.</li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-bold text-lg mb-2">Irregular Cheat Sheet</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+              {[['go','went','gone'],['see','saw','seen'],['make','made','made'],['have','had','had'],['do','did','done']].map(([b,p,pp]) => (
+                <div key={b} className="bg-slate-700/40 rounded-lg p-2 border border-slate-600/40">
+                  <div className="font-bold text-white">{b}</div>
+                  <div className="text-slate-300">V2: <span className="text-white font-semibold">{p}</span></div>
+                  <div className="text-slate-300">V3: <span className="text-white font-semibold">{pp}</span></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Simple tense timeline visual inspired by classroom timelines
+function TimelineVisual({ category }: { category: string }) {
+  // Map our category to a visual variant
+  const variant = ((): string => category)()
+
+  return (
+    <div className="mt-3 p-3 rounded-md bg-slate-900/20 border border-blue-400/20">
+      <div className="flex items-center justify-center">
+        <svg width="320" height="80" viewBox="0 0 320 80" className="text-blue-200">
+          {/* Axis */}
+          <line x1="16" y1="40" x2="304" y2="40" stroke="currentColor" strokeWidth="2" />
+          {/* Present marker */}
+          <line x1="160" y1="18" x2="160" y2="62" stroke="currentColor" strokeWidth="2" />
+
+          {/* Past / Present / Future labels */}
+          <text x="24" y="72" fontSize="10" fill="currentColor">Past</text>
+          <text x="148" y="72" fontSize="10" fill="currentColor">Present</text>
+          <text x="260" y="72" fontSize="10" fill="currentColor">Future</text>
+
+          {/* Variant markers */}
+          {variant === 'past' && (
+            <g>
+              <text x="90" y="28" fontSize="16" fill="#60a5fa">✕</text>
+            </g>
+          )}
+          {(variant === 'present' || variant === 'default') && (
+            <g>
+              {[140, 146, 152, 158, 164, 170, 176].map((x, i) => (
+                <text key={i} x={x} y="28" fontSize="12" fill="#38bdf8">✕</text>
+              ))}
+            </g>
+          )}
+          {variant === 'future' && (
+            <g>
+              <text x="230" y="28" fontSize="16" fill="#22d3ee">✕</text>
+            </g>
+          )}
+          {variant.endsWith('perfect') && (
+            <g>
+              {/* Oval around present to show link past↔now */}
+              <ellipse cx="200" cy="56" rx="28" ry="10" fill="none" stroke="#fde68a" strokeWidth="2" />
+              <ellipse cx="120" cy="56" rx="28" ry="10" fill="none" stroke="#fde68a" strokeWidth="2" />
+              <text x="152" y="28" fontSize="14" fill="#fde68a">↔</text>
+            </g>
+          )}
+          {variant.endsWith('continuous') && !variant.includes('perfect') && (
+            <g>
+              {/* Arc centered on present */}
+              <path d="M 100 52 Q 160 10 220 52" fill="none" stroke="#34d399" strokeWidth="3" strokeDasharray="4 3" />
+            </g>
+          )}
+          {variant.includes('perfect-continuous') && (
+            <g>
+              {/* Arc starting in past moving toward present */}
+              <path d="M 60 58 Q 140 8 220 58" fill="none" stroke="#a7f3d0" strokeWidth="3" strokeDasharray="5 3" />
+              <ellipse cx="120" cy="56" rx="22" ry="8" fill="none" stroke="#fde68a" strokeWidth="2" />
+            </g>
+          )}
+          {variant === 'default' && (
+            <g>
+              <circle cx="160" cy="28" r="4" fill="#93c5fd" />
+            </g>
+          )}
+        </svg>
+      </div>
+    </div>
+  )
+}
   // Enhanced word categories for this level with pronoun elimination
   const getWordCategories = () => {
     const allPronouns = [
@@ -78,13 +212,40 @@ export default function LevelPage() {
     const baseCategories = {
       subjects: availablePronouns,
 
+      // Merge base verbs with CSV verbs
       verbs: [
         { word: 'eat/eats', baseForm: 'eat', thirdPersonForm: 'eats', category: 'verb', toggleable: true },
         { word: 'like/likes', baseForm: 'like', thirdPersonForm: 'likes', category: 'verb', toggleable: true },
         { word: 'watch/watches', baseForm: 'watch', thirdPersonForm: 'watches', category: 'verb', toggleable: true },
         { word: 'play/plays', baseForm: 'play', thirdPersonForm: 'plays', category: 'verb', toggleable: true },
         { word: 'study/studies', baseForm: 'study', thirdPersonForm: 'studies', category: 'verb', toggleable: true },
-        { word: 'work/works', baseForm: 'work', thirdPersonForm: 'works', category: 'verb', toggleable: true }
+        { word: 'work/works', baseForm: 'work', thirdPersonForm: 'works', category: 'verb', toggleable: true },
+        { word: 'read/reads', baseForm: 'read', thirdPersonForm: 'reads', category: 'verb', toggleable: true },
+        { word: 'write/writes', baseForm: 'write', thirdPersonForm: 'writes', category: 'verb', toggleable: true },
+        { word: 'drink/drinks', baseForm: 'drink', thirdPersonForm: 'drinks', category: 'verb', toggleable: true },
+        { word: 'cook/cooks', baseForm: 'cook', thirdPersonForm: 'cooks', category: 'verb', toggleable: true },
+        { word: 'visit/visits', baseForm: 'visit', thirdPersonForm: 'visits', category: 'verb', toggleable: true },
+        { word: 'travel/travels', baseForm: 'travel', thirdPersonForm: 'travels', category: 'verb', toggleable: true },
+        { word: 'learn/learns', baseForm: 'learn', thirdPersonForm: 'learns', category: 'verb', toggleable: true },
+        { word: 'teach/teaches', baseForm: 'teach', thirdPersonForm: 'teaches', category: 'verb', toggleable: true },
+        { word: 'try/tries', baseForm: 'try', thirdPersonForm: 'tries', category: 'verb', toggleable: true },
+        { word: 'fix/fixes', baseForm: 'fix', thirdPersonForm: 'fixes', category: 'verb', toggleable: true },
+        { word: 'go/goes', baseForm: 'go', thirdPersonForm: 'goes', category: 'verb', toggleable: true, v2: 'went', v3: 'gone', ving: 'going' },
+        { word: 'see/sees', baseForm: 'see', thirdPersonForm: 'sees', category: 'verb', toggleable: true, v2: 'saw', v3: 'seen', ving: 'seeing' },
+        { word: 'make/makes', baseForm: 'make', thirdPersonForm: 'makes', category: 'verb', toggleable: true, v2: 'made', v3: 'made', ving: 'making' },
+        { word: 'have/has', baseForm: 'have', thirdPersonForm: 'has', category: 'verb', toggleable: true, v2: 'had', v3: 'had', ving: 'having' },
+        { word: 'do/does', baseForm: 'do', thirdPersonForm: 'does', category: 'verb', toggleable: true, v2: 'did', v3: 'done', ving: 'doing' },
+        // CSV injected verbs appended below
+        ...csvVerbs.map(v => ({
+          word: `${v.base}/${v.third}`,
+          baseForm: v.base,
+          thirdPersonForm: v.third,
+          category: 'verb',
+          toggleable: true,
+          v2: v.v2,
+          v3: v.v3,
+          ving: v.ing
+        }))
       ],
 
       objects: [
@@ -93,7 +254,19 @@ export default function LevelPage() {
         { word: 'basketball', category: 'uncountable-noun', toggleable: false },
         { word: 'music', category: 'uncountable-noun', toggleable: false },
         { word: 'water', category: 'uncountable-noun', toggleable: false },
-        { word: 'coffee', category: 'uncountable-noun', toggleable: false }
+        { word: 'coffee', category: 'uncountable-noun', toggleable: false },
+        { word: 'book/books', category: 'countable-noun', toggleable: true },
+        { word: 'apple/apples', category: 'countable-noun', toggleable: true },
+        { word: 'sandwich/sandwiches', category: 'countable-noun', toggleable: true },
+        { word: 'movie/movies', category: 'countable-noun', toggleable: true },
+        { word: 'game/games', category: 'countable-noun', toggleable: true },
+        { word: 'car/cars', category: 'countable-noun', toggleable: true },
+        { word: 'dog/dogs', category: 'countable-noun', toggleable: true },
+        { word: 'cat/cats', category: 'countable-noun', toggleable: true },
+        { word: 'teacher/teachers', category: 'countable-noun', toggleable: true },
+        { word: 'student/students', category: 'countable-noun', toggleable: true },
+        { word: 'rice', category: 'uncountable-noun', toggleable: false },
+        { word: 'homework', category: 'uncountable-noun', toggleable: false }
       ],
 
       articles: [
@@ -105,15 +278,27 @@ export default function LevelPage() {
       helpers: [
         { word: 'do', category: 'auxiliary', usage: 'I, you, we, they' },
         { word: 'does', category: 'auxiliary', usage: 'he, she, it' },
+        { word: 'did', category: 'auxiliary', usage: 'past questions/negatives' },
         { word: 'am', category: 'be-verb', usage: 'I' },
         { word: 'is', category: 'be-verb', usage: 'he, she, it' },
-        { word: 'are', category: 'be-verb', usage: 'you, we, they' }
+        { word: 'are', category: 'be-verb', usage: 'you, we, they' },
+        { word: 'was', category: 'be-verb', usage: 'I, he, she, it (past)' },
+        { word: 'were', category: 'be-verb', usage: 'you, we, they (past)' },
+        { word: 'be', category: 'auxiliary', usage: 'with will: will be' },
+        { word: 'been', category: 'auxiliary', usage: 'perfect continuous/passive' },
+        { word: 'had', category: 'auxiliary', usage: 'past perfect' },
+        { word: 'have', category: 'auxiliary', usage: 'I, you, we, they (perfect)' },
+        { word: 'has', category: 'auxiliary', usage: 'he, she, it (perfect)' }
       ],
 
       negatives: [
         { word: 'not', category: 'negation' },
         { word: "don't", category: 'negative-contraction' },
         { word: "doesn't", category: 'negative-contraction' },
+        { word: "didn't", category: 'negative-contraction' },
+        { word: "haven't", category: 'negative-contraction' },
+        { word: "hasn't", category: 'negative-contraction' },
+        { word: "can't", category: 'negative-contraction' },
         { word: "isn't", category: 'negative-contraction' },
         { word: "aren't", category: 'negative-contraction' }
       ],
@@ -125,6 +310,78 @@ export default function LevelPage() {
         { word: 'when', category: 'wh-question', asks: 'time' },
         { word: 'why', category: 'wh-question', asks: 'reasons' },
         { word: 'how', category: 'wh-question', asks: 'manner' }
+      ],
+
+      modals: [
+        { word: 'will', category: 'modal' },
+        { word: 'can', category: 'modal' },
+        { word: 'should', category: 'modal' },
+        { word: 'must', category: 'modal' }
+      ],
+
+      conjunctions: [
+        { word: 'if', category: 'conjunction' }
+      ],
+
+      prepositions: [
+        { word: 'by', category: 'preposition' }
+      ],
+
+      adjectives: [
+        { word: 'big', category: 'adjective' },
+        { word: 'small', category: 'adjective' },
+        { word: 'interesting', category: 'adjective' },
+        { word: 'delicious', category: 'adjective' },
+        { word: 'fun', category: 'adjective' },
+        { word: 'boring', category: 'adjective' },
+        { word: 'new', category: 'adjective' },
+        { word: 'old', category: 'adjective' },
+        { word: 'easy', category: 'adjective' },
+        { word: 'difficult', category: 'adjective' }
+      ],
+
+      adverbs: [
+        { word: 'quickly', category: 'adverb' },
+        { word: 'slowly', category: 'adverb' },
+        { word: 'carefully', category: 'adverb' },
+        { word: 'well', category: 'adverb' },
+        { word: 'badly', category: 'adverb' },
+        { word: 'often', category: 'adverb' },
+        { word: 'usually', category: 'adverb' },
+        { word: 'sometimes', category: 'adverb' },
+        { word: 'never', category: 'adverb' }
+      ],
+
+      time: [
+        { word: 'yesterday', category: 'time-phrase' },
+        { word: 'today', category: 'time-phrase' },
+        { word: 'tomorrow', category: 'time-phrase' },
+        { word: 'tonight', category: 'time-phrase' },
+        { word: 'now', category: 'time-phrase' },
+        { word: 'later', category: 'time-phrase' },
+        { word: 'soon', category: 'time-phrase' }
+      ],
+
+      places: [
+        { word: 'school', category: 'countable-noun' },
+        { word: 'park', category: 'countable-noun' },
+        { word: 'office', category: 'countable-noun' },
+        { word: 'home', category: 'uncountable-noun' },
+        { word: 'store', category: 'countable-noun' },
+        { word: 'beach', category: 'countable-noun' }
+      ],
+
+      determiners: [
+        { word: 'this', category: 'determiner' },
+        { word: 'that', category: 'determiner' },
+        { word: 'these', category: 'determiner' },
+        { word: 'those', category: 'determiner' },
+        { word: 'my', category: 'determiner' },
+        { word: 'your', category: 'determiner' },
+        { word: 'his', category: 'determiner' },
+        { word: 'her', category: 'determiner' },
+        { word: 'our', category: 'determiner' },
+        { word: 'their', category: 'determiner' }
       ]
     }
 
@@ -132,6 +389,243 @@ export default function LevelPage() {
   }
 
   const wordCategories = getWordCategories()
+
+  // Derive extra categories needed per level so toolbox always has required words
+  const activeRequiredCategories = (() => {
+    const base = new Set<string>([...(level.requiredCategories || [])])
+    const name = (level.name || '').toLowerCase()
+    const formula = (level.formula || '').toLowerCase()
+    if (name.includes('conditional') || formula.includes('if')) base.add('conjunctions')
+    if (name.includes('future') || formula.includes('will') || formula.includes('going to')) base.add('modals')
+    if (name.includes('perfect') || formula.includes('have')) base.add('helpers')
+    if (name.includes('passive')) base.add('helpers')
+    if (name.includes('question') || formula.includes('?') || name.includes('wh')) base.add('question-words')
+    // Always enrich with general-purpose categories
+    ;['adjectives','adverbs','time','places','determiners'].forEach(c => base.add(c))
+    // Keep core categories when appropriate
+    return Array.from(base)
+  })()
+
+  // Pattern pill styling and interactions
+  const getPatternPillClass = () => {
+    const name = (level.name || '').toLowerCase()
+    const formula = (level.formula || '').toLowerCase()
+    if (name.includes('conditional') || formula.includes('if')) {
+      return 'bg-gradient-to-r from-teal-500/30 to-emerald-500/30 text-teal-100 border-teal-400/30'
+    }
+    if (name.includes('future') || formula.includes('will') || formula.includes('going to')) {
+      return 'bg-gradient-to-r from-cyan-500/30 to-sky-500/30 text-cyan-100 border-cyan-400/30'
+    }
+    if (name.includes('past') || formula.includes('v2') || name.includes('did')) {
+      return 'bg-gradient-to-r from-violet-500/30 to-purple-500/30 text-violet-100 border-violet-400/30'
+    }
+    if (name.includes('perfect') || formula.includes('have')) {
+      return 'bg-gradient-to-r from-fuchsia-500/30 to-purple-500/30 text-fuchsia-100 border-fuchsia-400/30'
+    }
+    if (name.includes('modal') || name.includes('can') || name.includes('should') || name.includes('must')) {
+      return 'bg-gradient-to-r from-indigo-500/30 to-blue-500/30 text-indigo-100 border-indigo-400/30'
+    }
+    if (name.includes('passive')) {
+      return 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-purple-100 border-purple-400/30'
+    }
+    return 'bg-blue-400/30 text-blue-100 border-blue-400/30'
+  }
+
+  // Category detection for scaffolds
+  const detectLevelCategory = () => {
+    const name = (level.name || '').toLowerCase()
+    const formula = (level.formula || '').toLowerCase()
+    const mentions = (kw: string) => name.includes(kw) || formula.includes(kw)
+    if (name.includes('conditional') || formula.includes('if')) return 'conditional'
+
+    // Tense detection first
+    const tense: 'past' | 'present' | 'future' = name.includes('past') ? 'past' : name.includes('future') ? 'future' : 'present'
+    const isPerfect = mentions('perfect') || formula.includes('have')
+    const isPerfectContinuous = mentions('perfect continuous') || (isPerfect && (mentions('continuous') || mentions('been')))
+    const isContinuous = mentions('continuous') || mentions('progressive') || mentions('v-ing') || mentions('be +')
+
+    if (isPerfectContinuous) return `${tense}-perfect-continuous` as any
+    if (isPerfect) return `${tense}-perfect` as any
+    if (isContinuous) return `${tense}-continuous` as any
+
+    if (tense === 'future' || formula.includes('will') || formula.includes('going to')) return 'future'
+    if (tense === 'past' || formula.includes('v2') || name.includes('did')) return 'past'
+    if (name.includes('perfect')) return 'perfect'
+    if (name.includes('modal') || name.includes('can') || name.includes('should') || name.includes('must')) return 'modal'
+    if (name.includes('passive')) return 'passive'
+    return 'default'
+  }
+
+  const toPastTense = (base: string) => {
+    const b = (base || '').toLowerCase()
+    if (b === 'eat') return 'ate'
+    if (/[^aeiou]y$/.test(b)) return b.replace(/y$/, 'ied')
+    if (/(e)$/.test(b)) return `${b}d`
+    return `${b}ed`
+  }
+
+  const toPastParticiple = (base: string) => {
+    const b = (base || '').toLowerCase()
+    if (b === 'eat') return 'eaten'
+    return toPastTense(b)
+  }
+
+  const chooseBeForm = (subjectLower: string) => {
+    if (subjectLower === 'i') return 'am'
+    if (['he','she','it'].includes(subjectLower)) return 'is'
+    return 'are'
+  }
+
+  const chooseHasHave = (subjectLower: string) => {
+    return ['he','she','it'].includes(subjectLower) ? 'has' : 'have'
+  }
+
+  const insertScaffoldFromFormula = () => {
+    const subjects: Array<{ word: string }> = (wordCategories.subjects as any) || []
+    const verbs: Array<{ word: string; baseForm?: string; thirdPersonForm?: string }> = (wordCategories.verbs as any) || []
+    const objects: Array<{ word: string }> = (wordCategories.objects as any) || []
+
+    const preferredSubject = subjects.find(s => ['he','she','it'].includes((s.word||'').toLowerCase()))?.word
+      || subjects[0]?.word || 'I'
+    const backupSubject = subjects.find(s => !['he','she','it'].includes((s.word||'').toLowerCase()))?.word || 'I'
+    const subjectLower = preferredSubject.toLowerCase()
+    const isThirdPerson = ['he','she','it'].includes(subjectLower)
+
+    const baseEntry: any = verbs[0] || { baseForm: 'like', thirdPersonForm: 'likes', word: 'like/likes' }
+    const verbBase = baseEntry.baseForm || (baseEntry.word?.split('/')?.[0]) || 'like'
+    const verb3rd = baseEntry.thirdPersonForm || (baseEntry.word?.split('/')?.[1]) || 'likes'
+    const verbV2 = toPastTense(verbBase)
+    const verbV3 = toPastParticiple(verbBase)
+    const object = objects[0]?.word || 'pizza'
+
+    const category = detectLevelCategory()
+
+    let exemplar: Array<{ word: string; category: string; originalWord: string }>
+
+    if (category === 'conditional') {
+      // If he studies, he plays
+      const s1 = preferredSubject
+      const s2 = preferredSubject
+      const v1 = isThirdPerson ? verb3rd : verbBase
+      const v2 = isThirdPerson ? verb3rd : verbBase
+      exemplar = [
+        { word: 'if', category: 'conjunction', originalWord: 'if' },
+        { word: s1, category: 'pronoun', originalWord: s1 },
+        { word: v1, category: 'verb', originalWord: `${verbBase}/${verb3rd}` },
+        { word: ',', category: 'punctuation', originalWord: ',' },
+        { word: s2, category: 'pronoun', originalWord: s2 },
+        { word: v2, category: 'verb', originalWord: `${verbBase}/${verb3rd}` },
+        { word: object, category: 'noun', originalWord: object }
+      ]
+    } else if (category === 'future') {
+      // He will play soccer
+      const s = preferredSubject
+      exemplar = [
+        { word: s, category: 'pronoun', originalWord: s },
+        { word: 'will', category: 'modal', originalWord: 'will' },
+        { word: verbBase, category: 'verb', originalWord: `${verbBase}/${verb3rd}` },
+        { word: object, category: 'noun', originalWord: object }
+      ]
+    } else if (category === 'past') {
+      // He played soccer
+      const s = preferredSubject
+      exemplar = [
+        { word: s, category: 'pronoun', originalWord: s },
+        { word: verbV2, category: 'verb', originalWord: verbV2 },
+        { word: object, category: 'noun', originalWord: object }
+      ]
+    } else if (category === 'perfect') {
+      // He has played soccer
+      const s = preferredSubject
+      const hasHave = chooseHasHave(subjectLower)
+      exemplar = [
+        { word: s, category: 'pronoun', originalWord: s },
+        { word: hasHave, category: 'auxiliary', originalWord: hasHave },
+        { word: verbV3, category: 'verb', originalWord: verbV3 },
+        { word: object, category: 'noun', originalWord: object }
+      ]
+    } else if (category === 'modal') {
+      // He can play soccer
+      const s = preferredSubject
+      exemplar = [
+        { word: s, category: 'pronoun', originalWord: s },
+        { word: 'can', category: 'modal', originalWord: 'can' },
+        { word: verbBase, category: 'verb', originalWord: `${verbBase}/${verb3rd}` },
+        { word: object, category: 'noun', originalWord: object }
+      ]
+    } else if (category === 'passive') {
+      // The pizza is played/eaten (use be + V3). Prefer 'pizza'.
+      const be = chooseBeForm(object.toLowerCase()) // treat object as subject phrase
+      exemplar = [
+        { word: 'the', category: 'definite-article', originalWord: 'the' },
+        { word: object, category: 'noun', originalWord: object },
+        { word: be, category: 'be-verb', originalWord: be },
+        { word: verbV3, category: 'verb', originalWord: verbV3 }
+      ]
+    } else {
+      // Default present simple
+      const chosenVerb = isThirdPerson ? verb3rd : verbBase
+      exemplar = [
+        { word: preferredSubject, category: 'pronoun', originalWord: preferredSubject },
+        { word: chosenVerb, category: 'verb', originalWord: `${verbBase}/${verb3rd}` },
+        { word: object, category: 'noun', originalWord: object }
+      ]
+    }
+
+    setSelectedTiles(exemplar)
+  }
+
+  const [pillToast, setPillToast] = useState('')
+  const handlePatternPillClick = async (e: React.MouseEvent) => {
+    try { await navigator.clipboard.writeText(level.formula) } catch {}
+    setPillToast('Copied!')
+    setTimeout(() => setPillToast(''), 1200)
+    if ((e as any).shiftKey) {
+      insertScaffoldFromFormula()
+      setPillToast('Example added')
+      setTimeout(() => setPillToast(''), 1400)
+    }
+  }
+
+  // Drag and drop support for sentence tiles
+  const onDragStart = (e: React.DragEvent, tileIndex: number) => {
+    e.dataTransfer.setData('text/plain', String(tileIndex))
+    e.dataTransfer.effectAllowed = 'move'
+  }
+
+  const onDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+  }
+
+  const onDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault()
+    const sourceIndexStr = e.dataTransfer.getData('text/plain')
+    if (sourceIndexStr === '') return
+    const sourceIndex = parseInt(sourceIndexStr, 10)
+    if (Number.isNaN(sourceIndex) || sourceIndex === targetIndex) return
+
+    setSelectedTiles(prev => {
+      const next = [...prev]
+      const [moved] = next.splice(sourceIndex, 1)
+      next.splice(targetIndex, 0, moved)
+      return next
+    })
+  }
+
+  const onDropToEnd = (e: React.DragEvent) => {
+    e.preventDefault()
+    const sourceIndexStr = e.dataTransfer.getData('text/plain')
+    if (sourceIndexStr === '') return
+    const sourceIndex = parseInt(sourceIndexStr, 10)
+    if (Number.isNaN(sourceIndex)) return
+    setSelectedTiles(prev => {
+      const next = [...prev]
+      const [moved] = next.splice(sourceIndex, 1)
+      next.push(moved)
+      return next
+    })
+  }
 
   // Handle tile clicks with toggle functionality
   const handleTileClick = (word: string, category: string) => {
@@ -169,6 +663,10 @@ export default function LevelPage() {
     }
   }
 
+  // removed unused handleScroll
+
+  useEffect(() => {}, [levelId])
+
   // Check sentence using enhanced grammar engine
   const checkSentence = async () => {
     // Prevent double-checking within 500ms
@@ -199,6 +697,7 @@ export default function LevelPage() {
       // Add small delay to show evaluation state
       await new Promise(resolve => setTimeout(resolve, 300))
 
+      // Validate sentence using grammar engine
       const validation = await grammarEngine.validateSentence(tokens, { levelId })
 
       // Check for semantic issues in grammatically correct sentences
@@ -220,6 +719,8 @@ export default function LevelPage() {
 
       // Update stats and handle mode progression
       if (validation.isValid) {
+        let isLevelComplete = false
+
         if (learningMode === 'categorized') {
           const newCategorizedCorrect = categorizedCorrect + 1
           setCategorizedCorrect(newCategorizedCorrect)
@@ -227,16 +728,15 @@ export default function LevelPage() {
           // After 5 correct in categorized mode, switch to shuffled mode
           if (newCategorizedCorrect >= 5) {
             setLearningMode('shuffled')
-            setFeedback('🎉 Great! Now try without categories - like Duolingo! All words are mixed together.')
+            setFeedback('🎉 Great! Now try without categories - all words are mixed together for a real challenge!')
           }
         } else {
           const newShuffledCorrect = shuffledCorrect + 1
           setShuffledCorrect(newShuffledCorrect)
 
-          // After 5 correct in shuffled mode, level is complete
-          if (newShuffledCorrect >= 5) {
-            const newProgress = levelProgress + 1
-            setLevelProgress(newProgress)
+          // After 3 correct in shuffled mode, level is complete
+          if (newShuffledCorrect >= 3) {
+            isLevelComplete = true
           }
         }
 
@@ -246,18 +746,10 @@ export default function LevelPage() {
           setUsedPronouns([...usedPronouns, usedPronoun.word])
         }
 
-        const pointsEarned = validation.pointsEarned || Math.round(validation.score * level.points) || 10
+        const pointsEarned = Math.round((validation as any).score * (level.points || 10)) || 10
 
-        const newStats = {
-          ...userStats,
-          points: userStats.points + pointsEarned,
-          correctAnswers: userStats.correctAnswers + 1,
-          currentStreak: userStats.currentStreak + 1
-        }
-
-        // Mark level as completed after 5 correct sentences
-        if (newProgress >= 5 && !userStats.completedLevels.includes(levelId)) {
-          newStats.completedLevels = [...userStats.completedLevels, levelId]
+        // Mark level as completed after completing both modes (5 categorized + 5 shuffled)
+        if (isLevelComplete) {
           setFeedback(`🎉 Level Complete! You've mastered ${level.name}. Ready for the next challenge?`)
           setShowLevelComplete(true)
 
@@ -266,9 +758,29 @@ export default function LevelPage() {
             setShowLevelComplete(false)
           }, 4000)
         }
+      } else {
+        // Adaptive hints after repeated mistakes
+        const incorrectAttempts = Number(localStorage.getItem(`lvl-${levelId}-incorrect`) || '0') + 1
+        localStorage.setItem(`lvl-${levelId}-incorrect`, String(incorrectAttempts))
 
-        setUserStats(newStats)
-        localStorage.setItem('userStats', JSON.stringify(newStats))
+        if (incorrectAttempts >= 3) {
+          const hasVerb = tokens.some(t => t.category.includes('verb'))
+          const hasSubject = tokens.some(t => t.category.includes('pronoun'))
+          const hasObject = tokens.some(t => t.category.includes('noun'))
+
+          if (!hasVerb) {
+            setFeedback('Hint: Add a verb. Use base form for I/you/we/they; add -s for he/she/it.')
+          } else if (!hasSubject) {
+            setFeedback('Hint: Start with a subject (I/you/he/she/it/we/they).')
+          } else if (!hasObject) {
+            setFeedback('Hint: Add an object to complete the idea (pizza, soccer, music...).')
+          } else {
+            setFeedback(validation.feedback || 'You are close — check verb form and word order.')
+          }
+
+          setShowFeedback(true)
+          localStorage.setItem(`lvl-${levelId}-incorrect`, '0')
+        }
       }
     } catch (error) {
       console.error('Error checking sentence:', error)
@@ -290,14 +802,18 @@ export default function LevelPage() {
     setSelectedTiles(newTiles)
   }
 
-  // Generate shuffled words for challenge mode (like Duolingo)
+  // Generate shuffled words for challenge mode
   const getShuffledWords = () => {
     const allWords: Array<{ word: string; category: string; originalWord: string; toggleable?: boolean }> = []
 
-    // Collect all words from required categories
-    const requiredCategories = level.requiredCategories || []
-    requiredCategories.forEach(categoryName => {
-      const categoryWords = wordCategories[categoryName as keyof typeof wordCategories] || []
+    // Collect all words from union of required + derived categories
+    const categories = (activeRequiredCategories as string[])
+    categories.forEach(categoryName => {
+      const categoryWordsRaw = wordCategories[categoryName as keyof typeof wordCategories] || []
+      const categoryWords = (categoryWordsRaw as any[]).map((w) => ({
+        ...w,
+        originalWord: w.originalWord ?? w.word
+      }))
       allWords.push(...categoryWords)
     })
 
@@ -319,8 +835,104 @@ export default function LevelPage() {
     })
   }
 
+  // Load saved sentences from localStorage on component mount
+  useEffect(() => {
+    const saved = localStorage.getItem('savedSentences')
+    if (saved) {
+      try {
+        setSavedSentences(JSON.parse(saved))
+      } catch (error) {
+        console.error('Error loading saved sentences:', error)
+      }
+    }
+  }, [])
+
+  // Load CSV verbs from public data
+  useEffect(() => {
+    const loadCsv = async () => {
+      try {
+        const res = await fetch('/data/top_verbs.csv')
+        if (!res.ok) return
+        const text = await res.text()
+        const lines = text.split('\n').slice(1).filter(Boolean)
+        const parsed = lines.map(line => {
+          const cells = line.split(',').map(c => c.trim())
+          // Expect format: Verb,V1,V1-3rd,V1-ing,V2,V3
+          const base = (cells[1] || cells[0] || '').toLowerCase()
+          const third = (cells[2] || '').toLowerCase()
+          const ing = (cells[3] || '').toLowerCase()
+          const v2 = (cells[4] || '').toLowerCase()
+          const v3 = (cells[5] || '').toLowerCase()
+          return { base, third, ing, v2, v3 }
+        }).filter(v => v.base && v.third)
+        // Dedup by base
+        const unique = new Map<string, { base: string; third: string; ing: string; v2: string; v3: string }>()
+        parsed.forEach(v => { if (!unique.has(v.base)) unique.set(v.base, v) })
+        setCsvVerbs(Array.from(unique.values()))
+      } catch (e) {
+        console.warn('Failed to load CSV verbs', e)
+      }
+    }
+    loadCsv()
+  }, [])
+
+  // Save sentence functionality
+  const saveSentence = () => {
+    if (selectedTiles.length === 0) return
+
+    const sentence = selectedTiles.map(tile => tile.word).join(' ')
+    const newSavedSentence = {
+      id: Math.random().toString(36).substr(2, 9),
+      sentence,
+      level: levelId,
+      timestamp: Date.now()
+    }
+
+    const updatedSaved = [newSavedSentence, ...savedSentences].slice(0, 50) // Keep only 50 most recent
+    setSavedSentences(updatedSaved)
+    localStorage.setItem('savedSentences', JSON.stringify(updatedSaved))
+
+    // Show confirmation
+    setJustSaved(true)
+    setTimeout(() => setJustSaved(false), 2000)
+  }
+
+  // Delete saved sentence
+  const deleteSavedSentence = (id: string) => {
+    const updatedSaved = savedSentences.filter(s => s.id !== id)
+    setSavedSentences(updatedSaved)
+    localStorage.setItem('savedSentences', JSON.stringify(updatedSaved))
+  }
+
+  // Load a saved sentence back into the builder
+  const loadSavedSentence = (sentence: string) => {
+    const words = sentence.split(' ')
+    const newTiles = words.map(word => ({
+      word,
+      category: 'unknown', // We could improve this by storing category info
+      originalWord: word
+    }))
+    setSelectedTiles(newTiles)
+    setShowSavedModal(false)
+  }
+
+  // Combo tips for natural collocations
+  const comboTips = [
+    { left: 'drink', right: 'coffee' },
+    { left: 'play', right: 'guitar' },
+    { left: 'read', right: 'books' },
+    { left: 'go', right: 'to school' },
+    { left: 'make', right: 'a sandwich' },
+    { left: 'do', right: 'homework' },
+  ]
+
   // Color coding for word categories with icons (low-saturation pastels with black text)
   const getCategoryColor = (category: string) => {
+    // In challenge mode, remove colors for more difficulty
+    if (learningMode === 'shuffled') {
+      return 'bg-slate-200/80 border-slate-300/50 text-gray-900 hover:bg-slate-300/80'
+    }
+
     const colors = {
       'pronoun': 'bg-sky-200/80 border-sky-300/50 text-gray-900 hover:bg-sky-300/80',
       'verb': 'bg-purple-200/80 border-purple-300/50 text-gray-900 hover:bg-purple-300/80',
@@ -332,9 +944,61 @@ export default function LevelPage() {
       'be-verb': 'bg-violet-200/80 border-violet-300/50 text-gray-900 hover:bg-violet-300/80',
       'negation': 'bg-red-200/80 border-red-300/50 text-gray-900 hover:bg-red-300/80',
       'negative-contraction': 'bg-red-200/80 border-red-300/50 text-gray-900 hover:bg-red-300/80',
-      'wh-question': 'bg-emerald-200/80 border-emerald-300/50 text-gray-900 hover:bg-emerald-300/80'
+      'wh-question': 'bg-emerald-200/80 border-emerald-300/50 text-gray-900 hover:bg-emerald-300/80',
+      'modal': 'bg-indigo-200/80 border-indigo-300/50 text-gray-900 hover:bg-indigo-300/80',
+      'conjunction': 'bg-teal-200/80 border-teal-300/50 text-gray-900 hover:bg-teal-300/80',
+      'preposition': 'bg-cyan-200/80 border-cyan-300/50 text-gray-900 hover:bg-cyan-300/80',
+      'adjective': 'bg-lime-200/80 border-lime-300/50 text-gray-900 hover:bg-lime-300/80',
+      'adverb': 'bg-amber-200/80 border-amber-300/50 text-gray-900 hover:bg-amber-300/80',
+      'time-phrase': 'bg-sky-200/80 border-sky-300/50 text-gray-900 hover:bg-sky-300/80',
+      'determiner': 'bg-rose-200/80 border-rose-300/50 text-gray-900 hover:bg-rose-300/80'
     }
     return colors[category as keyof typeof colors] || 'bg-slate-200/80 border-slate-300/50 text-gray-900 hover:bg-slate-300/80'
+  }
+
+  // Transform verbs for tense/aspect to display appropriate forms
+  const mapVerbForLevel = (wordObj: any) => {
+    const category = detectLevelCategory()
+    if (wordObj.category !== 'verb') return wordObj
+    const base = wordObj.baseForm || wordObj.word?.split('/')?.[0]
+    const third = wordObj.thirdPersonForm || wordObj.word?.split('/')?.[1]
+    const v2 = wordObj.v2 || toPastTense(base)
+    const v3 = wordObj.v3 || toPastParticiple(base)
+    const ving = wordObj.ving || `${base?.endsWith('e') ? base.slice(0,-1) : base}ing`
+
+    // Choose default display depending on level
+    if (category.includes('past') && !category.includes('perfect') && !category.includes('continuous')) {
+      return { ...wordObj, word: v2, originalWord: v2, toggleable: false }
+    }
+    if (category.includes('perfect') && !category.includes('continuous')) {
+      return { ...wordObj, word: v3, originalWord: v3, toggleable: false }
+    }
+    if (category.includes('continuous')) {
+      return { ...wordObj, word: ving, originalWord: ving, toggleable: false }
+    }
+    if (category.includes('future')) {
+      return { ...wordObj, word: base, originalWord: `${base}/${third}`, toggleable: true }
+    }
+    // Default: show toggle base/3rd
+    return { ...wordObj, word: `${base}/${third}`, originalWord: `${base}/${third}`, toggleable: true }
+  }
+
+  // Get word display for challenge mode with improved verb handling
+  const getChallengeWordDisplay = (wordObj: { word: string; baseForm?: string; thirdPersonForm?: string; category: string; toggleable?: boolean }) => {
+    // Show both forms in shuffled; otherwise show current form
+    if (learningMode === 'shuffled' && wordObj.category === 'verb' && wordObj.toggleable && wordObj.baseForm && wordObj.thirdPersonForm) {
+      return `${wordObj.baseForm}/${wordObj.thirdPersonForm}`
+    }
+    return wordObj.word
+  }
+
+  // Check if a word is currently in its toggled state
+  const isWordToggled = (wordObj: { word: string; baseForm?: string; thirdPersonForm?: string }) => {
+    if (!wordObj.baseForm || !wordObj.thirdPersonForm) return false
+
+    // If word contains '/', it's showing both forms (untoggled state)
+    // If it doesn't contain '/', it's showing just one form (toggled state)
+    return !wordObj.word.includes('/')
   }
 
   const getCategoryIcon = (categoryName: string) => {
@@ -345,7 +1009,15 @@ export default function LevelPage() {
       'articles': '📝',
       'helpers': '🔧',
       'negatives': '❌',
-      'question-words': '❓'
+      'question-words': '❓',
+      'modals': '🔮',
+      'conjunctions': '🧩',
+      'prepositions': '🧷',
+      'adjectives': '🌈',
+      'adverbs': '💨',
+      'time': '⏰',
+      'places': '📍',
+      'determiners': '🏷️'
     }
     return icons[categoryName as keyof typeof icons] || '📝'
   }
@@ -952,7 +1624,7 @@ export default function LevelPage() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gray-900">
+    <div className="min-h-screen relative overflow-hidden bg-[#0B1220]">
       <style jsx>{`
         @keyframes bounce-once {
           0%, 20%, 53%, 80%, 100% {
@@ -974,11 +1646,32 @@ export default function LevelPage() {
         .animate-bounce-once {
           animation: bounce-once 0.6s ease-out;
         }
+        /* Custom thin scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #374151;
+          border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #4B5563;
+        }
+      `}</style>
+      <style jsx global>{`
+        @keyframes progressGlow {
+          0% { background-position: 0% 0%; box-shadow: 0 0 0px rgba(167,139,250,0.0); }
+          50% { background-position: 100% 0%; box-shadow: 0 0 8px rgba(167,139,250,0.35); }
+          100% { background-position: 0% 0%; box-shadow: 0 0 0px rgba(167,139,250,0.0); }
+        }
       `}</style>
       {/* Subtle Background Gradients */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-blue-900/30 to-purple-900/30">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-600/10 to-purple-600/10 rounded-full filter blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-br from-orange-600/10 to-yellow-600/10 rounded-full filter blur-3xl"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 via-sky-950/40 to-purple-950/40">
+        <div className="absolute -top-16 -right-16 w-[28rem] h-[28rem] bg-[conic-gradient(at_30%_20%,#6EE7F9_0deg,#A78BFA_120deg,#F472B6_240deg,#6EE7F9_360deg)] opacity-25 rounded-full blur-[100px]"></div>
+        <div className="absolute bottom-[-6rem] left-[-6rem] w-[28rem] h-[28rem] bg-[conic-gradient(at_70%_80%,#34D399_0deg,#60A5FA_120deg,#C084FC_240deg,#34D399_360deg)] opacity-25 rounded-full blur-[110px]"></div>
       </div>
 
 
@@ -1031,7 +1724,7 @@ export default function LevelPage() {
               <span className="text-xs font-medium text-slate-300">Level {level.id} of 47</span>
               <div className="flex-1 mx-3 bg-slate-700/50 rounded-full h-1.5">
                 <div
-                  className="bg-gradient-to-r from-sky-400 to-purple-400 h-1.5 rounded-full transition-all duration-500"
+                  className="h-1.5 rounded-full transition-all duration-500 bg-[linear-gradient(90deg,#22D3EE,#A78BFA,#F472B6,#34D399)] bg-[length:200%_100%] animate-[progressGlow_3s_linear_infinite]"
                   style={{ width: `${(level.id / 47) * 100}%` }}
                 ></div>
               </div>
@@ -1043,386 +1736,27 @@ export default function LevelPage() {
           <Card className="bg-slate-800/90 backdrop-blur-sm shadow-lg border-0 rounded-2xl border border-slate-700/50">
             <div className="p-4">
               <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <h1 className="text-2xl font-bold text-white drop-shadow-lg">
                     {level.name}
                   </h1>
-                  {userStats.completedLevels.includes(levelId) && (
-                    <Badge className="bg-green-200/80 text-green-800 border-green-300 rounded-full px-2 py-0.5 text-xs">
-                      <CheckCircle className="w-3 h-3 mr-1" />
-                      ✓
-                    </Badge>
-                  )}
                 </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowHelpModal(true)}
+                  className="flex items-center gap-2 bg-slate-700/50 text-slate-200 border-slate-600/30 hover:bg-slate-600/50 rounded-full backdrop-blur-sm transition-all duration-300"
+                >
+                  <HelpCircle className="w-4 h-4" />
+                  <span className="text-sm">How to use</span>
+                </Button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
-                <div className="bg-blue-100/80 rounded-xl border border-blue-200/50 overflow-hidden">
-                  <button
-                    onClick={() => setPatternOpen(!patternOpen)}
-                    className="w-full p-3 flex items-center justify-between hover:bg-blue-200/40 transition-colors"
-                  >
-                    <div className="flex items-center gap-1">
-                      <span className="text-sm">📝</span>
-                      <strong className="text-gray-900 text-sm">Pattern</strong>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="bg-blue-200/70 text-gray-900 px-2 py-1 rounded-full text-xs font-bold">
-                        {level.formula}
-                      </div>
-                      {patternOpen ? (
-                        <ChevronUp className="w-4 h-4 text-gray-700" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-gray-700" />
-                      )}
-                    </div>
-                  </button>
-                  {patternOpen && (
-                    <div className="px-3 pb-3">
-                      <div className="bg-blue-50/80 rounded-lg p-4 border border-blue-200/60">
-                        <div className="space-y-2">
-                          <div className="text-xs text-gray-700">
-                            <strong>How to build:</strong>
-                          </div>
-                          {(() => {
-                            // Smart pattern detection system for all 47 levels
-                            const getPatternForLevel = () => {
-                              const levelName = level.name.toLowerCase()
-                              const formula = level.formula.toLowerCase()
-
-                              // Helper function to create pattern components
-                              const createComponent = (text: string, color: string, label: string) => (
-                                <div className="text-center">
-                                  <div className={`${color} border border-gray-300/50 text-gray-900 px-2 py-1 rounded-full text-xs font-medium`}>
-                                    {text}
-                                  </div>
-                                  <div className="text-xs text-gray-600 mt-0.5">{label}</div>
-                                </div>
-                              )
-
-                              // Pattern templates based on formula and level characteristics
-                              if (levelName.includes('negative') || formula.includes('not')) {
-                                const contractions = levelName.includes('past') ?
-                                  [{ from: "did not", to: "didn't" }] :
-                                  [{ from: "do not", to: "don't" }, { from: "does not", to: "doesn't" }]
-
-                                return (
-                                  <div className="space-y-3">
-                                    <div className="flex items-center justify-center space-x-1">
-                                      {createComponent('Subject', 'bg-sky-200/80', 'Who')}
-                                      <span className="text-gray-500 text-xs">+</span>
-                                      {createComponent(levelName.includes('past') ? "didn't" : 'do/does', 'bg-violet-200/80', 'Helper')}
-                                      <span className="text-gray-500 text-xs">+</span>
-                                      {createComponent('not', 'bg-red-200/80', 'Negative')}
-                                      <span className="text-gray-500 text-xs">+</span>
-                                      {createComponent('Verb', 'bg-purple-200/80', 'Action')}
-                                      <span className="text-gray-500 text-xs">+</span>
-                                      {createComponent('Object', 'bg-orange-200/80', 'What')}
-                                    </div>
-                                    <div className="text-center">
-                                      <div className="text-xs text-gray-600 mb-1">💡 <strong>Tip:</strong> You can use contractions for natural speech</div>
-                                      <div className="flex items-center justify-center space-x-2 text-xs">
-                                        {contractions.map((c, i) => (
-                                          <span key={i} className="bg-gray-100 px-2 py-1 rounded text-gray-700">{c.from} → {c.to}</span>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  </div>
-                                )
-                              }
-
-                              if (levelName.includes('question') || formula.includes('?')) {
-                                if (levelName.includes('yes/no') || levelName.includes('yes') || levelName.includes('no')) {
-                                  const helper = levelName.includes('past') ? 'Did' :
-                                                levelName.includes('continuous') ? 'am/is/are' :
-                                                levelName.includes('perfect') ? 'Have/Has' : 'Do/Does'
-
-                                  return (
-                                    <div className="flex items-center justify-center space-x-1">
-                                      {createComponent(helper, 'bg-violet-200/80', 'Helper')}
-                                      <span className="text-gray-500 text-xs">+</span>
-                                      {createComponent('Subject', 'bg-sky-200/80', 'Who')}
-                                      <span className="text-gray-500 text-xs">+</span>
-                                      {createComponent('Verb', 'bg-purple-200/80', 'Action')}
-                                      <span className="text-gray-500 text-xs">+</span>
-                                      {createComponent('Object?', 'bg-orange-200/80', 'What')}
-                                    </div>
-                                  )
-                                } else {
-                                  // Wh-questions
-                                  const helper = levelName.includes('past') ? 'did' :
-                                                levelName.includes('continuous') ? 'am/is/are' :
-                                                levelName.includes('perfect') ? 'have/has' : 'do/does'
-
-                                  return (
-                                    <div className="space-y-3">
-                                      <div className="flex items-center justify-center space-x-1">
-                                        {createComponent('Wh-word', 'bg-emerald-200/80', 'Question')}
-                                        <span className="text-gray-500 text-xs">+</span>
-                                        {createComponent(helper, 'bg-violet-200/80', 'Helper')}
-                                        <span className="text-gray-500 text-xs">+</span>
-                                        {createComponent('Subject', 'bg-sky-200/80', 'Who')}
-                                        <span className="text-gray-500 text-xs">+</span>
-                                        {createComponent('Verb', 'bg-purple-200/80', 'Action')}
-                                      </div>
-                                      <div className="text-center">
-                                        <div className="text-xs text-gray-600 mb-1">
-                                          💡 <strong>Tip:</strong> {levelName.includes('what') ? 'What asks about things or actions' :
-                                                                   'Who = people, Where = places, When = time, Why = reasons'}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )
-                                }
-                              }
-
-                              if (levelName.includes('continuous') || formula.includes('ing')) {
-                                const helper = levelName.includes('past') ? 'was/were' : 'am/is/are'
-                                return (
-                                  <div className="space-y-3">
-                                    <div className="flex items-center justify-center space-x-1">
-                                      {createComponent('Subject', 'bg-sky-200/80', 'Who')}
-                                      <span className="text-gray-500 text-xs">+</span>
-                                      {createComponent(helper, 'bg-violet-200/80', 'Be verb')}
-                                      <span className="text-gray-500 text-xs">+</span>
-                                      {createComponent('Verb-ing', 'bg-purple-200/80', 'Action')}
-                                      <span className="text-gray-500 text-xs">+</span>
-                                      {createComponent('Object', 'bg-orange-200/80', 'What')}
-                                    </div>
-                                    <div className="text-center">
-                                      <div className="text-xs text-gray-600 mb-1">
-                                        💡 <strong>Tip:</strong> {levelName.includes('past') ? 'For ongoing actions in the past' : 'For actions happening now! Add -ing to verbs'}
-                                      </div>
-                                      {!levelName.includes('past') && (
-                                        <div className="flex items-center justify-center space-x-2 text-xs">
-                                          <span className="bg-gray-100 px-2 py-1 rounded text-gray-700">I am → I&apos;m</span>
-                                          <span className="bg-gray-100 px-2 py-1 rounded text-gray-700">You are → You&apos;re</span>
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                )
-                              }
-
-                              if (levelName.includes('perfect') || formula.includes('have') || formula.includes('has')) {
-                                return (
-                                  <div className="space-y-3">
-                                    <div className="flex items-center justify-center space-x-1">
-                                      {createComponent('Subject', 'bg-sky-200/80', 'Who')}
-                                      <span className="text-gray-500 text-xs">+</span>
-                                      {createComponent('have/has', 'bg-violet-200/80', 'Helper')}
-                                      <span className="text-gray-500 text-xs">+</span>
-                                      {createComponent('V3', 'bg-purple-200/80', 'Past Participle')}
-                                      <span className="text-gray-500 text-xs">+</span>
-                                      {createComponent('Object', 'bg-orange-200/80', 'What')}
-                                    </div>
-                                    <div className="text-center">
-                                      <div className="text-xs text-gray-600 mb-1">💡 <strong>Tip:</strong> For experiences or actions with present relevance</div>
-                                      <div className="flex items-center justify-center space-x-2 text-xs">
-                                        <span className="bg-gray-100 px-2 py-1 rounded text-gray-700">I have → I&apos;ve</span>
-                                        <span className="bg-gray-100 px-2 py-1 rounded text-gray-700">She has → She&apos;s</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                )
-                              }
-
-                              if (levelName.includes('past') || formula.includes('v2') || levelName.includes('did')) {
-                                if (levelName.includes('passive')) {
-                                  return (
-                                    <div className="space-y-3">
-                                      <div className="flex items-center justify-center space-x-1">
-                                        {createComponent('Subject', 'bg-sky-200/80', 'Who/What')}
-                                        <span className="text-gray-500 text-xs">+</span>
-                                        {createComponent('was/were', 'bg-violet-200/80', 'Be verb')}
-                                        <span className="text-gray-500 text-xs">+</span>
-                                        {createComponent('V3', 'bg-purple-200/80', 'Past Participle')}
-                                        <span className="text-gray-500 text-xs">+</span>
-                                        {createComponent('by + agent', 'bg-gray-200/80', 'Who did it')}
-                                      </div>
-                                      <div className="text-center">
-                                        <div className="text-xs text-gray-600 mb-1">💡 <strong>Tip:</strong> Focus on the action, not who did it</div>
-                                      </div>
-                                    </div>
-                                  )
-                                } else {
-                                  return (
-                                    <div className="space-y-3">
-                                      <div className="flex items-center justify-center space-x-1">
-                                        {createComponent('Subject', 'bg-sky-200/80', 'Who')}
-                                        <span className="text-gray-500 text-xs">+</span>
-                                        {createComponent('V2', 'bg-purple-200/80', 'Past Verb')}
-                                        <span className="text-gray-500 text-xs">+</span>
-                                        {createComponent('Object', 'bg-orange-200/80', 'What')}
-                                        <span className="text-gray-500 text-xs">+</span>
-                                        {createComponent('Time', 'bg-yellow-200/80', 'When')}
-                                      </div>
-                                      <div className="text-center">
-                                        <div className="text-xs text-gray-600 mb-1">💡 <strong>Tip:</strong> For completed actions in the past</div>
-                                        <div className="text-xs text-gray-600">Regular verbs: +ed | Irregular verbs: special forms</div>
-                                      </div>
-                                    </div>
-                                  )
-                                }
-                              }
-
-                              if (levelName.includes('future') || formula.includes('will') || levelName.includes('going to')) {
-                                if (levelName.includes('going to')) {
-                                  return (
-                                    <div className="space-y-3">
-                                      <div className="flex items-center justify-center space-x-1">
-                                        {createComponent('Subject', 'bg-sky-200/80', 'Who')}
-                                        <span className="text-gray-500 text-xs">+</span>
-                                        {createComponent('am/is/are', 'bg-violet-200/80', 'Be verb')}
-                                        <span className="text-gray-500 text-xs">+</span>
-                                        {createComponent('going to', 'bg-indigo-200/80', 'Future')}
-                                        <span className="text-gray-500 text-xs">+</span>
-                                        {createComponent('V1', 'bg-purple-200/80', 'Base Verb')}
-                                      </div>
-                                      <div className="text-center">
-                                        <div className="text-xs text-gray-600 mb-1">💡 <strong>Tip:</strong> For planned future actions</div>
-                                      </div>
-                                    </div>
-                                  )
-                                } else {
-                                  return (
-                                    <div className="space-y-3">
-                                      <div className="flex items-center justify-center space-x-1">
-                                        {createComponent('Subject', 'bg-sky-200/80', 'Who')}
-                                        <span className="text-gray-500 text-xs">+</span>
-                                        {createComponent('will', 'bg-indigo-200/80', 'Future')}
-                                        <span className="text-gray-500 text-xs">+</span>
-                                        {createComponent('V1', 'bg-purple-200/80', 'Base Verb')}
-                                        <span className="text-gray-500 text-xs">+</span>
-                                        {createComponent('Object', 'bg-orange-200/80', 'What')}
-                                      </div>
-                                      <div className="text-center">
-                                        <div className="text-xs text-gray-600 mb-1">💡 <strong>Tip:</strong> For predictions and promises</div>
-                                      </div>
-                                    </div>
-                                  )
-                                }
-                              }
-
-                              if (levelName.includes('conditional') || formula.includes('if')) {
-                                return (
-                                  <div className="space-y-3">
-                                    <div className="flex items-center justify-center space-x-1">
-                                      {createComponent('If', 'bg-yellow-200/80', 'Condition')}
-                                      <span className="text-gray-500 text-xs">+</span>
-                                      {createComponent('condition', 'bg-sky-200/80', 'Situation')}
-                                      <span className="text-gray-500 text-xs">,</span>
-                                      {createComponent('result', 'bg-green-200/80', 'What happens')}
-                                    </div>
-                                    <div className="text-center">
-                                      <div className="text-xs text-gray-600 mb-1">
-                                        💡 <strong>Tip:</strong> {levelName.includes('zero') ? 'For facts and general truths' :
-                                                                 levelName.includes('first') ? 'For real future possibilities' :
-                                                                 'For hypothetical situations'}
-                                      </div>
-                                    </div>
-                                  </div>
-                                )
-                              }
-
-                              if (levelName.includes('modal') || levelName.includes('can') || levelName.includes('should') || levelName.includes('must')) {
-                                return (
-                                  <div className="space-y-3">
-                                    <div className="flex items-center justify-center space-x-1">
-                                      {createComponent('Subject', 'bg-sky-200/80', 'Who')}
-                                      <span className="text-gray-500 text-xs">+</span>
-                                      {createComponent('Modal', 'bg-indigo-200/80', 'Can/Should/Must')}
-                                      <span className="text-gray-500 text-xs">+</span>
-                                      {createComponent('V1', 'bg-purple-200/80', 'Base Verb')}
-                                      <span className="text-gray-500 text-xs">+</span>
-                                      {createComponent('Object', 'bg-orange-200/80', 'What')}
-                                    </div>
-                                    <div className="text-center">
-                                      <div className="text-xs text-gray-600 mb-1">
-                                        💡 <strong>Tip:</strong> {levelName.includes('can') ? 'For ability and permission' :
-                                                                 levelName.includes('should') ? 'For advice and recommendations' :
-                                                                 'For obligation and necessity'}
-                                      </div>
-                                    </div>
-                                  </div>
-                                )
-                              }
-
-                              // Default pattern for basic affirmative sentences
-                              return (
-                                <div className="space-y-3">
-                                  <div className="flex items-center justify-center space-x-2">
-                                    {createComponent('Subject', 'bg-sky-200/80', 'Who')}
-                                    <span className="text-gray-500 text-xs">+</span>
-                                    {createComponent('Verb', 'bg-purple-200/80', 'Action')}
-                                    <span className="text-gray-500 text-xs">+</span>
-                                    {createComponent('Object', 'bg-orange-200/80', 'What')}
-                                  </div>
-                                  <div className="text-center">
-                                    <div className="text-xs text-gray-600 mb-1">💡 <strong>Tip:</strong> Basic sentence structure - who does what</div>
-                                  </div>
-                                </div>
-                              )
-                            }
-
-                            return getPatternForLevel()
-                          })()}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div className="bg-green-100/60 rounded-xl border border-green-200/40 overflow-hidden">
-                  <button
-                    onClick={() => setGrammarTipOpen(!grammarTipOpen)}
-                    className="w-full p-3 flex items-center justify-between hover:bg-green-200/40 transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm">💡</span>
-                      <strong className="text-gray-900 text-sm">Quick Grammar Guide</strong>
-                    </div>
-                    {grammarTipOpen ? (
-                      <ChevronUp className="w-4 h-4 text-gray-700" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 text-gray-700" />
-                    )}
-                  </button>
-
-                  {grammarTipOpen && (
-                    <div className="px-3 pb-3">
-                      <div className="bg-green-50/80 rounded-lg p-4 border border-green-200/60">
-                        <h4 className="font-semibold text-gray-900 text-sm mb-3">{getVisualGrammarCards().title}</h4>
-                        <div className="space-y-4">
-                          {getVisualGrammarCards().cards.map((card, index) => (
-                            <div key={index} className="space-y-2">
-                              <p className="text-xs text-gray-700 font-medium">{card.explanation}</p>
-                              <div className="flex items-center justify-center">
-                                <div className="flex items-center space-x-2">
-                                  {card.example.map((word, wordIndex) => (
-                                    <div key={wordIndex} className="text-center">
-                                      <div className={`${card.colors[wordIndex]} border border-gray-300/50 text-gray-900 px-3 py-2 rounded-full text-sm font-medium shadow-sm`}>
-                                        {word}
-                                      </div>
-                                      <div className="text-xs text-gray-600 mt-1">
-                                        {card.labels[wordIndex]}
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          {/* Sentence Building Area */}
-          <Card className="bg-slate-800/90 backdrop-blur-sm shadow-lg border-2 border-slate-600 rounded-2xl">
+          {/* Main Content Area with Horizontal Layout */}
+          <div className="flex flex-col lg:flex-row gap-6 min-h-[600px]">
+            {/* Left Side - Sentence Building Area */}
+            <div className="flex-1 min-w-0">
+              <Card className="bg-slate-800/90 backdrop-blur-sm shadow-lg border-2 border-slate-600 rounded-2xl h-full">
             <div className="p-4">
               <div className="text-center mb-3">
                 <div className="flex items-center justify-center space-x-2">
@@ -1441,7 +1775,7 @@ export default function LevelPage() {
                     <span>
                       {learningMode === 'categorized'
                         ? `${categorizedCorrect}/5 correct`
-                        : `${shuffledCorrect}/5 correct`}
+                        : `${shuffledCorrect}/3 correct`}
                     </span>
                   </div>
                   <div className={`bg-slate-700/50 rounded-full h-1.5 transition-all duration-300 ${
@@ -1456,7 +1790,7 @@ export default function LevelPage() {
                       style={{
                         width: `${learningMode === 'categorized'
                           ? (categorizedCorrect / 5) * 100
-                          : (shuffledCorrect / 5) * 100}%`
+                          : (shuffledCorrect / 3) * 100}%`
                       }}
                     ></div>
                   </div>
@@ -1520,7 +1854,11 @@ export default function LevelPage() {
               </div>
 
               {/* Current Sentence Display */}
-              <div className="min-h-[60px] p-3 sm:p-4 border-2 border-dashed border-gray-300 rounded-2xl bg-gradient-to-r from-blue-50/60 to-purple-50/60 mb-4 flex items-center justify-center">
+                      <div
+                        className="min-h-[60px] p-3 sm:p-4 border-2 border-dashed border-gray-300 rounded-2xl bg-gradient-to-r from-blue-50/60 to-purple-50/60 mb-4"
+                        onDragOver={onDragOver}
+                        onDrop={onDropToEnd}
+                      >
                 {selectedTiles.length === 0 ? (
                   <p className="text-gray-600 text-center text-sm">
                     <span className="block text-lg mb-1">✨</span>
@@ -1532,10 +1870,16 @@ export default function LevelPage() {
                       <Badge
                         key={index}
                         variant="secondary"
-                        className={`${getCategoryColor(tile.category)} cursor-pointer hover:scale-105 hover:shadow-lg text-sm px-3 py-2 rounded-full transition-all duration-200 border shadow-sm min-h-[36px] touch-manipulation`}
+                                className={`${getCategoryColor(tile.category)} cursor-move hover:scale-105 hover:shadow-lg text-sm px-3 py-2 rounded-full transition-all duration-200 border shadow-sm min-h-[36px] touch-manipulation`}
+                                draggable
+                                onDragStart={(e) => onDragStart(e, index)}
+                                onDragOver={onDragOver}
+                                onDrop={(e) => onDrop(e, index)}
                         onClick={() => removeTile(index)}
                       >
-                        {tile.word}
+                        <span className={tile.category === 'verb' && isWordToggled(tile) ? 'font-bold' : ''}>
+                          {getChallengeWordDisplay(tile)}
+                        </span>
                         <span className="ml-1 text-xs opacity-60">×</span>
                       </Badge>
                     ))}
@@ -1544,7 +1888,7 @@ export default function LevelPage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row justify-center gap-3 sm:space-x-3 mb-4">
+              <div className="flex flex-col sm:flex-row justify-center gap-3 mb-4">
                 <Button
                   onClick={checkSentence}
                   className="flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-500 to-green-400 hover:from-blue-600 hover:to-green-500 text-white font-semibold rounded-full px-4 py-2.5 shadow-lg transform hover:scale-105 transition-all duration-200 text-sm w-full sm:w-auto"
@@ -1552,6 +1896,24 @@ export default function LevelPage() {
                 >
                   <CheckCircle className="w-4 h-4" />
                   <span>Check Sentence</span>
+                </Button>
+
+                <Button
+                  onClick={saveSentence}
+                  className={`flex items-center justify-center space-x-2 ${justSaved ? 'bg-green-500 hover:bg-green-600' : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'} text-white font-semibold rounded-full px-4 py-2.5 shadow-lg transform hover:scale-105 transition-all duration-200 text-sm w-full sm:w-auto`}
+                  disabled={selectedTiles.length === 0}
+                >
+                  {justSaved ? (
+                    <>
+                      <CheckCircle className="w-4 h-4" />
+                      <span>Saved!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Heart className="w-4 h-4" />
+                      <span>Save</span>
+                    </>
+                  )}
                 </Button>
 
                 <Button
@@ -1563,7 +1925,7 @@ export default function LevelPage() {
                   <span>Clear</span>
                 </Button>
 
-                {(userStats.completedLevels.includes(levelId) || levelProgress > 0) && (
+                {(categorizedCorrect >= 5 && shuffledCorrect >= 3) && (
                   <Button
                     onClick={nextLevel}
                     className="flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold rounded-full px-4 py-2.5 shadow-lg transform hover:scale-105 transition-all duration-200 text-sm w-full sm:w-auto"
@@ -1574,113 +1936,429 @@ export default function LevelPage() {
                 )}
               </div>
 
+              {/* Pattern and Quick Grammar Guide - Moved from top */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 items-start gap-3 mt-6 pt-4 border-t border-slate-600/30">
+                        {(() => {
+                          const category = detectLevelCategory()
+                          const info: Record<string, { what: string; why: string }> = {
+                            conditional: {
+                              what: 'An if-clause plus a result clause using present forms.',
+                              why: 'To show cause → result, general truths, or likely outcomes.'
+                            },
+                            continuous: {
+                              what: 'Present Continuous: be + V-ing (am/is/are + V-ing).',
+                              why: 'An action happening now or around now; temporary situations.'
+                            },
+                            'perfect-continuous': {
+                              what: 'Perfect Continuous: have/has been + V-ing.',
+                              why: 'An action that started in the past and continues to now.'
+                            },
+                            future: {
+                              what: 'Future with will/going to + base verb.',
+                              why: 'Decisions, predictions, plans and promises about the future.'
+                            },
+                            past: {
+                              what: 'Past Simple (V2) for finished actions at a specific time.',
+                              why: 'To talk about completed events and sequences in the past.'
+                            },
+                            perfect: {
+                              what: 'Present Perfect: have/has + V3 (past participle).',
+                              why: 'Links past to now: experiences, recent results, since/for duration.'
+                            },
+                            modal: {
+                              what: 'Modal + base verb (can/should/must...).',
+                              why: 'Express ability, advice, obligation, possibility or permission.'
+                            },
+                            passive: {
+                              what: 'Be (am/is/are) + V3; focus on the action/result.',
+                              why: 'Use when the doer is unknown/unimportant or to sound formal.'
+                            },
+                            default: {
+                              what: 'Present Simple: subject + base verb / +s for he/she/it.',
+                              why: 'Facts, routines, schedules and general truths.'
+                            }
+                          }
+                          const chosen = info[category.split('-')[1] as keyof typeof info] || info[category as keyof typeof info] || info.default
+                          return (
+                            <PatternCard
+                              persistKey={`pattern-open-${levelId}`}
+                              pill={
+                                <button onClick={handlePatternPillClick} className={`px-2 py-1 rounded-full text-xs font-bold border ${getPatternPillClass()} transition-colors hover:opacity-90`} title="Click to copy. Shift+Click to auto-insert an example sentence.">
+                        {level.formula}
+                  </button>
+                              }
+                              toast={pillToast}
+                              info={chosen}
+                              visual={<TimelineVisual category={category} />}
+                            />
+                          )
+                        })()}
+                        <GrammarGuideCard
+                          persistKey={`grammar-open-${levelId}`}
+                          sections={[{ label: level.name, content: level.formula }]}
+                        />
+              </div>
+
             </div>
           </Card>
+            </div>
 
-          {/* Word Categories */}
-          <div className="space-y-3">
+            {/* Right Side - Word Categories Toolbox */}
+                <div className="w-full lg:w-80 space-y-4 max-h-[600px] overflow-y-auto custom-scrollbar">
+              <div className="lg:sticky lg:top-0 bg-gradient-to-r from-gray-900 via-gray-900 to-gray-900/95 backdrop-blur-sm pb-3 z-10 border-b border-slate-700/30">
+                <div className="relative flex items-center justify-center">
+                  <h3 className="text-lg font-bold text-white flex items-center tracking-wide">
+                    <span className="mr-3 text-xl">🧰</span>
+                    Word Toolbox
+                  </h3>
+          <Button
+            onClick={() => setShowVerbGuide(true)}
+            variant="ghost"
+            className="absolute left-0 text-gray-300 hover:text-white hover:bg-slate-700/60 p-2 rounded-full transition-all duration-200"
+            title="Verb System Guide (V1, V1-3rd, V-ing, V2, V3)"
+          >
+            <BookOpen className="w-5 h-5" />
+          </Button>
+                  <Button
+                    onClick={() => setShowSavedModal(true)}
+                    variant="ghost"
+                    className="absolute right-0 text-gray-300 hover:text-white hover:bg-slate-700/60 p-2 rounded-full transition-all duration-200 relative"
+                  >
+                    <Bookmark className="w-5 h-5" />
+                    {savedSentences.length > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-purple-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                        {savedSentences.length > 9 ? '9+' : savedSentences.length}
+                      </span>
+                    )}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Vertical layout with helper tip */}
+              <div className="space-y-3">
             {/* Helper Instructions and Logical Word Combination Tips */}
             {level.requiredCategories?.includes('verbs') && (
-              <div className="bg-slate-800/70 backdrop-blur-sm rounded-2xl p-3 border border-slate-600/30">
-                <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-2 text-slate-300 text-sm">
+              <div className="bg-slate-800/80 backdrop-blur-sm rounded-xl p-4 border border-slate-600/40 shadow-lg">
+                <div className="flex flex-col items-center justify-center space-y-3 text-slate-200 text-sm">
                   <div className="flex items-center space-x-2">
-                    <span className="text-blue-400">💡</span>
-                    <span><strong>Tip:</strong> Click verb tiles to toggle forms</span>
+                    <span className="text-blue-400 text-base">💡</span>
+                    <span className="font-medium"><strong className="text-white">Tip:</strong> Click verb tiles to toggle forms</span>
                   </div>
-                  <div className="flex items-center space-x-1">
-                    <span className="bg-purple-200/80 text-gray-900 px-2 py-1 rounded-full text-xs">eat</span>
-                    <span className="text-slate-400">↔</span>
-                    <span className="bg-purple-200/80 text-gray-900 px-2 py-1 rounded-full text-xs">eats</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="bg-purple-300/90 text-gray-900 px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm">eat</span>
+                    <span className="text-slate-300 font-bold">↔</span>
+                    <span className="bg-purple-300/90 text-gray-900 px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm">eats</span>
                   </div>
+                  {learningMode === 'shuffled' && (
+                    <div className="flex items-center space-x-2 text-xs text-purple-300">
+                      <span>🎯</span>
+                      <span>Challenge mode shows both forms for easy toggling</span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
 
+                {/* Combo Tips removed for now */}
 
-
-            {/* Conditional Word Layout - Categorized vs Shuffled */}
+            {/* Vertical Stacked Word Categories */}
             {learningMode === 'categorized' ? (
-              /* Categorized Mode - Horizontal Scroll Categories */
-              <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory">
-                {['subjects', 'verbs', 'articles', 'objects', 'helpers', 'negatives'].filter(categoryName =>
-                  level.requiredCategories?.includes(categoryName)
-                ).map(categoryName => {
-                  const categoryWords = wordCategories[categoryName as keyof typeof wordCategories] || []
-                  if (categoryWords.length === 0) return null
-
-                  const categoryColor = categoryName === 'subjects' ? 'from-sky-200/60 to-sky-300/60' :
-                                      categoryName === 'verbs' ? 'from-purple-200/60 to-purple-300/60' :
-                                      categoryName === 'articles' ? 'from-pink-200/60 to-pink-300/60' :
-                                      categoryName === 'objects' ? 'from-orange-200/60 to-orange-300/60' :
-                                      categoryName === 'helpers' ? 'from-violet-200/60 to-violet-300/60' :
-                                      categoryName === 'negatives' ? 'from-red-200/60 to-red-300/60' :
-                                      'from-gray-200/60 to-gray-300/60'
-
-                  return (
-                    <Card key={categoryName} className="bg-slate-800/90 backdrop-blur-sm shadow-lg border-0 rounded-2xl overflow-hidden border border-slate-700/50 flex-shrink-0 w-72 snap-start">
-                      <div className={`bg-gradient-to-r ${categoryColor} p-2`}>
-                        <div className="flex items-center justify-center space-x-1">
-                          <span className="text-lg">{getCategoryIcon(categoryName)}</span>
-                          <h3 className="text-sm font-bold capitalize text-gray-900">
-                            {categoryName.replace('-', ' ')}
-                          </h3>
-                        </div>
-                      </div>
-                      <div className="p-2 sm:p-3">
-                        <div className="flex flex-wrap gap-2 justify-center">
-                          {categoryWords.map((wordObj: { word: string; category: string; toggleable?: boolean }, index: number) => (
-                            <Button
-                              key={index}
-                              variant="outline"
-                              onClick={() => handleTileClick(wordObj.word, wordObj.category)}
-                              className={`${getCategoryColor(wordObj.category)} transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 rounded-full px-3 py-2 font-medium text-sm min-h-[40px] touch-manipulation`}
-                            >
-                              {wordObj.word}
-                              {wordObj.toggleable && (
-                                <span className="ml-1 text-xs opacity-70">↔</span>
-                              )}
-                            </Button>
-                          ))}
-                        </div>
-                      </div>
-                    </Card>
-                  )
-                })}
-              </div>
-            ) : (
-              /* Shuffled Mode - All Words Mixed Like Duolingo */
+                  <WordCategoryList
+                    categoriesToShow={[...new Set(['subjects','verbs','articles','objects','helpers','negatives','question-words','modals','conjunctions','prepositions','adjectives','adverbs','time','places','determiners'])]
+                      .filter((categoryName) => (activeRequiredCategories as string[]).includes(categoryName))}
+                    wordCategories={wordCategories as any}
+                    getCategoryIcon={getCategoryIcon as any}
+                    getCategoryColor={getCategoryColor as any}
+                    getChallengeWordDisplay={(w: any) => getChallengeWordDisplay(mapVerbForLevel(w))}
+                    onTileClick={handleTileClick}
+                  />
+                ) : (
               <Card className="bg-slate-800/90 backdrop-blur-sm shadow-lg border-0 rounded-2xl overflow-hidden border border-slate-700/50">
-                <div className="bg-gradient-to-r from-purple-400/60 to-pink-400/60 p-2">
+                    <div className="bg-gradient-to-r from-sky-400/60 via-fuchsia-400/60 to-emerald-400/60 p-2">
                   <div className="flex items-center justify-center space-x-1">
                     <span className="text-lg">🎯</span>
-                    <h3 className="text-sm font-bold text-gray-900">
-                      Challenge Mode - All Words Mixed!
-                    </h3>
+                        <h3 className="text-sm font-bold text-gray-900">Challenge Mode - Mixed Words with Verb Toggle!</h3>
                   </div>
                 </div>
                 <div className="p-3">
-                  <div className="flex flex-wrap gap-2 justify-center">
-                    {getShuffledWords().map((wordObj, index) => (
-                      <Button
-                        key={`${wordObj.word}-${index}`}
-                        variant="outline"
-                        onClick={() => handleTileClick(wordObj.word, wordObj.category)}
-                        className={`${getCategoryColor(wordObj.category)} transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 rounded-full px-3 py-2 font-medium text-sm min-h-[40px] touch-manipulation`}
-                      >
-                        {wordObj.word}
-                        {wordObj.toggleable && (
-                          <span className="ml-1 text-xs opacity-70">↔</span>
-                        )}
-                      </Button>
-                    ))}
-                  </div>
+                      <ShuffledWordGrid
+                        words={getShuffledWords().map((w: any) => mapVerbForLevel(w)) as any}
+                        learningMode={learningMode}
+                        isWordToggled={isWordToggled as any}
+                        getCategoryColor={getCategoryColor as any}
+                        getChallengeWordDisplay={getChallengeWordDisplay as any}
+                        onTileClick={handleTileClick}
+                      />
                 </div>
               </Card>
             )}
-
+              </div>
+            </div>
           </div>
+            </div>
+          </Card>
+
+          {/* duplicate content fully removed */}
         </div>
       </div>
+
+      {/* Verb System Guide Modal */}
+      <VerbSystemGuide open={showVerbGuide} onClose={() => setShowVerbGuide(false)} />
+
+      {/* Saved Sentences Modal */}
+      {showSavedModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+          <div className="bg-slate-800 rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden shadow-2xl">
+            {/* Modal Header */}
+            <div className="px-6 py-4 border-b border-slate-600 flex items-center justify-between bg-gradient-to-r from-purple-500/15 to-pink-500/15">
+              <h2 className="text-xl font-bold text-white flex items-center">
+                <Bookmark className="w-5 h-5 mr-2 text-purple-400" />
+                My Saved Sentences
+              </h2>
+              <Button
+                onClick={() => setShowSavedModal(false)}
+                variant="ghost"
+                className="text-slate-300 hover:text-white hover:bg-slate-700/60 p-2 rounded-full"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 overflow-y-auto max-h-[60vh]">
+              {savedSentences.length === 0 ? (
+                <div className="text-center py-8">
+                  <Heart className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+                  <p className="text-gray-400 text-lg mb-2">No saved sentences yet</p>
+                  <p className="text-gray-500 text-sm">Start building sentences and click the Save button to collect your favorites!</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {savedSentences.map((saved) => (
+                    <div key={saved.id} className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/30 hover:border-slate-500/50 transition-all duration-200">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <p className="text-white font-medium text-lg mb-2">"{saved.sentence}"</p>
+                          <div className="flex items-center space-x-4 text-sm text-gray-400">
+                            <span>Level {saved.level}</span>
+                            <span>•</span>
+                            <span>{new Date(saved.timestamp).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2 ml-4">
+                          <Button
+                            onClick={() => loadSavedSentence(saved.sentence)}
+                            variant="ghost"
+                            className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/20 p-2 rounded-lg"
+                          >
+                            <BookmarkPlus className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            onClick={() => deleteSavedSentence(saved.id)}
+                            variant="ghost"
+                            className="text-red-400 hover:text-red-300 hover:bg-red-500/20 p-2 rounded-lg"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            {savedSentences.length > 0 && (
+              <div className="px-6 py-4 border-t border-slate-600 bg-slate-700/30">
+                <p className="text-center text-sm text-gray-400">
+                  {savedSentences.length} saved sentence{savedSentences.length !== 1 ? 's' : ''} • Click <BookmarkPlus className="inline w-4 h-4 mx-1" /> to load a sentence
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Help Modal */}
+      {showHelpModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+          <div className="bg-slate-800 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            {/* Modal Header */}
+            <div className="px-6 py-4 border-b border-slate-600 flex items-center justify-between bg-gradient-to-r from-blue-500/15 to-purple-500/15 backdrop-blur-sm">
+              <h2 className="text-2xl font-bold text-white flex items-center drop-shadow-lg">
+                <HelpCircle className="w-7 h-7 mr-3 text-blue-300" />
+                How to Use Sentence Builder
+              </h2>
+              <Button
+                onClick={() => setShowHelpModal(false)}
+                variant="ghost"
+                className="text-slate-300 hover:text-white hover:bg-slate-700/60 p-2 rounded-full transition-all duration-200"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="px-6 py-6 space-y-8">
+              {/* Basic Instructions */}
+              <section>
+                <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
+                  <span className="w-10 h-10 bg-blue-500/30 text-blue-200 rounded-full flex items-center justify-center text-lg font-bold mr-4 border-2 border-blue-400/40">1</span>
+                  Build Your Sentence
+                </h3>
+                <Card className="p-6 bg-slate-700/40 border-2 border-slate-600/50 shadow-lg">
+                  <div className="space-y-4 text-slate-100">
+                    <p className="text-lg leading-relaxed font-medium">
+                      <span className="text-blue-300 font-bold">Click word tiles</span> below to build your sentence. Start with a subject, add a verb, then an object.
+                    </p>
+                    <div className="bg-blue-500/15 p-4 rounded-xl border-2 border-blue-400/30 shadow-inner">
+                      <p className="text-base font-semibold text-blue-200">
+                        <span className="text-blue-300">Example:</span> Click <span className="bg-slate-600/50 px-2 py-1 rounded font-mono text-sm">I</span> →
+                        <span className="bg-slate-600/50 px-2 py-1 rounded font-mono text-sm ml-2">like</span> →
+                        <span className="bg-slate-600/50 px-2 py-1 rounded font-mono text-sm ml-2">pizza</span> to make "I like pizza"
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              </section>
+
+              {/* Verb Toggle Instructions */}
+              {level.requiredCategories?.includes('verbs') && (
+                <section>
+                  <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
+                    <span className="w-10 h-10 bg-purple-500/30 text-purple-200 rounded-full flex items-center justify-center text-lg font-bold mr-4 border-2 border-purple-400/40">2</span>
+                    Toggle Verb Forms
+                  </h3>
+                  <Card className="p-6 bg-slate-700/40 border-2 border-slate-600/50 shadow-lg">
+                    <div className="space-y-4 text-slate-100">
+                      <p className="text-lg leading-relaxed font-medium">
+                        Some verbs can change form! Look for the <span className="bg-purple-500/30 px-3 py-1 rounded-lg text-base font-bold text-purple-200 border border-purple-400/40">↔</span> symbol.
+                      </p>
+                      <div className="bg-purple-500/15 p-4 rounded-xl border-2 border-purple-400/30 shadow-inner">
+                        <p className="text-base font-semibold text-purple-200 mb-3">
+                          <span className="text-purple-300">Click to toggle:</span>
+                        </p>
+                        <div className="flex items-center justify-center gap-4 text-base">
+                          <span className="bg-slate-600/80 px-3 py-2 rounded-lg font-mono font-bold text-white shadow-sm">eat</span>
+                          <span className="text-purple-300 text-xl font-bold">↔</span>
+                          <span className="bg-slate-600/80 px-3 py-2 rounded-lg font-mono font-bold text-white shadow-sm">eats</span>
+                        </div>
+                        <p className="text-sm text-purple-200/80 mt-3 font-medium">
+                          Use base form with I/you/we/they, add -s with he/she/it
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                </section>
+              )}
+
+              {/* Check and Clear */}
+              <section>
+                  <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
+                    <span className="w-10 h-10 bg-green-500/30 text-green-200 rounded-full flex items-center justify-center text-lg font-bold mr-4 border-2 border-green-400/40">3</span>
+                    Check Your Sentence
+                  </h3>
+                  <Card className="p-6 bg-slate-700/40 border-2 border-slate-600/50 shadow-lg">
+                    <div className="space-y-4 text-slate-100">
+                      <p className="text-lg leading-relaxed font-medium">
+                        When you're happy with your sentence, click the <span className="text-green-300 font-bold bg-green-500/20 px-2 py-1 rounded">Check Sentence</span> button.
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-green-500/15 p-4 rounded-xl border-2 border-green-400/30 shadow-inner">
+                          <p className="text-base mb-2 font-bold text-green-200 flex items-center">
+                            <span className="text-green-300 mr-2">✅</span> Correct:
+                          </p>
+                          <p className="text-sm text-green-100/90 font-medium">You'll get points and feedback!</p>
+                        </div>
+                        <div className="bg-orange-500/15 p-4 rounded-xl border-2 border-orange-400/30 shadow-inner">
+                          <p className="text-base mb-2 font-bold text-orange-200 flex items-center">
+                            <span className="text-orange-300 mr-2">⚠️</span> Almost:
+                          </p>
+                          <p className="text-sm text-orange-100/90 font-medium">Hints to improve your sentence</p>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </section>
+
+              {/* Progress and Modes */}
+              <section>
+                <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
+                  <span className="w-10 h-10 bg-orange-500/30 text-orange-200 rounded-full flex items-center justify-center text-lg font-bold mr-4 border-2 border-orange-400/40">4</span>
+                  Learning Modes
+                </h3>
+                <Card className="p-6 bg-slate-700/40 border-2 border-slate-600/50 shadow-lg">
+                  <div className="space-y-4 text-slate-100">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="bg-blue-500/15 p-4 rounded-xl border-2 border-blue-400/30 shadow-inner">
+                        <h4 className="font-bold text-blue-200 mb-3 flex items-center text-base">
+                          <span className="w-6 h-6 bg-blue-500/30 rounded-lg mr-3 flex items-center justify-center text-sm">📝</span>
+                          Learning Mode
+                        </h4>
+                        <p className="text-sm font-medium text-blue-100/90">
+                          Words are organized by category. Complete <span className="font-bold text-blue-300">5 correct sentences</span> to unlock Challenge Mode.
+                        </p>
+                      </div>
+                      <div className="bg-purple-500/15 p-4 rounded-xl border-2 border-purple-400/30 shadow-inner">
+                        <h4 className="font-bold text-purple-200 mb-3 flex items-center text-base">
+                          <span className="w-6 h-6 bg-purple-500/30 rounded-lg mr-3 flex items-center justify-center text-sm">🎯</span>
+                          Challenge Mode
+                        </h4>
+                        <p className="text-sm font-medium text-purple-100/90">
+                          All words are mixed together. Complete <span className="font-bold text-purple-300">3 correct sentences</span> to finish the level.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </section>
+
+              {/* Tips */}
+              <section>
+                <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
+                  <span className="w-10 h-10 bg-yellow-500/30 text-yellow-200 rounded-full flex items-center justify-center text-lg font-bold mr-4 border-2 border-yellow-400/40">💡</span>
+                  Pro Tips
+                </h3>
+                <Card className="p-6 bg-slate-700/40 border-2 border-slate-600/50 shadow-lg">
+                  <div className="space-y-4 text-slate-100">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex items-start space-x-4 p-3 bg-yellow-500/10 rounded-lg border border-yellow-400/20">
+                        <span className="text-yellow-300 mt-1 text-lg">•</span>
+                        <p className="text-sm font-medium text-yellow-100/90">Read your sentence out loud before checking</p>
+                      </div>
+                      <div className="flex items-start space-x-4 p-3 bg-blue-500/10 rounded-lg border border-blue-400/20">
+                        <span className="text-blue-300 mt-1 text-lg">•</span>
+                        <p className="text-sm font-medium text-blue-100/90">Use the Pattern guide to understand sentence structure</p>
+                      </div>
+                      <div className="flex items-start space-x-4 p-3 bg-green-500/10 rounded-lg border border-green-400/20">
+                        <span className="text-green-300 mt-1 text-lg">•</span>
+                        <p className="text-sm font-medium text-green-100/90">Grammar Tip box explains specific rules</p>
+                      </div>
+                      <div className="flex items-start space-x-4 p-3 bg-purple-500/10 rounded-lg border border-purple-400/20">
+                        <span className="text-purple-300 mt-1 text-lg">•</span>
+                        <p className="text-sm font-medium text-purple-100/90">Clear and rebuild if you're stuck</p>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </section>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-6 py-4 border-t border-slate-600 bg-slate-700/40 backdrop-blur-sm">
+              <div className="flex justify-center">
+                <Button
+                  onClick={() => setShowHelpModal(false)}
+                  className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-8 py-3 rounded-full font-bold shadow-lg transform hover:scale-105 transition-all duration-200"
+                >
+                  Got it! Let's build sentences! 🎯
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

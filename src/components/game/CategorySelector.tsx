@@ -21,7 +21,7 @@ interface CategorySelectorProps {
 export const CategorySelector: React.FC<CategorySelectorProps> = ({ 
   selectedCategory, 
   onCategorySelect, 
-  userStats = { points: 0, completedLevels: [] },
+  userStats = { points: 0, completedLevels: [], totalPoints: 0, currentStreak: 0, totalSentences: 0, unlockedBadges: [], levelsAttempted: [], perfectSentences: 0 },
   showRecommendations = true,
   compact = false,
   onShowGamification
@@ -53,7 +53,7 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
     const isUnlocked = unlockedCategories.some(cat => cat.id === category.id);
     const isSelected = selectedCategory === category.id;
     const isRecommended = recommendedCategory?.id === category.id;
-    const progress = getCategoryProgress(category.id, userStats.completedLevels);
+    const progress = getCategoryProgress(category.id); // No user stats in free-play mode
     const isDetailsOpen = showDetails[category.id];
     
     return (
@@ -198,18 +198,6 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
         
         {/* User Stats Summary */}
         <div className="flex justify-center space-x-8">
-          <div className="text-center bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
-            <div className="text-3xl font-bold text-blue-600 mb-1">{userStats.points}</div>
-            <div className="text-sm font-medium text-slate-600">Points</div>
-          </div>
-          <div className="text-center bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
-            <div className="text-3xl font-bold text-emerald-600 mb-1">{userStats.completedLevels.length}</div>
-            <div className="text-sm font-medium text-slate-600">Levels Completed</div>
-          </div>
-          <div className="text-center bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
-            <div className="text-3xl font-bold text-purple-600 mb-1">{userStats.currentStreak}</div>
-            <div className="text-sm font-medium text-slate-600">Current Streak</div>
-          </div>
         </div>
         
         {/* Action Buttons */}

@@ -13,19 +13,9 @@ function GrammarLevelsContent() {
   const searchParams = useSearchParams()
   const selectedCategory = searchParams.get('category')
 
-  const [userStats, setUserStats] = useState({
-    completedLevels: [1],
-    currentLevel: 1,
-    points: 180,
-    streak: 3
-  })
+  // User stats tracking removed for free play
 
-  useEffect(() => {
-    const savedStats = localStorage.getItem('userStats')
-    if (savedStats) {
-      setUserStats(JSON.parse(savedStats))
-    }
-  }, [])
+  // No user stats tracking for free play
 
   const categories = [
     {
@@ -106,14 +96,7 @@ function GrammarLevelsContent() {
     router.push(`/game/level/${levelId}`)
   }
 
-  const isLevelCompleted = (levelId: number) => {
-    return userStats.completedLevels.includes(levelId)
-  }
-
-  const getCategoryProgress = (levels: { id: number }[]) => {
-    const completed = levels.filter(level => userStats.completedLevels.includes(level.id)).length
-    return { completed, total: levels.length }
-  }
+  // Level completion tracking removed for free play
 
   // Filter categories based on URL parameter
   const displayedCategories = selectedCategory
@@ -157,12 +140,6 @@ function GrammarLevelsContent() {
                   </Button>
                 </div>
 
-                <div className="flex items-center space-x-4">
-                  <Badge variant="secondary" className="flex items-center space-x-1 bg-slate-700/60 text-slate-200 border-0 rounded-full px-3 py-1 backdrop-blur-sm">
-                    <Trophy className="w-4 h-4" />
-                    <span>{userStats.points} XP</span>
-                  </Badge>
-                </div>
               </div>
 
               <div className="text-center">
@@ -196,21 +173,13 @@ function GrammarLevelsContent() {
                         <h3 className="text-2xl font-bold text-white">
                           {category.name}
                         </h3>
+                        <span className="text-sm text-slate-400 bg-slate-700/50 px-2 py-1 rounded-full">
+                          {category.levels.length} levels
+                        </span>
                       </div>
-                      <p className="text-slate-300 mb-3 text-base">
+                      <p className="text-slate-300 text-base">
                         {category.description}
                       </p>
-                      <div className="space-y-2">
-                        <div className="h-2 bg-slate-700/50 rounded-full overflow-hidden">
-                          <div
-                            className={`h-full bg-gradient-to-r ${category.color} transition-all duration-700 rounded-full`}
-                            style={{ width: `${(getCategoryProgress(category.levels).completed / getCategoryProgress(category.levels).total) * 100}%` }}
-                          />
-                        </div>
-                        <p className="text-xs text-slate-400">
-                          {getCategoryProgress(category.levels).completed} of {getCategoryProgress(category.levels).total} levels completed
-                        </p>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -218,34 +187,25 @@ function GrammarLevelsContent() {
                 {/* Levels Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                   {category.levels.map((level) => {
-                    const completed = isLevelCompleted(level.id)
+                    // In free-play mode, no level completion tracking
+                    const completed = false
 
                     return (
                       <Card
                         key={level.id}
-                        className={`p-4 cursor-pointer transition-all duration-300 transform hover:scale-105 border border-slate-600/30 rounded-2xl group ${
-                          completed
-                            ? 'bg-gradient-to-br from-green-500/20 to-emerald-500/20 hover:from-green-500/30 hover:to-emerald-500/30 backdrop-blur-sm shadow-lg'
-                            : 'bg-slate-700/60 hover:bg-slate-600/60 backdrop-blur-sm shadow-lg hover:shadow-xl'
-                        }`}
+                        className="p-4 cursor-pointer transition-all duration-300 transform hover:scale-105 border border-slate-600/30 rounded-2xl group bg-slate-700/60 hover:bg-slate-600/60 backdrop-blur-sm shadow-lg hover:shadow-xl"
                         onClick={() => handleLevelSelect(level.id)}
                       >
                         <div className="text-center space-y-3">
                           <div className="flex items-center justify-center">
-                            {completed ? (
-                              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-400/80 to-emerald-500/80 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
-                                <CheckCircle className="w-6 h-6 text-white" />
-                              </div>
-                            ) : (
-                              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-400/80 to-indigo-500/80 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
-                                <span className="text-white font-bold text-base">{level.id}</span>
-                              </div>
-                            )}
+                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-400/80 to-indigo-500/80 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+                              <span className="text-white font-bold text-base">{level.id}</span>
+                            </div>
                           </div>
 
                           <div>
                             <h4 className="font-bold text-sm text-white mb-1 group-hover:text-white/90 transition-colors">
-                              Level {level.id}
+                              {level.name}
                             </h4>
                             <p className="text-xs text-slate-300 leading-tight">
                               {level.shortDescription}

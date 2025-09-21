@@ -27,23 +27,9 @@ export default function EnhancedSentenceTilesPage() {
   const [sentencesCompleted, setSentencesCompleted] = useState(0)
   const [showConfetti, setShowConfetti] = useState(false)
 
-  const [userStats, setUserStats] = useState({
-    points: 180,
-    streak: 3,
-    correctAnswers: 11,
-    completedLevels: [1],
-    currentStreak: 3,
-    nextLevelXP: 250,
-    currentLevelProgress: 72
-  })
+  // User stats tracking removed for free play
 
-  // Load user stats
-  useEffect(() => {
-    const savedStats = localStorage.getItem('userStats')
-    if (savedStats) {
-      setUserStats(JSON.parse(savedStats))
-    }
-  }, [])
+  // No user stats tracking for free play
 
   // Get current level data
   const level = getLevelById(currentLevel) || comprehensiveLevels45[0]
@@ -182,21 +168,7 @@ export default function EnhancedSentenceTilesPage() {
       setShowConfetti(true)
       setSentencesCompleted(prev => prev + 1)
 
-      // Update stats with animations
-      const newStats = {
-        ...userStats,
-        points: userStats.points + Math.round(validation.score * 20),
-        correctAnswers: userStats.correctAnswers + 1,
-        currentStreak: userStats.currentStreak + 1,
-        currentLevelProgress: Math.min(userStats.currentLevelProgress + 15, 100)
-      }
-
-      if (!userStats.completedLevels.includes(currentLevel)) {
-        newStats.completedLevels = [...userStats.completedLevels, currentLevel]
-      }
-
-      setUserStats(newStats)
-      localStorage.setItem('userStats', JSON.stringify(newStats))
+      // No user stats tracking for free play
 
       // Hide confetti after animation
       setTimeout(() => setShowConfetti(false), 2000)
@@ -245,137 +217,91 @@ export default function EnhancedSentenceTilesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4">
+    <div className="min-h-screen bg-[#0B1528] text-white p-6">
       <div className="max-w-6xl mx-auto space-y-6">
+        {/* Navigation */}
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            onClick={() => router.push('/game/levels')}
+            className="text-white hover:bg-[#1E293B] rounded-full px-4 py-2 flex items-center"
+          >
+            <span className="mr-2">←</span>
+            Levels
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => router.push('/')}
+            className="text-white hover:bg-[#1E293B] rounded-full px-4 py-2"
+          >
+            Home
+          </Button>
+        </div>
 
-        {/* Enhanced Header with Progress */}
-        <Card className="border-2 border-blue-200 bg-white/80 backdrop-blur">
-          <div className="p-6">
-            {/* Navigation and Stats */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => router.push('/')}
-                  className="flex items-center space-x-2 bg-white/80"
-                >
-                  <Home className="w-4 h-4" />
-                  <span>Home</span>
-                </Button>
-                <div className="text-sm text-gray-600">Level {currentLevel}</div>
-              </div>
+        {/* Level Progress */}
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm text-gray-400">
+            <span>Level 1 of 47</span>
+            <span>2%</span>
+          </div>
+          <div className="w-full h-1 bg-[#1E293B] rounded-full">
+            <div className="w-[2%] h-full bg-purple-500 rounded-full"></div>
+          </div>
+        </div>
 
-              <div className="flex items-center space-x-4">
-                {/* Enhanced XP with progress bar */}
-                <div className="flex flex-col items-end">
-                  <motion.div
-                    animate={{ scale: userStats.points > 180 ? [1, 1.1, 1] : 1 }}
-                    className="flex items-center space-x-1"
-                  >
-                    <Trophy className="w-4 h-4 text-yellow-600" />
-                    <span className="font-semibold text-yellow-800">{userStats.points} XP</span>
-                  </motion.div>
-                  <div className="flex items-center space-x-2 text-xs text-gray-500">
-                    <Progress value={userStats.currentLevelProgress} className="w-16 h-1" />
-                    <span>{userStats.nextLevelXP - userStats.points} to next</span>
-                  </div>
-                </div>
+        {/* Main Content Card */}
+        <div className="bg-[#1E293B]/50 rounded-xl p-6">
+          {/* Title and Help */}
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold">Basic Affirmative</h1>
+            <Button
+              variant="ghost"
+              className="text-gray-400 hover:text-white"
+            >
+              How to use
+            </Button>
+          </div>
 
-                {/* Animated Streak */}
-                <motion.div
-                  animate={{
-                    scale: userStats.streak > 3 ? [1, 1.1, 1] : 1,
-                    boxShadow: userStats.streak > 5 ? ['0 0 0 rgba(236, 72, 153, 0)', '0 0 20px rgba(236, 72, 153, 0.5)', '0 0 0 rgba(236, 72, 153, 0)'] : 'none'
-                  }}
-                  transition={{ duration: 0.6 }}
-                  className="flex items-center space-x-1 bg-pink-100 text-pink-800 px-3 py-1 rounded-full"
-                >
-                  <Flame className="w-4 h-4" />
-                  <span className="font-semibold">{userStats.streak}</span>
-                </motion.div>
-              </div>
+          {/* Pattern and Grammar Guide */}
+          <div className="flex justify-between items-center gap-4 mb-6">
+            <div className="flex-1 bg-[#2D3B4E] rounded-xl p-3 flex items-center">
+              <span className="text-gray-400 mr-3">✏️ Pattern</span>
+              <span className="text-white">subject + verb + object</span>
+              <span className="ml-2 text-gray-400">▼</span>
             </div>
-
-            {/* Progress Tracker */}
-            <div className="mb-4">
-              <div className="flex items-center justify-between text-sm mb-2">
-                <span className="text-gray-600">Session Progress</span>
-                <span className="font-semibold text-gray-800">{sentencesCompleted}/{targetSentences} sentences</span>
-              </div>
-              <Progress value={(sentencesCompleted / targetSentences) * 100} className="h-2" />
-            </div>
-
-            {/* Level Info */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-gray-900">{level.name}</h1>
-                <Badge variant="outline" className="bg-white/80 text-xs">{level.formula}</Badge>
-              </div>
-
-              <p className="text-gray-600 text-sm leading-relaxed">{level.explanation}</p>
-
-              <div className="flex flex-wrap gap-2 text-xs">
-                <div className="bg-green-50 text-green-700 px-3 py-1 rounded-full border border-green-200">
-                  <strong>Examples:</strong> She eats pizza • I like books • They watch movies
-                </div>
-              </div>
+            <div className="flex-1 bg-[#2D3B4E] rounded-xl p-3 flex items-center cursor-pointer">
+              <span className="text-gray-400 mr-3">💡 Quick Grammar Guide</span>
+              <span className="ml-auto text-gray-400">▼</span>
             </div>
           </div>
-        </Card>
 
-        {/* Enhanced Sentence Building Area */}
-        <Card className="border border-gray-200 bg-white/80 backdrop-blur">
-          <div className="p-6 space-y-6">
-            {/* Header with Hint Button */}
+        {/* Main Content Area */}
+        <div className="flex flex-col lg:flex-row gap-6 min-h-[600px]">
+          {/* Primary Canvas - Sentence Builder */}
+          <div className="flex-1 space-y-6 min-w-0">
+            {/* Title and Progress */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <BookOpen className="w-5 h-5 text-blue-600" />
-                <h2 className="text-lg font-semibold text-gray-900">Build Your Sentence</h2>
+                <span className="text-xl">📚</span>
+                <h2 className="text-xl">Build Your Sentence</h2>
               </div>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={toggleHint}
-                className="flex items-center space-x-1 text-xs"
-              >
-                <Lightbulb className="w-3 h-3" />
-                <span>Hint</span>
-              </Button>
+              <div className="flex items-center space-x-2 text-sm">
+                <span className="text-gray-400">Learn with Categories</span>
+                <span className="text-gray-400">•</span>
+                <span>0/5 correct</span>
+              </div>
             </div>
 
-            {/* Hint Display */}
-            <AnimatePresence>
-              {showHint && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800"
-                >
-                  <strong>Formula:</strong> Subject + Verb + Object
-                  <br />
-                  <strong>Example:</strong> I + eat + pizza = &quot;I eat pizza&quot;
-                  <br />
-                  <strong>Remember:</strong> he/she/it → adds -s (eats, likes, watches)
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Sentence Display with Drop Zones */}
-            <div className="min-h-[60px] p-4 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 relative">
+            {/* Sentence Display Area - Hero Section */}
+            <div className="bg-[#2D3B4E] rounded-xl p-8 min-h-[200px] flex items-center justify-center">
               {selectedTiles.length === 0 ? (
-                <div className="text-center py-2">
-                  <p className="text-gray-500">Click word tiles below to build your sentence...</p>
-                  <div className="flex justify-center space-x-4 mt-2 text-xs text-gray-400">
-                    <span className="bg-blue-100 px-2 py-1 rounded">Subject</span>
-                    <span className="bg-purple-100 px-2 py-1 rounded">Verb</span>
-                    <span className="bg-orange-100 px-2 py-1 rounded">Object</span>
-                  </div>
+                <div className="text-center">
+                  <span className="text-3xl mb-4 block">✨</span>
+                  <p className="text-gray-400 text-lg">Tap tiles from the toolbox to build your sentence...</p>
+                  <p className="text-gray-500 text-sm mt-2">Your sentence will appear here</p>
                 </div>
               ) : (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3 justify-center">
                   <AnimatePresence>
                     {selectedTiles.map((tile) => (
                       <motion.div
@@ -387,170 +313,233 @@ export default function EnhancedSentenceTilesPage() {
                       >
                         <Badge
                           variant="secondary"
-                          className={`${getCategoryColor(tile.category)} cursor-pointer hover:opacity-80 text-base px-3 py-2 shadow-sm rounded-full transition-all hover:shadow-md`}
+                          className="cursor-pointer text-lg px-6 py-3 bg-[#3E4E67] text-white hover:bg-[#4A5B76] transition-all rounded-xl"
                           onClick={() => removeTile(tile.id)}
                         >
                           {tile.word}
-                          <span className="ml-2 text-xs opacity-70">×</span>
+                          <span className="ml-2 text-sm opacity-70">×</span>
                         </Badge>
                       </motion.div>
                     ))}
                   </AnimatePresence>
                 </div>
               )}
-
-              {/* Confetti Effect */}
-              <AnimatePresence>
-                {showConfetti && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute inset-0 pointer-events-none"
-                  >
-                    {[...Array(20)].map((_, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{
-                          opacity: 1,
-                          scale: 0,
-                          x: '50%',
-                          y: '50%'
-                        }}
-                        animate={{
-                          opacity: 0,
-                          scale: 1,
-                          x: `${50 + (Math.random() - 0.5) * 200}%`,
-                          y: `${50 + (Math.random() - 0.5) * 200}%`,
-                          rotate: Math.random() * 360
-                        }}
-                        transition={{ duration: 1.5, delay: i * 0.1 }}
-                        className="absolute w-3 h-3 bg-gradient-to-r from-yellow-400 to-pink-500 rounded-full"
-                      />
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </div>
 
-            {/* Enhanced Action Buttons */}
-            <div className="flex space-x-3">
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Button
-                  onClick={checkSentence}
-                  className="flex items-center space-x-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-full px-6 py-2 shadow-lg hover:shadow-xl transition-all"
-                  disabled={selectedTiles.length === 0}
-                >
-                  <CheckCircle className="w-4 h-4" />
-                  <span>Check Sentence</span>
-                </Button>
-              </motion.div>
-
+            {/* Action Buttons */}
+            <div className="flex gap-4">
               <Button
-                variant="outline"
+                onClick={checkSentence}
+                className="flex-1 bg-[#10B981] hover:bg-[#059669] text-white py-4 rounded-xl font-medium text-lg"
+                disabled={selectedTiles.length === 0}
+              >
+                <span className="mr-2">✓</span>
+                Check Sentence
+              </Button>
+              <Button
                 onClick={clearSentence}
-                className="flex items-center space-x-2 bg-white hover:bg-gray-50 rounded-full px-6 py-2 shadow-sm"
+                className="flex-1 bg-white hover:bg-gray-100 text-gray-800 py-4 rounded-xl font-medium text-lg"
               >
-                <RotateCcw className="w-4 h-4" />
-                <span>Clear</span>
+                Clear
               </Button>
             </div>
 
-            {/* Enhanced Feedback Display */}
-            <AnimatePresence>
-              {showFeedback && (
-                <motion.div
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className={`p-4 rounded-xl ${
-                    feedback.includes('Perfect') || feedback.includes('Correct') || feedback.includes('Excellent') || feedback.includes('Well done') || feedback.includes('Great') || feedback.includes('Fantastic') || feedback.includes('Outstanding')
-                      ? 'bg-green-50 border border-green-200 text-green-800'
-                      : 'bg-red-50 border border-red-200 text-red-800'
-                  }`}
+            {/* Feedback Area */}
+            {showFeedback && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-[#2D3B4E] rounded-xl p-4"
+              >
+                <p className="text-center">{feedback}</p>
+              </motion.div>
+            )}
+
+            {/* Tip Section */}
+            <div className="bg-[#2D3B4E] rounded-xl p-4">
+              <div className="flex items-center text-gray-400 text-sm">
+                <span className="mr-2">💡</span>
+                <span>Tip:</span>
+                <span className="ml-2">Click verb tiles to toggle forms</span>
+                <div className="ml-4 bg-[#3E4E67] rounded-xl px-3 py-1">
+                  eat <span className="text-gray-400">↔</span> eats
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Toolbox - Word Categories */}
+          <div className="w-full lg:w-80 lg:space-y-4 lg:max-h-[600px] lg:overflow-y-auto lg:scrollbar-thin lg:scrollbar-thumb-gray-600 lg:scrollbar-track-gray-800">
+            <div className="lg:sticky lg:top-0 bg-[#0B1528] pb-2 z-10">
+              <h3 className="text-lg font-semibold text-gray-300 flex items-center">
+                <span className="mr-2">🧰</span>
+                Word Toolbox
+              </h3>
+            </div>
+
+            {/* Mobile: Horizontal scroll layout */}
+            <div className="lg:hidden flex gap-4 overflow-x-auto pb-4">
+              {/* Subjects Panel - Mobile */}
+              <div className="bg-[#2D3B4E] rounded-xl p-4 min-w-[200px] flex-shrink-0">
+                <h4 className="text-gray-400 mb-3 flex items-center font-medium">
+                  <span className="mr-2">😊</span>
+                  Subjects
+                </h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {['i', 'you', 'he', 'she', 'it', 'we', 'they'].map((word) => (
+                    <Button
+                      key={word}
+                      onClick={() => handleTileClick(word, 'pronoun')}
+                      className="bg-[#3E4E67] hover:bg-[#4A5B76] text-white rounded-lg px-3 py-2 text-sm w-full"
+                    >
+                      {word}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Verbs Panel - Mobile */}
+              <div className="bg-[#2D3B4E] rounded-xl p-4 min-w-[250px] flex-shrink-0">
+                <h4 className="text-gray-400 mb-3 flex items-center font-medium">
+                  <span className="mr-2">⚡</span>
+                  Verbs
+                </h4>
+                <div className="grid grid-cols-1 gap-2">
+                  {[
+                    'eat/eats',
+                    'like/likes',
+                    'watch/watches',
+                    'play/plays',
+                    'study/studies',
+                    'work/works'
+                  ].map((word) => (
+                    <Button
+                      key={word}
+                      onClick={() => handleTileClick(word, 'verb')}
+                      className="bg-[#3E4E67] hover:bg-[#4A5B76] text-white rounded-lg px-3 py-2 text-sm w-full text-left justify-start"
+                    >
+                      {word.split('/')[0]}
+                      <span className="text-xs text-gray-400 ml-auto">/{word.split('/')[1]}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Objects Panel - Mobile */}
+              <div className="bg-[#2D3B4E] rounded-xl p-4 min-w-[200px] flex-shrink-0">
+                <h4 className="text-gray-400 mb-3 flex items-center font-medium">
+                  <span className="mr-2">📦</span>
+                  Objects
+                </h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    'pizza',
+                    'soccer',
+                    'basketball',
+                    'music',
+                    'water',
+                    'coffee'
+                  ].map((word) => (
+                    <Button
+                      key={word}
+                      onClick={() => handleTileClick(word, 'noun')}
+                      className="bg-[#3E4E67] hover:bg-[#4A5B76] text-white rounded-lg px-3 py-2 text-sm w-full"
+                    >
+                      {word}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop: Vertical layout */}
+            <div className="hidden lg:block space-y-4">
+              {/* Subjects Panel - Desktop */}
+              <div className="bg-[#2D3B4E] rounded-xl p-4">
+                <h4 className="text-gray-400 mb-3 flex items-center font-medium">
+                  <span className="mr-2">😊</span>
+                  Subjects
+                </h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {['i', 'you', 'he', 'she', 'it', 'we', 'they'].map((word) => (
+                    <Button
+                      key={word}
+                      onClick={() => handleTileClick(word, 'pronoun')}
+                      className="bg-[#3E4E67] hover:bg-[#4A5B76] text-white rounded-lg px-3 py-2 text-sm w-full"
+                    >
+                      {word}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Verbs Panel - Desktop */}
+              <div className="bg-[#2D3B4E] rounded-xl p-4">
+                <h4 className="text-gray-400 mb-3 flex items-center font-medium">
+                  <span className="mr-2">⚡</span>
+                  Verbs
+                </h4>
+                <div className="grid grid-cols-1 gap-2">
+                  {[
+                    'eat/eats',
+                    'like/likes',
+                    'watch/watches',
+                    'play/plays',
+                    'study/studies',
+                    'work/works'
+                  ].map((word) => (
+                    <Button
+                      key={word}
+                      onClick={() => handleTileClick(word, 'verb')}
+                      className="bg-[#3E4E67] hover:bg-[#4A5B76] text-white rounded-lg px-3 py-2 text-sm w-full text-left justify-start"
+                    >
+                      {word.split('/')[0]}
+                      <span className="text-xs text-gray-400 ml-auto">/{word.split('/')[1]}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Objects Panel - Desktop */}
+              <div className="bg-[#2D3B4E] rounded-xl p-4">
+                <h4 className="text-gray-400 mb-3 flex items-center font-medium">
+                  <span className="mr-2">📦</span>
+                  Objects
+                </h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    'pizza',
+                    'soccer',
+                    'basketball',
+                    'music',
+                    'water',
+                    'coffee'
+                  ].map((word) => (
+                    <Button
+                      key={word}
+                      onClick={() => handleTileClick(word, 'noun')}
+                      className="bg-[#3E4E67] hover:bg-[#4A5B76] text-white rounded-lg px-3 py-2 text-sm w-full"
+                    >
+                      {word}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Toolbox Actions - Desktop */}
+              <div className="bg-[#2D3B4E] rounded-xl p-4">
+                <Button
+                  onClick={shuffleTiles}
+                  className="w-full bg-[#3E4E67] hover:bg-[#4A5B76] text-white rounded-lg py-2 text-sm"
                 >
-                  <div className="flex items-start space-x-3">
-                    {feedback.includes('Perfect') || feedback.includes('Correct') || feedback.includes('Excellent') || feedback.includes('Well done') || feedback.includes('Great') || feedback.includes('Fantastic') || feedback.includes('Outstanding') ? (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5"
-                      >
-                        <CheckCircle className="w-4 h-4 text-white" />
-                      </motion.div>
-                    ) : (
-                      <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <XCircle className="w-4 h-4 text-white" />
-                      </div>
-                    )}
-                    <p className="font-medium leading-relaxed">{feedback}</p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </Card>
-
-        {/* Enhanced Word Categories */}
-        <Card className="border border-gray-200 bg-white/80 backdrop-blur">
-          <div className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold">Word Tiles</h3>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={shuffleTiles}
-                className="flex items-center space-x-1 text-xs"
-              >
-                <Shuffle className="w-3 h-3" />
-                <span>Shuffle</span>
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-3 gap-6">
-              {/* Enhanced Categories with Icons */}
-              {Object.entries(wordCategories).map(([categoryKey, words]) => {
-                const Icon = getCategoryIcon(categoryKey)
-                const categoryName = categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1)
-
-                return (
-                  <div key={categoryKey}>
-                    <div className="flex items-center space-x-2 mb-3">
-                      <Icon className="w-4 h-4 text-gray-600" />
-                      <h4 className="font-semibold text-gray-800">{categoryName}</h4>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {words.map((wordObj: { word: string; category: string; locked?: boolean }, index: number) => (
-                        <motion.div
-                          key={index}
-                          whileHover={{ scale: wordObj.locked ? 1 : 1.05 }}
-                          whileTap={{ scale: wordObj.locked ? 1 : 0.95 }}
-                        >
-                          <Button
-                            variant="outline"
-                            onClick={() => !wordObj.locked && handleTileClick(wordObj.word, wordObj.category)}
-                            disabled={wordObj.locked}
-                            className={`${getCategoryColor(wordObj.category, wordObj.locked)} transition-all shadow-sm hover:shadow-md relative`}
-                          >
-                            {wordObj.word}
-                            {wordObj.toggleable && !wordObj.locked && (
-                              <span className="ml-1 text-xs opacity-70">↔</span>
-                            )}
-                            {wordObj.locked && (
-                              <div className="absolute -top-1 -right-1 text-xs bg-gray-500 text-white px-1 rounded-full">
-                                L{currentLevel + 2}
-                              </div>
-                            )}
-                          </Button>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
-                )
-              })}
+                  <Shuffle className="w-4 h-4 mr-2" />
+                  Shuffle Words
+                </Button>
+              </div>
             </div>
           </div>
-        </Card>
+        </div>
+        </div>
       </div>
     </div>
   )

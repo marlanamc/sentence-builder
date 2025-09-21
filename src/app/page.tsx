@@ -2,13 +2,16 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Play, Target, TrendingUp, HelpCircle, X, Book, Star, CheckCircle, ArrowRight, Clock, Calendar, RotateCcw, Zap, MessageSquare, Brain, BookOpen, ChevronRight, Gamepad2 } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import { TrendingUp, HelpCircle, X, Clock, RotateCcw, Zap, MessageSquare, BookOpen, Gamepad2, Play, Calendar, LogIn, LogOut, User, Target, CheckCircle, Brain } from 'lucide-react'
+import { useAuth } from '@/lib/auth-context'
+import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
 export default function HomePage() {
   const [showHelpModal, setShowHelpModal] = useState(false);
   const router = useRouter();
+  const { user, signOut } = useAuth();
+  // Authentication is available but not required for playing
 
   const categories = [
     {
@@ -40,7 +43,7 @@ export default function HomePage() {
       description: "Present perfect vs past simple",
       levels: "18-24",
       color: "bg-orange-500",
-      icon: CheckCircle,
+      icon: Clock,
       difficulty: "Intermediate"
     },
     {
@@ -72,27 +75,11 @@ export default function HomePage() {
       description: "Complex grammar and sentence structures",
       levels: "39-47",
       color: "bg-gray-500",
-      icon: Brain,
+      icon: BookOpen,
       difficulty: "Expert"
     }
   ];
 
-  const gameModes = [
-    {
-      name: "Learning Mode",
-      description: "Perfect for beginners! Get hints, explanations, and unlimited time to build sentences correctly.",
-      icon: BookOpen,
-      color: "text-blue-400",
-      features: ["Unlimited time", "Built-in hints", "Grammar explanations", "Pattern guides"]
-    },
-    {
-      name: "Challenge Mode",
-      description: "Test your skills! Build sentences without hints under time pressure - just like real conversations.",
-      icon: Zap,
-      color: "text-orange-400",
-      features: ["Time pressure", "No hints", "Real conversation prep", "Achievement unlocks"]
-    }
-  ];
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-gray-900">
@@ -124,7 +111,7 @@ export default function HomePage() {
                 className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg"
               >
                 <HelpCircle className="w-4 h-4 mr-2" />
-                How it Works
+                How It Works
               </Button>
               <Button
                 onClick={() => router.push('/game/levels')}
@@ -133,6 +120,26 @@ export default function HomePage() {
                 <Play className="w-4 h-4 mr-2" />
                 Start Learning
               </Button>
+              {user ? (
+                <div className="flex items-center space-x-2">
+                  <span className="text-white text-sm">Hi, {user.email?.split('@')[0]}</span>
+                  <Button
+                    onClick={() => signOut()}
+                    className="bg-red-500 hover:bg-red-600 text-white shadow-lg"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  onClick={() => router.push('/auth')}
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg"
+                >
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Sign In
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -141,17 +148,17 @@ export default function HomePage() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-center px-6 py-8">
         {/* Hero Title */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl md:text-7xl font-bold mb-4 relative">
+        <div className="text-center mb-12">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 relative">
             {/* Shadow/outline text */}
             <span
               className="absolute inset-0 text-transparent"
               style={{
-                WebkitTextStroke: '2px rgba(255,255,255,0.2)',
-                textStroke: '2px rgba(255,255,255,0.2)'
+                WebkitTextStroke: '1px rgba(255,255,255,0.3)',
+                textStroke: '1px rgba(255,255,255,0.3)'
               }}
             >
-              Sentence Builder Game
+              Master Sentence Building
             </span>
 
             {/* Main gradient text */}
@@ -163,76 +170,118 @@ export default function HomePage() {
                 backgroundClip: 'text'
               }}
             >
-              Sentence Builder Game
+              Master Sentence Building
             </span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-white/90 mb-8 font-medium" style={{ textShadow: '1px 2px 8px rgba(0,0,0,0.8), 0px 1px 3px rgba(0,0,0,0.6)' }}>
-            How do you want to practice today?
+          <p className="text-lg md:text-xl text-white/90 mb-8 font-medium max-w-2xl mx-auto leading-relaxed" style={{ textShadow: '1px 2px 8px rgba(0,0,0,0.8), 0px 1px 3px rgba(0,0,0,0.6)' }}>
+            Build perfect English sentences with interactive word tiles. Learn grammar naturally through practice, not memorization - just click and construct sentences correctly.
           </p>
+
         </div>
 
-        {/* Game Mode Selection */}
-        <div className="mb-8">
-          <div className="flex gap-4 justify-center flex-wrap max-w-4xl mx-auto">
-            <Button
-              onClick={() => router.push('/game/sentence-tiles')}
-              className="flex items-center gap-3 rounded-2xl px-8 py-6 text-lg font-semibold transition-all duration-300 backdrop-blur-md border border-slate-600/30 bg-gradient-to-r from-green-500/80 to-emerald-500/80 hover:from-green-600/80 hover:to-emerald-600/80 text-white shadow-xl transform hover:scale-110"
-              size="lg"
-            >
-              <Play className="w-6 h-6" />
-              Sentence Tiles
-            </Button>
-            <Button
-              onClick={() => router.push('/game/levels')}
-              className="flex items-center gap-3 rounded-2xl px-8 py-6 text-lg font-semibold transition-all duration-300 backdrop-blur-md border border-slate-600/30 bg-slate-800/70 hover:bg-slate-700/70 text-slate-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-              size="lg"
-            >
-              <Target className="w-6 h-6" />
-              Grammar Levels
-            </Button>
+        {/* Grammar Levels CTA */}
+        <div className="mb-16">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm border border-blue-400/20 hover:border-blue-400/40 transition-all duration-300 rounded-2xl p-8 group cursor-pointer"
+                 onClick={() => router.push('/game/levels')}>
+              <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <Target className="w-10 h-10 text-white" />
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 group-hover:text-blue-300 transition-colors">
+                Start Building Sentences
+              </h2>
+              <p className="text-white/80 text-lg mb-6 max-w-2xl mx-auto leading-relaxed">
+                Learn to construct perfect English sentences through interactive practice. No confusing grammar rules - just click, build, and learn what works.
+              </p>
+              <div className="flex justify-center gap-3 mb-6">
+                <span className="bg-emerald-500/20 text-emerald-200 px-3 py-1 rounded-full text-sm font-medium">Perfect Grammar</span>
+                <span className="bg-blue-500/20 text-blue-200 px-3 py-1 rounded-full text-sm font-medium">Click & Build</span>
+                <span className="bg-purple-500/20 text-purple-200 px-3 py-1 rounded-full text-sm font-medium">Instant Correction</span>
+              </div>
+              <Button
+                onClick={() => router.push('/game/levels')}
+                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-8 py-3 rounded-full font-bold shadow-lg transform hover:scale-105 transition-all duration-200 text-lg"
+              >
+                <Target className="w-5 h-5 mr-2" />
+                Start Building Sentences
+              </Button>
+            </div>
           </div>
         </div>
 
         {/* Grammar Categories */}
-        <div className="mb-8 max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categories.slice(0, 6).map((category, index) => (
+        <div className="max-w-7xl mx-auto">
+          {/* Section Header */}
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4" style={{ textShadow: '1px 2px 8px rgba(0,0,0,0.8)' }}>
+              Learn English Grammar Through Practice
+            </h2>
+            <p className="text-white/80 text-base max-w-3xl mx-auto">
+              Start with basic sentence construction and progress to complex structures. Each level teaches you to write English correctly and confidently.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {categories.map((category, index) => (
               <Card
                 key={category.name}
-                onClick={() => router.push('/game/levels')}
-                className="bg-slate-800/90 backdrop-blur-sm shadow-lg border border-slate-700/50 hover:shadow-2xl transition-all duration-500 rounded-2xl transform hover:scale-105 group cursor-pointer flex flex-col h-full"
+                onClick={() => {
+                  const categoryMapping = {
+                    'Present Tense': 'present-basics',
+                    'Time & Expressions': 'time-expressions',
+                    'Past Tense': 'past-tense',
+                    'Present Perfect': 'present-perfect',
+                    'Future Tenses': 'future-tenses',
+                    'Modals & Special': 'modals-special',
+                    'Commands': 'commands-suggestions',
+                    'Advanced': 'advanced'
+                  };
+                  router.push(`/game/levels?category=${categoryMapping[category.name]}`);
+                }}
+                className="bg-slate-800/90 backdrop-blur-sm shadow-lg border border-slate-700/50 hover:shadow-2xl transition-all duration-500 rounded-2xl transform hover:scale-105 group cursor-pointer flex flex-col h-full overflow-hidden"
               >
                 <div className="p-6 flex flex-col h-full">
                   {/* Header with Icon, Title, and Number */}
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${category.color} flex items-center justify-center flex-shrink-0 shadow-lg transform group-hover:scale-110 transition-transform duration-300 relative`}>
-                      <category.icon className="w-8 h-8 text-white" />
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-slate-900 text-white rounded-full flex items-center justify-center text-xs font-bold border-2 border-white">
+                  <div className="flex items-center gap-4 mb-5">
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${category.color} flex items-center justify-center flex-shrink-0 shadow-lg transform group-hover:scale-110 transition-transform duration-300 relative`}>
+                      <category.icon className="w-7 h-7 text-white" />
+                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-slate-900 text-white rounded-full flex items-center justify-center text-xs font-bold border-2 border-white">
                         {index + 1}
                       </div>
                     </div>
-                    <div className="flex-1 min-h-[60px] flex flex-col justify-center">
+                    <div className="flex-1">
                       <h3 className="text-lg font-bold text-white mb-1 group-hover:text-white/90 transition-colors leading-tight">
                         {category.name}
                       </h3>
-                      <div className="text-xs text-slate-300 font-medium">
-                        {category.levels.split('-').length > 1 ?
-                          `${parseInt(category.levels.split('-')[1]) - parseInt(category.levels.split('-')[0]) + 1} levels` :
-                          category.levels}
+                      <div className="flex items-center gap-2 text-xs text-slate-400">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          category.difficulty === 'Beginner' ? 'bg-green-500/20 text-green-300' :
+                          category.difficulty === 'Intermediate' ? 'bg-yellow-500/20 text-yellow-300' :
+                          category.difficulty === 'Advanced' ? 'bg-orange-500/20 text-orange-300' :
+                          'bg-purple-500/20 text-purple-300'
+                        }`}>
+                          {category.difficulty}
+                        </span>
+                        <span>•</span>
+                        <span>
+                          {category.levels.split('-').length > 1 ?
+                            `${parseInt(category.levels.split('-')[1]) - parseInt(category.levels.split('-')[0]) + 1} levels` :
+                            category.levels}
+                        </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Description - Fixed Height */}
-                  <div className="mb-4 flex-1">
-                    <p className="text-slate-300 text-sm leading-relaxed h-[40px] overflow-hidden">
+                  {/* Description */}
+                  <div className="mb-6 flex-1">
+                    <p className="text-slate-300 text-sm leading-relaxed">
                       {category.description}
                     </p>
                   </div>
 
-                  {/* Progress Section - Fixed Position */}
-                  <div className="space-y-3 mt-auto">
+                  {/* Progress Section */}
+                  <div className="space-y-4">
                     <div className="relative">
                       <div className="h-2 bg-slate-700/50 rounded-full overflow-hidden">
                         <div
@@ -240,7 +289,7 @@ export default function HomePage() {
                           style={{ width: index === 0 ? '75%' : '0%' }}
                         />
                       </div>
-                      <div className="text-xs text-slate-400 mt-1 text-center">
+                      <div className="text-xs text-slate-400 mt-2">
                         {index === 0 ? '6/8 completed' : `0/${parseInt(category.levels.split('-')[1]) - parseInt(category.levels.split('-')[0]) + 1} completed`}
                       </div>
                     </div>
@@ -249,10 +298,19 @@ export default function HomePage() {
                     <Button
                       onClick={(e) => {
                         e.stopPropagation();
-                        router.push('/game/levels');
+                        const categoryMapping = {
+                          'Present Tense': 'present-basics',
+                          'Time & Expressions': 'time-expressions',
+                          'Past Tense': 'past-tense',
+                          'Present Perfect': 'present-perfect',
+                          'Future Tenses': 'future-tenses',
+                          'Modals & Special': 'modals-special',
+                          'Commands': 'commands-suggestions',
+                          'Advanced': 'advanced'
+                        };
+                        router.push(`/game/levels?category=${categoryMapping[category.name]}`);
                       }}
-                      className="w-full bg-slate-700/60 hover:bg-slate-600/60 text-slate-200 font-semibold rounded-2xl shadow-lg backdrop-blur-sm border border-slate-600/30 transform transition-all duration-300 group-hover:scale-105"
-                      size="lg"
+                      className="w-full bg-slate-700/60 hover:bg-slate-600/60 text-slate-200 font-semibold rounded-2xl shadow-lg backdrop-blur-sm border border-slate-600/30 transform transition-all duration-300 group-hover:scale-105 py-2"
                     >
                       Start Practice
                     </Button>
@@ -263,17 +321,29 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* How does this work? Button */}
-        <div className="flex justify-center">
-          <Button
-            onClick={() => setShowHelpModal(true)}
-            variant="outline"
-            size="sm"
-            className="flex items-center space-x-2 bg-slate-800/70 text-slate-200 border-slate-600/30 hover:bg-slate-700/70 rounded-full backdrop-blur-sm transition-all duration-300"
-          >
-            <HelpCircle className="w-4 h-4" />
-            <span>How does this work?</span>
-          </Button>
+        {/* Footer Section */}
+        <div className="mt-16 pt-8 border-t border-slate-700/50">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 max-w-6xl mx-auto">
+            <div className="text-center md:text-left">
+              <p className="text-white/90 text-base font-medium">
+                Ready to write better English?
+              </p>
+              <p className="text-white/70 text-sm mt-1">
+                Join learners who are mastering sentence construction through interactive practice
+              </p>
+            </div>
+            <div className="flex gap-4">
+              <Button
+                onClick={() => setShowHelpModal(true)}
+                variant="outline"
+                size="sm"
+                className="flex items-center space-x-2 bg-slate-800/70 text-slate-200 border-slate-600/30 hover:bg-slate-700/70 rounded-full backdrop-blur-sm transition-all duration-300"
+              >
+                <HelpCircle className="w-4 h-4" />
+                <span>How It Works</span>
+              </Button>
+            </div>
+          </div>
         </div>
       </main>
 
@@ -285,7 +355,7 @@ export default function HomePage() {
             <div className="px-6 py-4 border-b border-slate-600 flex items-center justify-between">
               <h2 className="text-2xl font-bold text-white flex items-center">
                 <HelpCircle className="w-6 h-6 mr-2 text-blue-400" />
-                How it Works
+                How to Build Sentences
               </h2>
               <Button
                 onClick={() => setShowHelpModal(false)}
@@ -303,78 +373,111 @@ export default function HomePage() {
               <section>
                 <h3 className="text-2xl font-bold text-white mb-4 flex items-center">
                   <Gamepad2 className="w-6 h-6 text-emerald-400 mr-3" />
-                  How to Play
+                  How to Build Sentences
                 </h3>
                 <Card className="p-6 bg-white border-2 border-gray-200">
                   <div className="space-y-4">
                     <p className="text-black text-lg leading-relaxed">
-                      Click on word tiles to build sentences. Start simple!
+                      Click on word tiles to construct correct English sentences. Start with simple ones and learn grammar naturally through practice.
                     </p>
                     <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                       <p className="text-black text-lg">
-                        <strong>Example:</strong> Click "I" → "eat" → "pizza" to make "I eat pizza"
+                        <strong>Getting Started:</strong> Click &ldquo;I&rdquo; → &ldquo;eat&rdquo; → &ldquo;pizza&rdquo; to make &ldquo;I eat pizza&rdquo;
                       </p>
                     </div>
                     <div className="bg-green-50 p-4 rounded-lg border border-green-200">
                       <p className="text-black text-lg">
-                        <strong>Tip:</strong> Some words can change! Look for the ↔ symbol and click to switch between forms like
+                        <strong>Pro Tip:</strong> Some words have multiple forms! Look for the ↔ symbol and click to switch between forms like
                         <span className="bg-gray-200 px-2 py-1 rounded mx-2 font-mono">eat ↔ eats</span>
+                        - this teaches you correct verb agreement.
                       </p>
                     </div>
                   </div>
                 </Card>
               </section>
 
-              {/* Level Categories - Simplified */}
+              {/* Grammar Levels Overview */}
               <section>
                 <h3 className="text-2xl font-bold text-white mb-4 flex items-center">
                   <TrendingUp className="w-6 h-6 text-emerald-400 mr-3" />
-                  What You'll Learn
+                  Grammar Learning Levels
                 </h3>
                 <div className="grid gap-4">
                   <Card className="p-4 bg-green-50 border-2 border-green-200">
-                    <h4 className="font-bold text-black text-xl mb-2">🟢 Beginner (Levels 1-12)</h4>
-                    <p className="text-black text-lg">Present tense and basic time words</p>
-                    <div className="text-gray-700 text-base mt-2 italic">"I eat pizza" • "She plays soccer" • "Today, always, never"</div>
+                    <h4 className="font-bold text-black text-xl mb-2">🟢 Basics (Levels 1-12)</h4>
+                    <p className="text-black text-lg">Learn basic sentence structure and simple tenses</p>
+                    <div className="text-gray-700 text-base mt-2 italic">&ldquo;I eat pizza&rdquo; • &ldquo;She plays soccer&rdquo; • &ldquo;Today, always, never&rdquo;</div>
                   </Card>
 
                   <Card className="p-4 bg-yellow-50 border-2 border-yellow-200">
                     <h4 className="font-bold text-black text-xl mb-2">🟡 Intermediate (Levels 13-29)</h4>
-                    <p className="text-black text-lg">Past tense, present perfect, and future</p>
-                    <div className="text-gray-700 text-base mt-2 italic">"I ate pizza yesterday" • "I have eaten pizza" • "I will eat pizza"</div>
+                    <p className="text-black text-lg">Master past, present, and future tense structures</p>
+                    <div className="text-gray-700 text-base mt-2 italic">&ldquo;I ate pizza yesterday&rdquo; • &ldquo;I have eaten pizza&rdquo; • &ldquo;I will eat pizza&rdquo;</div>
                   </Card>
 
                   <Card className="p-4 bg-orange-50 border-2 border-orange-200">
                     <h4 className="font-bold text-black text-xl mb-2">🟠 Advanced (Levels 30-47)</h4>
-                    <p className="text-black text-lg">Special verbs, commands, and complex sentences</p>
-                    <div className="text-gray-700 text-base mt-2 italic">"I can swim" • "Eat your breakfast!" • "If I were you..."</div>
+                    <p className="text-black text-lg">Learn modal verbs, commands, and complex sentences</p>
+                    <div className="text-gray-700 text-base mt-2 italic">&ldquo;I can swim&rdquo; • &ldquo;Eat your breakfast!&rdquo; • &ldquo;If I were you...&rdquo;</div>
                   </Card>
                 </div>
               </section>
 
-              {/* Simple Tips */}
+              {/* Success Tips */}
               <section>
                 <h3 className="text-2xl font-bold text-white mb-4 flex items-center">
                   <CheckCircle className="w-6 h-6 text-emerald-400 mr-3" />
-                  Success Tips
+                  Tips for Learning Grammar
                 </h3>
                 <Card className="p-6 bg-blue-50 border-2 border-blue-200">
                   <div className="space-y-4">
                     <div className="flex items-start space-x-3">
                       <span className="text-2xl">1️⃣</span>
-                      <p className="text-black text-lg">Start with Level 1 - it's easy!</p>
+                      <p className="text-black text-lg">Start with Level 1 - master basic sentence structure first</p>
                     </div>
                     <div className="flex items-start space-x-3">
                       <span className="text-2xl">2️⃣</span>
-                      <p className="text-black text-lg">Read sentences out loud after you build them</p>
+                      <p className="text-black text-lg">Read sentences aloud - practice your pronunciation as you learn</p>
                     </div>
                     <div className="flex items-start space-x-3">
                       <span className="text-2xl">3️⃣</span>
-                      <p className="text-black text-lg">Practice a little bit every day</p>
+                      <p className="text-black text-lg">Use the Pattern guide - understand correct sentence structure</p>
                     </div>
                     <div className="flex items-start space-x-3">
                       <span className="text-2xl">4️⃣</span>
-                      <p className="text-black text-lg">Don't worry about mistakes - they help you learn!</p>
+                      <p className="text-black text-lg">Learn from mistakes - every correction teaches you grammar rules</p>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <span className="text-2xl">5️⃣</span>
+                      <p className="text-black text-lg">Complete levels in order - each level builds on the previous</p>
+                    </div>
+                  </div>
+                </Card>
+              </section>
+
+              {/* Benefits Section */}
+              <section>
+                <h3 className="text-2xl font-bold text-white mb-4 flex items-center">
+                  <Brain className="w-6 h-6 text-purple-400 mr-3" />
+                  How It Teaches Grammar
+                </h3>
+                <Card className="p-6 bg-purple-50 border-2 border-purple-200">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="bg-white p-4 rounded-lg border border-purple-100">
+                      <h4 className="font-bold text-purple-800 text-lg mb-2">🧠 Interactive Practice</h4>
+                      <p className="text-gray-700">Build sentences by clicking word tiles. Learn grammar through hands-on practice, not memorization.</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg border border-purple-100">
+                      <h4 className="font-bold text-purple-800 text-lg mb-2">🎯 Grammar Rules</h4>
+                      <p className="text-gray-700">Each level focuses on specific grammar concepts. You'll master sentence structure step by step.</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg border border-purple-100">
+                      <h4 className="font-bold text-purple-800 text-lg mb-2">⚡ Instant Feedback</h4>
+                      <p className="text-gray-700">Know immediately if your sentence is correct. Learn from mistakes and understand why sentences work.</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg border border-purple-100">
+                      <h4 className="font-bold text-purple-800 text-lg mb-2">📈 Progressive Learning</h4>
+                      <p className="text-gray-700">Start with simple sentences and advance to complex ones. Each level builds on grammar concepts you've learned.</p>
                     </div>
                   </div>
                 </Card>
@@ -386,10 +489,14 @@ export default function HomePage() {
             <div className="px-6 py-4 border-t border-slate-600 bg-slate-700/30">
               <div className="flex justify-center">
                 <Button
-                  onClick={() => setShowHelpModal(false)}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full"
+                  onClick={() => {
+                    setShowHelpModal(false);
+                    router.push('/game/levels');
+                  }}
+                  className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-8 py-3 rounded-full font-bold shadow-lg transform hover:scale-105 transition-all duration-200"
                 >
-                  Got it!
+                  <Target className="w-5 h-5 mr-2" />
+                  Start Building Sentences! 🎯
                 </Button>
               </div>
             </div>

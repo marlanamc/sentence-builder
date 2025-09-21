@@ -12,7 +12,7 @@ import { UserStats } from '@/data/types';
 
 interface CategoryLevelSelectorProps {
   categoryId: string;
-  userStats: UserStats;
+  userStats: UserStats = { points: 0, completedLevels: [], totalPoints: 0, currentStreak: 0, totalSentences: 0, unlockedBadges: [], levelsAttempted: [], perfectSentences: 0 };
   onLevelSelect: (levelId: number) => void;
   onBack: () => void;
 }
@@ -27,7 +27,7 @@ export const CategoryLevelSelector: React.FC<CategoryLevelSelectorProps> = ({
   
   const category = getCategoryById(categoryId);
   const levels = getLevelsByCategory(categoryId);
-  const progress = getCategoryProgress(categoryId, userStats.completedLevels);
+  const progress = getCategoryProgress(categoryId); // No user stats in free-play mode
   
   if (!category) {
     return (

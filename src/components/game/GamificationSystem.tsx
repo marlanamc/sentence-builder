@@ -9,7 +9,7 @@ import { X, Trophy, Star, Target, Zap, Shield, Award } from 'lucide-react';
 import { UserStats } from '@/data/types';
 
 interface GamificationSystemProps {
-  userStats: UserStats;
+  userStats: UserStats = { points: 0, completedLevels: [], totalPoints: 0, currentStreak: 0, totalSentences: 0, unlockedBadges: [], levelsAttempted: [], perfectSentences: 0 };
   gameStats?: any;
   onClose: () => void;
 }
@@ -36,28 +36,28 @@ export const GamificationSystem: React.FC<GamificationSystemProps> = ({
           {/* Stats Overview */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <div className="text-3xl font-bold text-blue-600">{userStats.points}</div>
-              <div className="text-sm text-gray-600">Total Points</div>
+              <div className="text-3xl font-bold text-blue-600">🎉</div>
+              <div className="text-sm text-gray-600">Learn & Practice</div>
             </div>
             <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="text-3xl font-bold text-green-600">{userStats.completedLevels.length}</div>
-              <div className="text-sm text-gray-600">Levels Completed</div>
+              <div className="text-3xl font-bold text-green-600">Free Play</div>
+              <div className="text-sm text-gray-600">Practice Mode</div>
             </div>
             <div className="text-center p-4 bg-purple-50 rounded-lg">
-              <div className="text-3xl font-bold text-purple-600">{userStats.currentStreak}</div>
-              <div className="text-sm text-gray-600">Current Streak</div>
+              <div className="text-3xl font-bold text-purple-600">∞</div>
+              <div className="text-sm text-gray-600">Unlimited</div>
             </div>
             <div className="text-center p-4 bg-orange-50 rounded-lg">
-              <div className="text-3xl font-bold text-orange-600">{userStats.bestStreak}</div>
-              <div className="text-sm text-gray-600">Best Streak</div>
+              <div className="text-3xl font-bold text-orange-600">🎯</div>
+              <div className="text-sm text-gray-600">Master Grammar</div>
             </div>
           </div>
 
-          {/* Achievements */}
+          {/* Learning Tips */}
           <div>
             <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
               <Award className="w-5 h-5 text-yellow-500" />
-              <span>Achievements</span>
+              <span>Learning Tips</span>
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Card className="p-4">
@@ -66,75 +66,78 @@ export const GamificationSystem: React.FC<GamificationSystemProps> = ({
                     <Target className="w-6 h-6 text-green-600" />
                   </div>
                   <div>
-                    <div className="font-semibold">First Steps</div>
-                    <div className="text-sm text-gray-600">Complete your first level</div>
-                    <Badge variant={userStats.completedLevels.length > 0 ? "default" : "secondary"}>
-                      {userStats.completedLevels.length > 0 ? "Earned" : "Locked"}
-                    </Badge>
+                    <div className="font-semibold">Practice Daily</div>
+                    <div className="text-sm text-gray-600">Build your grammar skills step by step</div>
                   </div>
                 </div>
               </Card>
-              
+
               <Card className="p-4">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-blue-100 rounded-full">
                     <Zap className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
-                    <div className="font-semibold">Streak Master</div>
-                    <div className="text-sm text-gray-600">Get a 5-day streak</div>
-                    <Badge variant={userStats.bestStreak >= 5 ? "default" : "secondary"}>
-                      {userStats.bestStreak >= 5 ? "Earned" : "Locked"}
-                    </Badge>
+                    <div className="font-semibold">Learn by Doing</div>
+                    <div className="text-sm text-gray-600">Interactive practice is the best way to learn</div>
                   </div>
                 </div>
               </Card>
-              
+
               <Card className="p-4">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-purple-100 rounded-full">
                     <Star className="w-6 h-6 text-purple-600" />
                   </div>
                   <div>
-                    <div className="font-semibold">Grammar Expert</div>
-                    <div className="text-sm text-gray-600">Complete 20 levels</div>
-                    <Badge variant={userStats.completedLevels.length >= 20 ? "default" : "secondary"}>
-                      {userStats.completedLevels.length >= 20 ? "Earned" : "Locked"}
-                    </Badge>
+                    <div className="font-semibold">Master Grammar</div>
+                    <div className="text-sm text-gray-600">Perfect your sentence building skills</div>
                   </div>
                 </div>
               </Card>
-              
+
               <Card className="p-4">
                 <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-yellow-100 rounded-full">
-                    <Trophy className="w-6 h-6 text-yellow-600" />
+                  <div className="p-2 bg-orange-100 rounded-full">
+                    <Trophy className="w-6 h-6 text-orange-600" />
                   </div>
                   <div>
-                    <div className="font-semibold">Point Collector</div>
-                    <div className="text-sm text-gray-600">Earn 1000 points</div>
-                    <Badge variant={userStats.points >= 1000 ? "default" : "secondary"}>
-                      {userStats.points >= 1000 ? "Earned" : "Locked"}
-                    </Badge>
+                    <div className="font-semibold">Stay Consistent</div>
+                    <div className="text-sm text-gray-600">Regular practice leads to mastery</div>
                   </div>
                 </div>
               </Card>
             </div>
           </div>
 
-          {/* Progress by Category */}
+          {/* Grammar Categories */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Progress by Category</h3>
-            <div className="space-y-3">
-              {Object.entries(userStats.categoryProgress).map(([categoryId, progress]) => (
-                <div key={categoryId} className="p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium capitalize">{categoryId.replace('-', ' ')}</span>
-                    <span className="text-sm text-gray-600">{progress.completed}/{progress.total}</span>
-                  </div>
-                  <Progress value={(progress.completed / progress.total) * 100} className="h-2" />
-                </div>
-              ))}
+            <h3 className="text-lg font-semibold mb-4">Grammar Categories</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="text-center p-3 bg-blue-50 rounded-lg">
+                <div className="font-semibold text-blue-800">Present Tense</div>
+                <div className="text-sm text-blue-600">8 levels</div>
+              </div>
+              <div className="text-center p-3 bg-green-50 rounded-lg">
+                <div className="font-semibold text-green-800">Time & Expressions</div>
+                <div className="text-sm text-green-600">4 levels</div>
+              </div>
+              <div className="text-center p-3 bg-purple-50 rounded-lg">
+                <div className="font-semibold text-purple-800">Past Tense</div>
+                <div className="text-sm text-purple-600">5 levels</div>
+              </div>
+              <div className="text-center p-3 bg-orange-50 rounded-lg">
+                <div className="font-semibold text-orange-800">Present Perfect</div>
+                <div className="text-sm text-orange-600">7 levels</div>
+              </div>
+              <div className="text-center p-3 bg-red-50 rounded-lg">
+                <div className="font-semibold text-red-800">Future Tenses</div>
+                <div className="text-sm text-red-600">5 levels</div>
+              </div>
+              <div className="text-center p-3 bg-indigo-50 rounded-lg">
+                <div className="font-semibold text-indigo-800">Advanced</div>
+                <div className="text-sm text-indigo-600">9 levels</div>
+              </div>
             </div>
           </div>
         </CardContent>

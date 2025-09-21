@@ -126,14 +126,16 @@ export const getUnlockedCategories = (userPoints: number): GrammarCategory[] => 
   return grammarCategories.filter(cat => userPoints >= cat.unlockRequirement);
 };
 
-export const getCategoryProgress = (categoryId: string, completedLevels: number[]): CategoryProgress => {
+export const getCategoryProgress = (categoryId: string, completedLevels?: number[]): CategoryProgress => {
   const category = getCategoryById(categoryId);
   if (!category) return { completed: 0, total: 0, percentage: 0 };
-  
-  const completed = category.levels.filter(levelId => completedLevels.includes(levelId)).length;
+
+  // In free-play mode, we don't track user progress
+  // Return 0 completed for all categories
+  const completed = 0;
   const total = category.totalLevels;
-  const percentage = Math.round((completed / total) * 100);
-  
+  const percentage = 0;
+
   return { completed, total, percentage };
 };
 
