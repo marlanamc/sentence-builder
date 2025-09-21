@@ -1987,7 +1987,7 @@ function TimelineVisual({ category }: { category: string }) {
                       style={{
                         width: `${learningMode === 'categorized'
                           ? (categorizedCorrect / 5) * 100
-                          : (shuffledCorrect / 3) * 100}%`
+                          : (shuffledCorrect / 3) * 100}%`$
                       }}
                   </div>
                   </div>
