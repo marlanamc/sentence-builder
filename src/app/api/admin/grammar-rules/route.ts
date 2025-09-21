@@ -1,10 +1,10 @@
-import { createClient } from '@/lib/supabase-server'
+import { supabase as createClient } from '@/lib/supabase-client'
 import { NextRequest, NextResponse } from 'next/server'
 
 // GET /api/admin/grammar-rules - Fetch all grammar rules
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createClient()
+    const supabase = createClient
 
     // Get all active grammar rules with level information
     const { data: rules, error } = await supabase
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
 // POST /api/admin/grammar-rules - Create new grammar rule
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient()
+    const supabase = createClient
     const body = await request.json()
 
     const { level_id, rule_type, rule_name, conditions, validation_logic, error_messages, examples, priority = 1 } = body

@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase-server'
+import { supabase as createClient } from '@/lib/supabase-client'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: { levelId: string } }
 ) {
   try {
-    const supabase = createClient()
+    const supabase = createClient
     const levelId = parseInt(params.levelId)
 
     if (!levelId || isNaN(levelId)) {
