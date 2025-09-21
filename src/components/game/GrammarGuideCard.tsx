@@ -101,44 +101,77 @@ export function GrammarGuideCard({ title = 'Quick Grammar Guide', persistKey, he
 
                 {section.label.includes('Pattern') ? (
                   <div className="space-y-3">
-                    <div className="bg-white/70 rounded-lg p-4 border border-amber-200">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-lg">→</span>
-                        {createWordBubble('Subject', 'subject')}
-                        <span className="text-gray-600">+</span>
-                        {createWordBubble('Verb', 'verb')}
-                        <span className="text-gray-600">+</span>
-                        {createWordBubble('Object', 'object')}
-                      </div>
-                    </div>
-                    <div className="space-y-2 text-sm">
-                      <div className="bg-white/50 rounded-lg p-3 border border-amber-100">
-                        <div className="flex items-center gap-2 flex-wrap mb-2">
-                          <span>→</span>
-                          <span className="font-medium text-gray-700">With 'he/she/it':</span>
-                        </div>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          {createWordBubble('She', 'subject')}
-                          <span className="text-gray-600">+</span>
-                          {createWordBubble('eats', 'verb')}
-                          <span className="text-gray-600">+</span>
-                          {createWordBubble('pizza', 'object')}
-                        </div>
-                      </div>
-                      <div className="bg-white/50 rounded-lg p-3 border border-amber-100">
-                        <div className="flex items-center gap-2 flex-wrap mb-2">
-                          <span>→</span>
-                          <span className="font-medium text-gray-700">With 'I/you/we/they':</span>
-                        </div>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          {createWordBubble('I', 'subject')}
-                          <span className="text-gray-600">+</span>
-                          {createWordBubble('eat', 'verb')}
-                          <span className="text-gray-600">+</span>
-                          {createWordBubble('pizza', 'object')}
-                        </div>
-                      </div>
-                    </div>
+                    {(() => {
+                      // Generate pattern based on content
+                      const content = section.content.toLowerCase()
+                      const showArticles = content.includes('article') || content.includes('a/an') || content.includes('the')
+                      const showNegation = content.includes('not') || content.includes("don't") || content.includes("doesn't")
+                      const showQuestion = content.includes('do/does') && (content.includes('?') || content.includes('question'))
+                      const showAuxiliary = content.includes('do/does') || content.includes('auxiliary')
+
+                      return (
+                        <>
+                          <div className="bg-white/70 rounded-lg p-4 border border-amber-200">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-lg">→</span>
+                              {showQuestion && createWordBubble('Do/Does', 'auxiliary')}
+                              {showQuestion && <span className="text-gray-600">+</span>}
+                              {createWordBubble('Subject', 'subject')}
+                              <span className="text-gray-600">+</span>
+                              {showAuxiliary && !showQuestion && createWordBubble('do/does', 'auxiliary')}
+                              {showAuxiliary && !showQuestion && <span className="text-gray-600">+</span>}
+                              {showNegation && createWordBubble('not', 'negation')}
+                              {showNegation && <span className="text-gray-600">+</span>}
+                              {createWordBubble('Verb', 'verb')}
+                              <span className="text-gray-600">+</span>
+                              {showArticles && createWordBubble('a/an/the', 'article')}
+                              {showArticles && <span className="text-gray-600">+</span>}
+                              {createWordBubble('Object', 'object')}
+                            </div>
+                          </div>
+                          <div className="space-y-2 text-sm">
+                            <div className="bg-white/50 rounded-lg p-3 border border-amber-100">
+                              <div className="flex items-center gap-2 flex-wrap mb-2">
+                                <span>→</span>
+                                <span className="font-medium text-gray-700">With 'he/she/it':</span>
+                              </div>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                {showQuestion && createWordBubble('Does', 'auxiliary')}
+                                {showQuestion && <span className="text-gray-600">+</span>}
+                                {createWordBubble('She', 'subject')}
+                                <span className="text-gray-600">+</span>
+                                {showAuxiliary && !showQuestion && createWordBubble("doesn't", 'negation')}
+                                {showAuxiliary && !showQuestion && <span className="text-gray-600">+</span>}
+                                {createWordBubble(showQuestion || showNegation ? 'eat' : 'eats', 'verb')}
+                                <span className="text-gray-600">+</span>
+                                {showArticles && createWordBubble('a', 'article')}
+                                {showArticles && <span className="text-gray-600">+</span>}
+                                {createWordBubble('sandwich', 'object')}
+                              </div>
+                            </div>
+                            <div className="bg-white/50 rounded-lg p-3 border border-amber-100">
+                              <div className="flex items-center gap-2 flex-wrap mb-2">
+                                <span>→</span>
+                                <span className="font-medium text-gray-700">With 'I/you/we/they':</span>
+                              </div>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                {showQuestion && createWordBubble('Do', 'auxiliary')}
+                                {showQuestion && <span className="text-gray-600">+</span>}
+                                {createWordBubble('I', 'subject')}
+                                <span className="text-gray-600">+</span>
+                                {showAuxiliary && !showQuestion && createWordBubble("don't", 'negation')}
+                                {showAuxiliary && !showQuestion && <span className="text-gray-600">+</span>}
+                                {createWordBubble('eat', 'verb')}
+                                <span className="text-gray-600">+</span>
+                                {showArticles && createWordBubble('the', 'article')}
+                                {showArticles && <span className="text-gray-600">+</span>}
+                                {createWordBubble('apple', 'object')}
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )
+                    })()}
                   </div>
                 ) : section.label.includes('Examples') ? (
                   <div className="space-y-2">
