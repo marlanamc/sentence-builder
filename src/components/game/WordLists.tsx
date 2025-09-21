@@ -12,13 +12,34 @@ type CategorizedProps = {
   getChallengeWordDisplay: (w: WordObj) => string
   onTileClick: (word: string, category: string) => void
   limitWordsPerCategory?: number
+  levelId?: number
 }
 
-export function WordCategoryList({ categoriesToShow, wordCategories, getCategoryIcon, getCategoryColor, getChallengeWordDisplay, onTileClick, limitWordsPerCategory }: CategorizedProps) {
+export function WordCategoryList({ categoriesToShow, wordCategories, getCategoryIcon, getCategoryColor, getChallengeWordDisplay, onTileClick, limitWordsPerCategory, levelId }: CategorizedProps) {
   return (
     <div className="space-y-4 pt-2">
       {categoriesToShow.map((categoryName) => {
-        const allCategoryWords = (wordCategories[categoryName] || []) as WordObj[]
+        let allCategoryWords = (wordCategories[categoryName] || []) as WordObj[]
+        
+        // Filter objects for Level 1 (Basic Affirmative) - only uncountable nouns and plural forms
+        if (levelId === 1 && categoryName === 'objects') {
+          allCategoryWords = allCategoryWords.filter(wordObj => {
+            // Show uncountable nouns (pizza, soccer, coffee, etc.)
+            if (wordObj.category === 'uncountable-noun') return true
+            // Show only plural forms of countable nouns (books, apples, not book, apple)
+            if (wordObj.category === 'countable-noun' && wordObj.toggleable) {
+              // Modify the word to show only the plural form
+              const parts = wordObj.word.split('/')
+              if (parts.length > 1) {
+                wordObj.word = parts[1] // Use plural form (apples instead of apple/apples)
+                wordObj.toggleable = false // Disable toggling for Level 1
+              }
+              return true
+            }
+            return false
+          })
+        }
+        
         const categoryWords = limitWordsPerCategory 
           ? allCategoryWords.slice(0, limitWordsPerCategory)
           : allCategoryWords

@@ -5,12 +5,12 @@ export const comprehensiveLevels47 = [
   {
     id: 1,
     name: 'Basic Affirmative',
-    shortDescription: 'Simple sentences with subject + verb + object',
+    shortDescription: 'Simple sentences with subject + verb + object (no articles needed)',
     category: 'present-basics',
-    pattern: 'Subject + V1/V1-3rd + Object',
+    pattern: 'Subject + V1/V1-3rd + Object (uncountable/plural)',
     formula: 'subject + verb + object',
-    example: 'She eats pizza.',
-    explanation: 'Use V1 (base form) with I, you, we, they. Use V1-3rd (adds -s/-es) with he, she, it.',
+    example: 'She eats pizza. / They play soccer. / We drink coffee.',
+    explanation: 'Use V1 (base form) with I, you, we, they. Use V1-3rd (adds -s/-es) with he, she, it. Use uncountable nouns (pizza, soccer, coffee) or plural nouns (apples, books) - no articles needed.',
     requiredCategories: ['subjects', 'verbs', 'objects'],
     color: 'bg-green-50 border-green-200',
     points: 15,
@@ -20,7 +20,9 @@ export const comprehensiveLevels47 = [
     grammarRules: {
       verbForm: 'present',
       subjectVerbAgreement: true,
-      requiresObject: true
+      requiresObject: true,
+      objectTypes: ['uncountable', 'plural'],
+      noArticles: true
     }
   },
   {

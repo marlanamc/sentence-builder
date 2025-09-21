@@ -809,7 +809,27 @@ function TimelineVisual({ category }: { category: string }) {
     // Use only the required categories from the level (not all active categories)
     const categories = level.requiredCategories || []
     categories.forEach(categoryName => {
-      const categoryWordsRaw = wordCategories[categoryName as keyof typeof wordCategories] || []
+      let categoryWordsRaw = wordCategories[categoryName as keyof typeof wordCategories] || []
+      
+      // Apply Level 1 object filtering for shuffled mode too
+      if (level.id === 1 && categoryName === 'objects') {
+        categoryWordsRaw = categoryWordsRaw.filter((wordObj: any) => {
+          // Show uncountable nouns (pizza, soccer, coffee, etc.)
+          if (wordObj.category === 'uncountable-noun') return true
+          // Show only plural forms of countable nouns
+          if (wordObj.category === 'countable-noun' && wordObj.toggleable) {
+            // Modify the word to show only the plural form
+            const parts = wordObj.word.split('/')
+            if (parts.length > 1) {
+              wordObj.word = parts[1] // Use plural form (apples instead of apple/apples)
+              wordObj.toggleable = false // Disable toggling for Level 1
+            }
+            return true
+          }
+          return false
+        })
+      }
+      
       const categoryWords = (categoryWordsRaw as any[]).map((w) => ({
         ...w,
         originalWord: w.originalWord ?? w.word
@@ -2138,6 +2158,7 @@ function TimelineVisual({ category }: { category: string }) {
                     getChallengeWordDisplay={(w: any) => getChallengeWordDisplay(mapVerbForLevel(w))}
                     onTileClick={handleTileClick}
                     limitWordsPerCategory={10}
+                    levelId={level.id}
                   />
                 ) : (
               <Card className="bg-slate-800/90 backdrop-blur-sm shadow-lg border-0 rounded-2xl overflow-hidden border border-slate-700/50">
