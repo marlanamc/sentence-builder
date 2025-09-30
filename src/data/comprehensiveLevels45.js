@@ -10,7 +10,7 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + V1/V1-3rd + Object (uncountable/plural)',
     formula: 'subject + verb + object',
     example: 'She eats pizza. / They play soccer. / We drink coffee.',
-    explanation: 'Use V1 (base form) with I, you, we, they. Use V1-3rd (adds -s/-es) with he, she, it. Use uncountable nouns (pizza, soccer, coffee) or plural nouns (apples, books) - no articles needed.',
+    explanation: '**Verb Forms:**\n• **V1 (base form)** with: I, you, we, they\n• **V1-3rd (adds -s/-es)** with: he, she, it\n\n**Nouns & Articles:**\n• Use **uncountable nouns** (pizza, soccer, coffee) or **plural nouns** (apples, books)\n• **No articles needed**',
     requiredCategories: ['subjects', 'verbs', 'objects'],
     color: 'bg-green-50 border-green-200',
     points: 15,
@@ -33,7 +33,7 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + V1/V1-3rd + a/an/the + Object',
     formula: 'subject + verb + a/an/the + object',
     example: 'I eat a sandwich. / She drinks the coffee.',
-    explanation: 'Use "a" or "an" with singular countable nouns. Use "the" for specific things. No article with plural or uncountable nouns.',
+    explanation: '**Articles:**\n• **"a"** before consonant sounds (a book, a car)\n• **"an"** before vowel sounds (an apple, an hour)\n• **"the"** for specific things (the book I read)\n• **No article** with plural or uncountable nouns',
     requiredCategories: ['subjects', 'verbs', 'objects', 'articles'],
     color: 'bg-green-50 border-green-200',
     points: 20,
@@ -55,7 +55,7 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + do/does + not + V1 + Object',
     formula: 'subject + do(es) + not + verb + object',
     example: 'I don\'t like vegetables. / She doesn\'t eat meat.',
-    explanation: 'Use "do not" with I, you, we, they. Use "does not" with he, she, it. Always use V1 after do/does.',
+    explanation: '**Negative Forms:**\n• **"don\'t"** with: I, you, we, they\n• **"doesn\'t"** with: he, she, it\n• Always use **V1 (base form)** after do/does',
     requiredCategories: ['subjects', 'verbs', 'objects', 'helpers', 'negatives'],
     color: 'bg-green-50 border-green-200',
     points: 25,
@@ -77,7 +77,7 @@ export const comprehensiveLevels47 = [
     pattern: 'Do/Does + Subject + V1 + Object?',
     formula: 'do(es) + subject + verb + object?',
     example: 'Do you like pizza? / Does she eat breakfast?',
-    explanation: 'Use "Do" with I, you, we, they. Use "Does" with he, she, it. Always use V1 after do/does.',
+    explanation: '**Question Forms:**\n• **"Do"** with: I, you, we, they\n• **"Does"** with: he, she, it\n• Always use **V1 (base form)** after do/does\n• Add **"?"** at the end',
     requiredCategories: ['helpers', 'subjects', 'verbs', 'objects'],
     color: 'bg-green-50 border-green-200',
     points: 30,
@@ -100,7 +100,11 @@ export const comprehensiveLevels47 = [
     pattern: 'What + do/does + Subject + V1?',
     formula: 'what + do(es) + subject + verb?',
     example: 'What do you eat?',
-    explanation: 'Start with question word, then use do/does + subject + V1.',
+    explanation: '**Be Verbs:**
+• **"am"** with: I
+• **"is"** with: he, she, it
+• **"are"** with: you, we, they
+• Use **adjectives** or **noun phrases** after be',
     requiredCategories: ['question-words', 'helpers', 'subjects', 'verbs'],
     color: 'bg-green-50 border-green-200',
     points: 35,
@@ -123,7 +127,11 @@ export const comprehensiveLevels47 = [
     pattern: 'Wh-word + do/does + Subject + V1?',
     formula: 'wh-word + do(es) + subject + verb?',
     example: 'Where do you live?',
-    explanation: 'Use different question words (who, where, when) with the same pattern.',
+    explanation: '**Negative Be:**
+• **"am not"** with: I
+• **"isn't"** with: he, she, it
+• **"aren't"** with: you, we, they
+• Add **"not"** after be verb',
     requiredCategories: ['question-words', 'helpers', 'subjects', 'verbs'],
     color: 'bg-green-50 border-green-200',
     points: 40,
@@ -146,7 +154,11 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + am/is/are + V1-ing + Object',
     formula: 'subject + be + verb-ing + object',
     example: 'I am eating lunch. / She is studying English.',
-    explanation: 'Use am (I), is (he/she/it), are (you/we/they) + verb-ing for actions happening now.',
+    explanation: '**Past Simple:**
+• Use **V2 (past form)** with all subjects
+• **Regular verbs:** add -ed (played, watched)
+• **Irregular verbs:** special forms (went, ate, saw)
+• Add **time markers** (yesterday, last week)',
     requiredCategories: ['subjects', 'be-verbs', 'verbs', 'objects'],
     color: 'bg-green-50 border-green-200',
     points: 45,
@@ -168,7 +180,10 @@ export const comprehensiveLevels47 = [
     pattern: 'Wh-word + am/is/are + Subject + V1-ing?',
     formula: 'wh-word + be + subject + verb-ing?',
     example: 'What are you doing?',
-    explanation: 'Start with question word, then am/is/are + subject + verb-ing.',
+    explanation: '**Past Negative:**
+• Use **"didn't"** with all subjects
+• Always use **V1 (base form)** after didn't
+• Add **time markers** (yesterday, last week)',
     requiredCategories: ['question-words', 'be-verbs', 'subjects', 'verbs'],
     color: 'bg-green-50 border-green-200',
     points: 50,
@@ -195,7 +210,10 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + V1 + at/on/in + time',
     formula: 'subject + verb + time preposition + time',
     example: 'She studies on Monday.',
-    explanation: 'Use "at" for specific times, "on" for days/dates, "in" for months/years/periods.',
+    explanation: '**Time Prepositions:**
+• **"at"** for specific times (at 3pm, at night)
+• **"on"** for days (on Monday, on weekends)
+• **"in"** for periods (in the morning, in 2024)"at" for specific times, "on" for days/dates, "in" for months/years/periods.',
     requiredCategories: ['subjects', 'verbs', 'time-prepositions', 'time-expressions'],
     color: 'bg-yellow-50 border-yellow-200',
     points: 55,
@@ -221,7 +239,10 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + adv + V1 + Object',
     formula: 'subject + always/usually/sometimes + verb + object',
     example: 'I always eat breakfast.',
-    explanation: 'Frequency adverbs go before the main verb but after "be" verbs.',
+    explanation: '**Frequency Adverbs:**
+• **Always, usually, often** before the verb
+• **Sometimes, rarely, never** before the verb
+• **Every day, once a week** at the end"be" verbs.',
     requiredCategories: ['subjects', 'frequency-adverbs', 'verbs', 'objects'],
     color: 'bg-yellow-50 border-yellow-200',
     points: 60,
@@ -243,7 +264,10 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + V1 + Object + frequency expression',
     formula: 'subject + verb + object + once/twice/three times + period',
     example: 'She visits once a month.',
-    explanation: 'Use once/twice/three times + a + time period to show how often.',
+    explanation: '**Frequency Expressions:**
+• **Once, twice, three times** + period
+• **Every day, every week, every month**
+• Place at the **end** of the sentence',
     requiredCategories: ['subjects', 'verbs', 'objects', 'frequency-expressions'],
     color: 'bg-yellow-50 border-yellow-200',
     points: 65,
@@ -265,7 +289,10 @@ export const comprehensiveLevels47 = [
     pattern: 'If + Present Simple, Present Simple',
     formula: 'if + present, present',
     example: 'If you heat water, it boils.',
-    explanation: 'Use zero conditional for facts, rules, and general truths. Both clauses use present simple.',
+    explanation: '**Zero Conditional:**
+• **If + present simple, present simple**
+• Used for **general truths** and **facts**
+• **"If"** means "when" or "whenever"',
     requiredCategories: ['subjects', 'verbs', 'conditionals'],
     color: 'bg-yellow-50 border-yellow-200',
     points: 70,
@@ -292,7 +319,10 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + V2 + Object',
     formula: 'subject + past verb + object',
     example: 'I ate pizza yesterday.',
-    explanation: 'Use V2 (past form) for completed actions in the past. Regular verbs add -ed, irregular verbs change completely.',
+    explanation: '**Past Simple:**
+• Use **V2 (past form)** with all subjects
+• **Regular verbs:** add -ed (played, watched)
+• **Irregular verbs:** special forms (went, ate, saw)',
     requiredCategories: ['subjects', 'verbs', 'objects', 'time-markers'],
     color: 'bg-red-50 border-red-200',
     points: 75,
@@ -314,7 +344,10 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + didn\'t + V1 + Object',
     formula: 'subject + didn\'t + verb + object',
     example: 'She didn\'t go to work.',
-    explanation: 'Use "didn\'t" + V1 (base form) for negative past sentences. Don\'t use V2 after didn\'t.',
+    explanation: '**Past Negative:**
+• Use **"didn't"** with all subjects
+• Always use **V1 (base form)** after didn't
+• **"Didn't"** = did not"didn\'t" + V1 (base form) for negative past sentences. Don\'t use V2 after didn\'t.',
     requiredCategories: ['subjects', 'helpers', 'negatives', 'verbs', 'objects'],
     color: 'bg-red-50 border-red-200',
     points: 80,
@@ -337,7 +370,10 @@ export const comprehensiveLevels47 = [
     pattern: 'Did + Subject + V1 + Object?',
     formula: 'did + subject + verb + object?',
     example: 'Did you eat lunch?',
-    explanation: 'Use "Did" + subject + V1 (base form) for past questions. Don\'t use V2 after did.',
+    explanation: '**Past Questions:**
+• Start with **"Did"** + subject + V1
+• Use **V1 (base form)** after Did
+• Add **"?"** at the end"Did" + subject + V1 (base form) for past questions. Don\'t use V2 after did.',
     requiredCategories: ['helpers', 'subjects', 'verbs', 'objects'],
     color: 'bg-red-50 border-red-200',
     points: 85,
@@ -362,7 +398,11 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + was/were + V1-ing + Object',
     formula: 'subject + was/were + verb-ing + object',
     example: 'They were playing soccer.',
-    explanation: 'Use was (I/he/she/it) or were (you/we/they) + verb-ing for ongoing actions in the past.',
+    explanation: '**Past Continuous:**
+• **"was"** with: I, he, she, it
+• **"were"** with: you, we, they
+• Add **"-ing"** to the verb
+• Use for **ongoing past actions**',
     requiredCategories: ['subjects', 'be-verbs', 'verbs', 'objects'],
     color: 'bg-red-50 border-red-200',
     points: 90,
@@ -385,7 +425,11 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + was/were + V3',
     formula: 'subject + be verb + past participle',
     example: 'The book was read by Maria.',
-    explanation: 'Use passive voice when the action is more important than who does it. Use was/were + V3.',
+    explanation: '**Passive Voice:**
+• **"was"** with: I, he, she, it
+• **"were"** with: you, we, they
+• Use **V3 (past participle)**
+• Object becomes the subject',
     requiredCategories: ['subjects', 'be-verbs', 'verbs'],
     color: 'bg-red-50 border-red-200',
     points: 95,
@@ -410,7 +454,11 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + have/has + V3 + Object',
     formula: 'subject + have/has + past participle + object',
     example: 'She has visited Paris.',
-    explanation: 'Use have (I/you/we/they) or has (he/she/it) + V3 (past participle) for actions with present relevance.',
+    explanation: '**Present Perfect:**
+• **"have"** with: I, you, we, they
+• **"has"** with: he, she, it
+• Use **V3 (past participle)**
+• For **completed actions** with present relevance',
     requiredCategories: ['subjects', 'have-verbs', 'verbs', 'objects'],
     color: 'bg-purple-50 border-purple-200',
     points: 100,
@@ -434,7 +482,11 @@ export const comprehensiveLevels47 = [
     pattern: 'Have/Has + Subject + ever + V3?',
     formula: 'have/has + subject + ever + past participle?',
     example: 'Have you ever been to Japan?',
-    explanation: 'Use "ever" in questions about life experiences. Use "never" for negative experiences.',
+    explanation: '**Present Perfect Experience:**
+• **"Have/Has + ever"** for life experiences
+• Use **V3 (past participle)**
+• **"Ever"** means "at any time in life"
+• Answer with **"Yes, I have"** or **"No, I haven't"**"ever" in questions about life experiences. Use "never" for negative experiences.',
     requiredCategories: ['have-verbs', 'subjects', 'experience-words', 'verbs'],
     color: 'bg-purple-50 border-purple-200',
     points: 105,
@@ -460,7 +512,11 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + have/has + just/already + V3',
     formula: 'subject + have/has + just/recently/already + past participle',
     example: 'I have just finished homework.',
-    explanation: 'Use "just" for very recent actions, "recently" for recent actions, "already" for completed actions.',
+    explanation: '**Present Perfect Recent:**
+• **"just"** = very recently
+• **"already"** = sooner than expected
+• **"recently"** = not long ago
+• Use **V3 (past participle)**"just" for very recent actions, "recently" for recent actions, "already" for completed actions.',
     requiredCategories: ['subjects', 'have-verbs', 'recent-words', 'verbs'],
     color: 'bg-purple-50 border-purple-200',
     points: 110,
@@ -484,7 +540,10 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + have/has + V3 + for/since',
     formula: 'subject + have/has + past participle + for/since + time',
     example: 'I have lived here for 5 years.',
-    explanation: 'Use "for" + period of time, "since" + starting point for actions continuing to now.',
+    explanation: '**Present Perfect Duration:**
+• **"for"** + period (for 2 years, for a long time)
+• **"since"** + point in time (since 2020, since Monday)
+• Use **V3 (past participle)**"for" + period of time, "since" + starting point for actions continuing to now.',
     requiredCategories: ['subjects', 'have-verbs', 'verbs', 'duration-expressions'],
     color: 'bg-purple-50 border-purple-200',
     points: 115,
@@ -512,7 +571,10 @@ export const comprehensiveLevels47 = [
     pattern: 'Finished time = Past Simple / Unfinished time = Present Perfect',
     formula: 'yesterday/last week = past / today/this week = present perfect',
     example: 'I ate pizza yesterday. / I have eaten pizza today.',
-    explanation: 'Use Past Simple for finished time periods. Use Present Perfect for unfinished time periods.',
+    explanation: '**Present Perfect vs Past:**
+• **Finished time** = Past Simple (yesterday, last week)
+• **Unfinished time** = Present Perfect (today, this week)
+• **Time markers** decide which tense to use',
     requiredCategories: ['subjects', 'verbs', 'time-markers', 'have-verbs'],
     color: 'bg-purple-50 border-purple-200',
     points: 120,
@@ -539,7 +601,10 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + haven\'t/hasn\'t + V3 + yet/still',
     formula: 'subject + haven\'t/hasn\'t + past participle + yet',
     example: 'I haven\'t finished yet.',
-    explanation: 'Use "yet" in questions and negatives about expected completion. "Still" emphasizes ongoing situation.',
+    explanation: '**Present Perfect Yet/Still:**
+• **"Yet"** = not finished (in questions/negatives)
+• **"Still"** = continuing (in affirmatives)
+• Use **V3 (past participle)**"yet" in questions and negatives about expected completion. "Still" emphasizes ongoing situation.',
     requiredCategories: ['have-verbs', 'subjects', 'verbs', 'completion-words'],
     color: 'bg-purple-50 border-purple-200',
     points: 125,
@@ -564,7 +629,11 @@ export const comprehensiveLevels47 = [
     pattern: 'All PP forms',
     formula: 'experience + recent + duration + completion',
     example: 'Real-life usage',
-    explanation: 'Practice all present perfect uses together: experience, recent actions, duration, and completion.',
+    explanation: '**Present Perfect Mixed:**
+• **Experience:** Have you ever...?
+• **Recent:** I've just...
+• **Duration:** I've lived here for...
+• **Completion:** I haven't finished yet',
     requiredCategories: ['subjects', 'have-verbs', 'verbs', 'objects', 'time-expressions'],
     color: 'bg-purple-50 border-purple-200',
     points: 130,
@@ -590,7 +659,10 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + am/is/are + going to + V1',
     formula: 'subject + be + going to + verb',
     example: 'I am going to study tonight.',
-    explanation: 'Use "going to" for plans, intentions, and predictions based on evidence.',
+    explanation: '**Going To Future:**
+• **"am/is/are going to"** + V1
+• For **plans** and **intentions**
+• **"Going to"** = planning to do something"going to" for plans, intentions, and predictions based on evidence.',
     requiredCategories: ['subjects', 'be-verbs', 'going-to', 'verbs'],
     color: 'bg-blue-50 border-blue-200',
     points: 135,
@@ -614,7 +686,10 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + will + V1 + Object',
     formula: 'subject + will + verb + object',
     example: 'I will help you.',
-    explanation: 'Use "will" for predictions, promises, spontaneous decisions, and offers.',
+    explanation: '**Will Future:**
+• **"will"** + V1 with all subjects
+• For **predictions** and **decisions**
+• **"Will"** = future certainty"will" for predictions, promises, spontaneous decisions, and offers.',
     requiredCategories: ['subjects', 'will', 'verbs', 'objects'],
     color: 'bg-blue-50 border-blue-200',
     points: 140,
@@ -637,7 +712,10 @@ export const comprehensiveLevels47 = [
     pattern: 'If + Present, will + V1',
     formula: 'if + present simple, will + base verb',
     example: 'If it rains, I will stay home.',
-    explanation: 'Use first conditional for future possibilities. If-clause uses present simple, result clause uses will.',
+    explanation: '**First Conditional:**
+• **If + present simple, will + V1**
+• For **real future possibilities**
+• **"If"** = when this happens',
     requiredCategories: ['conditionals', 'subjects', 'verbs'],
     color: 'bg-blue-50 border-blue-200',
     points: 142,
@@ -662,7 +740,10 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + will be + V1-ing + Object',
     formula: 'subject + will be + verb-ing + object',
     example: 'I will be working at 3 PM.',
-    explanation: 'Use "will be" + verb-ing for actions that will be in progress at a specific future time.',
+    explanation: '**Future Continuous:**
+• **"will be"** + V1-ing
+• For **ongoing future actions**
+• **"Will be doing"** = in progress at future time"will be" + verb-ing for actions that will be in progress at a specific future time.',
     requiredCategories: ['subjects', 'will', 'be-verbs', 'verbs', 'objects'],
     color: 'bg-blue-50 border-blue-200',
     points: 145,
@@ -685,7 +766,10 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + will have + V3 + by time',
     formula: 'subject + will have + past participle + by + time',
     example: 'She will have graduated by June.',
-    explanation: 'Use "will have" + V3 for actions that will be completed before a specific future time.',
+    explanation: '**Future Perfect:**
+• **"will have"** + V3
+• For **completed future actions**
+• **"Will have done"** = finished by future time"will have" + V3 for actions that will be completed before a specific future time.',
     requiredCategories: ['subjects', 'will', 'have-verbs', 'verbs'],
     color: 'bg-blue-50 border-blue-200',
     points: 150,
@@ -711,7 +795,11 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + modal + V1',
     formula: 'subject + can/should/must + verb',
     example: 'You should study.',
-    explanation: 'Use modals + base verb for ability (can), advice (should), and obligation (must).',
+    explanation: '**Modal Verbs:**
+• **"can"** = ability (I can swim)
+• **"should"** = advice (You should study)
+• **"must"** = necessity (I must go)
+• Use **V1 (base form)** after modals',
     requiredCategories: ['subjects', 'modals', 'verbs'],
     color: 'bg-orange-50 border-orange-200',
     points: 155,
@@ -733,7 +821,10 @@ export const comprehensiveLevels47 = [
     pattern: 'Multiple patterns',
     formula: 'used to / be used to / get used to',
     example: 'I used to live in Paris.',
-    explanation: 'Different meanings: past habits (used to), current adaptation (be used to), becoming adapted (get used to).',
+    explanation: '**Used To Family:**
+• **"used to"** = past habits (I used to smoke)
+• **"be used to"** = accustomed to (I'm used to it)
+• **"get used to"** = become accustomed (I'm getting used to it)',
     requiredCategories: ['subjects', 'used-to-forms', 'verbs'],
     color: 'bg-orange-50 border-orange-200',
     points: 160,
@@ -757,7 +848,10 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + have to/must + V1',
     formula: 'subject + have to/must + verb',
     example: 'I must study.',
-    explanation: 'Have to = external obligation (rules). Must = internal obligation (personal).',
+    explanation: '**Obligation:**
+• **"have to"** = external obligation (I have to work)
+• **"must"** = personal obligation (I must study)
+• **"have to"** changes with tense, **"must"** doesn't',
     requiredCategories: ['subjects', 'obligation-words', 'verbs'],
     color: 'bg-orange-50 border-orange-200',
     points: 165,
@@ -780,7 +874,10 @@ export const comprehensiveLevels47 = [
     pattern: 'Verb + V1-ing / Verb + to + V1',
     formula: 'verb + gerund / verb + infinitive',
     example: 'I enjoy swimming. / I want to swim.',
-    explanation: 'Some verbs take gerunds (-ing), others take infinitives (to + base). Must be memorized.',
+    explanation: '**Gerunds & Infinitives:**
+• **Gerund (-ing):** enjoy doing, stop doing
+• **Infinitive (to V1):** want to do, need to do
+• Some verbs take both with different meanings',
     requiredCategories: ['subjects', 'verbs', 'gerunds', 'infinitives'],
     color: 'bg-orange-50 border-orange-200',
     points: 168,
@@ -804,7 +901,11 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + prefer/would rather + V1/V1-ing',
     formula: 'subject + prefer/would rather + verb form',
     example: 'I prefer walking.',
-    explanation: 'Express preferences: prefer + gerund/noun, would rather + base verb.',
+    explanation: '**Preferences:**
+• **"prefer"** + gerund or infinitive
+• **"would rather"** + V1
+• **"would prefer"** + infinitive
+• Express what you like better',
     requiredCategories: ['subjects', 'preference-words', 'verbs'],
     color: 'bg-orange-50 border-orange-200',
     points: 170,
@@ -827,7 +928,11 @@ export const comprehensiveLevels47 = [
     pattern: 'Can/Could/May + Subject + V1?',
     formula: 'modal + subject + verb?',
     example: 'Can I use your phone?',
-    explanation: 'Politeness hierarchy: Can (informal) → Could (polite) → May (formal).',
+    explanation: '**Permission & Requests:**
+• **"Can I...?"** = informal permission
+• **"Could I...?"** = polite permission
+• **"May I...?"** = formal permission
+• All mean "Is it okay if I...?"',
     requiredCategories: ['permission-modals', 'subjects', 'verbs'],
     color: 'bg-orange-50 border-orange-200',
     points: 175,
@@ -853,7 +958,11 @@ export const comprehensiveLevels47 = [
     pattern: 'V1 + Object / Don\'t + V1 + Object',
     formula: 'verb + object / don\'t + verb + object',
     example: 'Open the door.',
-    explanation: 'Use base verb without subject for commands. Add "don\'t" for negative commands.',
+    explanation: '**Imperatives:**
+• **V1** for commands (Sit down!)
+• **Don't + V1** for negative commands (Don't run!)
+• **No subject** needed
+• Use **"!"** for emphasis"don\'t" for negative commands.',
     requiredCategories: ['verbs', 'objects', 'negatives'],
     color: 'bg-amber-50 border-amber-200',
     points: 180,
@@ -874,7 +983,11 @@ export const comprehensiveLevels47 = [
     pattern: 'Let\'s + V1 + Object',
     formula: 'let\'s + verb + object',
     example: 'Let\'s go to the movies.',
-    explanation: 'Use "Let\'s" + base verb for group suggestions and invitations.',
+    explanation: '**Let's Suggestions:**
+• **"Let's"** = let us (suggestion)
+• **"Let's + V1"** (Let's go!)
+• **"Let's not + V1"** (Let's not be late)
+• **"Let's"** = "Why don't we...?""Let\'s" + base verb for group suggestions and invitations.',
     requiredCategories: ['lets', 'verbs', 'objects'],
     color: 'bg-amber-50 border-amber-200',
     points: 185,
@@ -895,7 +1008,11 @@ export const comprehensiveLevels47 = [
     pattern: 'How about/What about + V1-ing/noun',
     formula: 'how/what about + gerund/noun',
     example: 'How about pizza?',
-    explanation: 'Use "How about" or "What about" + gerund or noun for casual suggestions.',
+    explanation: '**Casual Suggestions:**
+• **"How about...?"** + gerund/noun
+• **"What about...?"** + gerund/noun
+• **"Why don't we...?"** + V1
+• All mean "What do you think about...?""How about" or "What about" + gerund or noun for casual suggestions.',
     requiredCategories: ['suggestion-phrases', 'verbs', 'objects'],
     color: 'bg-amber-50 border-amber-200',
     points: 190,
@@ -918,7 +1035,11 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + V1 + comparative + than + Object',
     formula: 'subject + verb + -er than / more than + object',
     example: 'She is taller than me.',
-    explanation: 'Use -er + than for short adjectives, more + than for long adjectives.',
+    explanation: '**Comparatives:**
+• **Short adjectives:** add -er (bigger, faster)
+• **Long adjectives:** more + adjective (more beautiful)
+• **"than"** for comparison (bigger than)
+• **"as...as"** for equality (as big as)',
     requiredCategories: ['subjects', 'verbs', 'comparatives', 'objects'],
     color: 'bg-gray-50 border-gray-200',
     points: 195,
@@ -942,7 +1063,11 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + V1 + the + superlative',
     formula: 'subject + verb + the + -est / the most + adjective',
     example: 'She is the tallest student.',
-    explanation: 'Use the + -est for short adjectives, the most + adjective for long adjectives.',
+    explanation: '**Superlatives:**
+• **Short adjectives:** add -est (biggest, fastest)
+• **Long adjectives:** most + adjective (most beautiful)
+• **"the"** before superlative (the biggest)
+• **"in"** for place (the biggest in the world)',
     requiredCategories: ['subjects', 'verbs', 'superlatives', 'objects'],
     color: 'bg-gray-50 border-gray-200',
     points: 200,
@@ -966,7 +1091,11 @@ export const comprehensiveLevels47 = [
     pattern: 'someone/nothing/anything/everyone + verb',
     formula: 'indefinite pronoun + verb',
     example: 'Someone is calling.',
-    explanation: 'Indefinite pronouns refer to people or things without being specific. High frequency in natural English.',
+    explanation: '**Indefinite Pronouns:**
+• **"someone, anyone, everyone"** = people
+• **"something, anything, everything"** = things
+• **"somewhere, anywhere, everywhere"** = places
+• Use with **singular verbs**',
     requiredCategories: ['indefinite-pronouns', 'verbs'],
     color: 'bg-gray-50 border-gray-200',
     points: 203,
@@ -992,7 +1121,11 @@ export const comprehensiveLevels47 = [
     pattern: 'Mixed practice',
     formula: 'all comparison forms',
     example: 'Real-world comparisons',
-    explanation: 'Practice all comparison forms in natural contexts.',
+    explanation: '**Mixed Comparisons:**
+• **Comparatives:** -er than, more...than
+• **Superlatives:** the -est, the most...
+• **Equality:** as...as
+• **Practice all forms together**',
     requiredCategories: ['subjects', 'verbs', 'comparatives', 'superlatives', 'objects'],
     color: 'bg-gray-50 border-gray-200',
     points: 205,
@@ -1015,7 +1148,11 @@ export const comprehensiveLevels47 = [
     pattern: 'Noun + who/which/that + clause',
     formula: 'noun + relative pronoun + clause',
     example: 'The man who lives here is my teacher.',
-    explanation: 'Use relative clauses to combine ideas and add information about nouns. Who = people, which = things, that = both.',
+    explanation: '**Mixed Comparisons:**
+• **Comparatives:** -er than, more...than
+• **Superlatives:** the -est, the most...
+• **Equality:** as...as
+• **Practice all forms together**',
     requiredCategories: ['subjects', 'relative-pronouns', 'verbs'],
     color: 'bg-purple-100 border-purple-300',
     points: 208,
@@ -1040,7 +1177,11 @@ export const comprehensiveLevels47 = [
     pattern: 'Statement + tag',
     formula: 'positive statement + negative tag / negative statement + positive tag',
     example: 'You like pizza, don\'t you?',
-    explanation: 'Add opposite tag to confirm information. Positive statement gets negative tag.',
+    explanation: '**Tag Questions:**
+• **Positive statement + negative tag**
+• **Negative statement + positive tag**
+• **"isn't it?"** "don't you?" "won't they?"
+• **Rising intonation** for real questions',
     requiredCategories: ['subjects', 'verbs', 'tag-questions'],
     color: 'bg-purple-100 border-purple-300',
     points: 210,
@@ -1063,7 +1204,11 @@ export const comprehensiveLevels47 = [
     pattern: 'If + Subject + V2, Subject + would + V1',
     formula: 'if + past, would + base verb',
     example: 'If I had money, I would travel.',
-    explanation: 'Use past tense in if-clause, would + base verb in result clause for hypothetical situations.',
+    explanation: '**Second Conditional:**
+• **If + past simple, would + V1**
+• For **unreal present/future** situations
+• **"If I were you"** (not "if I was you")
+• **"Would"** = hypothetical result',
     requiredCategories: ['subjects', 'verbs', 'conditionals'],
     color: 'bg-purple-100 border-purple-300',
     points: 215,
@@ -1087,7 +1232,11 @@ export const comprehensiveLevels47 = [
     pattern: 'If + Past Perfect, would have + V3',
     formula: 'if + had + past participle, would have + past participle',
     example: 'If I had studied, I would have passed.',
-    explanation: 'Use third conditional for unreal past situations - things that didn\'t happen but we imagine the results.',
+    explanation: '**Third Conditional:**
+• **If + past perfect, would have + V3**
+• For **unreal past** situations
+• **"If I had known"** (past perfect)
+• **"I would have gone"** (would have + V3)'t happen but we imagine the results.',
     requiredCategories: ['subjects', 'verbs', 'conditionals'],
     color: 'bg-purple-100 border-purple-300',
     points: 217,
@@ -1112,7 +1261,11 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + phrasal verb + Object',
     formula: 'subject + verb + particle + object',
     example: 'Turn on the light.',
-    explanation: 'Phrasal verbs = verb + particle. Some are separable, some are inseparable.',
+    explanation: '**Phrasal Verbs:**
+• **Verb + particle** (look up, turn off)
+• **Separable:** look it up, turn it off
+• **Inseparable:** look after, get over
+• **Learn as complete units**',
     requiredCategories: ['subjects', 'phrasal-verbs', 'objects'],
     color: 'bg-purple-100 border-purple-300',
     points: 220,
@@ -1135,7 +1288,11 @@ export const comprehensiveLevels47 = [
     pattern: 'Subject + said + clause (backshift)',
     formula: 'subject + reporting verb + reported clause',
     example: 'He said he was tired.',
-    explanation: 'When reporting speech, move tenses back: present→past, past→past perfect, will→would.',
+    explanation: '**Reported Speech:**
+• **"He said (that)..."** + reported clause
+• **Backshift tenses:** present → past
+• **"I am tired"** → "He said he was tired"
+• **"That"** is often optional',
     requiredCategories: ['subjects', 'reporting-verbs', 'verbs'],
     color: 'bg-purple-100 border-purple-300',
     points: 220,
