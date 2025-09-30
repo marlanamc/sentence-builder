@@ -1,4 +1,8 @@
-export const comprehensiveLevels = [
+const fs = require('fs');
+const path = require('path');
+
+// Clean level data with properly escaped explanations
+const cleanLevels = `export const comprehensiveLevels = [
   {
     id: 1,
     name: 'Present Simple - Basic',
@@ -7,7 +11,7 @@ export const comprehensiveLevels = [
     pattern: 'Subject + V1/V1-3rd + Object',
     formula: 'subject + verb + object',
     example: 'I eat pizza. / She likes music.',
-    explanation: '**Verb Forms:**\n• **V1 (base form)** with: I, you, we, they\n• **V1-3rd (adds -s/-es)** with: he, she, it\n\n**Nouns & Articles:**\n• Use **uncountable nouns** (pizza, soccer, coffee) or **plural nouns** (apples, books)\n• **No articles needed**',
+    explanation: '**Verb Forms:**\\n• **V1 (base form)** with: I, you, we, they\\n• **V1-3rd (adds -s/-es)** with: he, she, it\\n\\n**Nouns & Articles:**\\n• Use **uncountable nouns** (pizza, soccer, coffee) or **plural nouns** (apples, books)\\n• **No articles needed**',
     requiredCategories: ['subjects', 'verbs', 'objects'],
     color: 'bg-green-50 border-green-200',
     points: 15,
@@ -24,7 +28,7 @@ export const comprehensiveLevels = [
     pattern: 'Subject + V1/V1-3rd + a/an/the + Object',
     formula: 'subject + verb + a/an/the + object',
     example: 'I eat a sandwich. / She drinks the coffee.',
-    explanation: '**Articles:**\n• **"a"** before consonant sounds (a book, a car)\n• **"an"** before vowel sounds (an apple, an hour)\n• **"the"** for specific things (the book I read)\n• **No article** with plural or uncountable nouns',
+    explanation: '**Articles:**\\n• **"a"** before consonant sounds (a book, a car)\\n• **"an"** before vowel sounds (an apple, an hour)\\n• **"the"** for specific things (the book I read)\\n• **No article** with plural or uncountable nouns',
     requiredCategories: ['subjects', 'verbs', 'objects', 'articles'],
     color: 'bg-green-50 border-green-200',
     points: 20,
@@ -40,8 +44,8 @@ export const comprehensiveLevels = [
     category: 'present-basics',
     pattern: 'Subject + do/does + not + V1 + Object',
     formula: 'subject + do(es) + not + verb + object',
-    example: "I don't like vegetables. / She doesn't eat meat.",
-    explanation: "**Negative Forms:**\\n• **\"don't\"** with: I, you, we, they\\n• **\"doesn't\"** with: he, she, it\\n• Always use **V1 (base form)** after do/does",
+    example: 'I don\'t like vegetables. / She doesn\'t eat meat.',
+    explanation: '**Negative Forms:**\\n• **"don\'t"** with: I, you, we, they\\n• **"doesn\'t"** with: he, she, it\\n• Always use **V1 (base form)** after do/does',
     requiredCategories: ['subjects', 'verbs', 'objects', 'helpers', 'negatives'],
     color: 'bg-green-50 border-green-200',
     points: 25,
@@ -58,7 +62,7 @@ export const comprehensiveLevels = [
     pattern: 'Do/Does + Subject + V1 + Object?',
     formula: 'do(es) + subject + verb + object?',
     example: 'Do you like pizza? / Does she play soccer?',
-    explanation: '**Question Forms:**\n• **"Do"** with: I, you, we, they\n• **"Does"** with: he, she, it\n• Always use **V1 (base form)** after do/does\n• Add **"?"** at the end',
+    explanation: '**Question Forms:**\\n• **"Do"** with: I, you, we, they\\n• **"Does"** with: he, she, it\\n• Always use **V1 (base form)** after do/does\\n• Add **"?"** at the end',
     requiredCategories: ['helpers', 'subjects', 'verbs', 'objects'],
     color: 'bg-green-50 border-green-200',
     points: 25,
@@ -75,7 +79,7 @@ export const comprehensiveLevels = [
     pattern: 'What + do/does + Subject + V1?',
     formula: 'what + do(es) + subject + verb?',
     example: 'What do you eat?',
-    explanation: '**Be Verbs:**\n• **"am"** with: I\n• **"is"** with: he, she, it\n• **"are"** with: you, we, they\n• Use **adjectives** or **noun phrases** after be',
+    explanation: '**Be Verbs:**\\n• **"am"** with: I\\n• **"is"** with: he, she, it\\n• **"are"** with: you, we, they\\n• Use **adjectives** or **noun phrases** after be',
     requiredCategories: ['question-words', 'helpers', 'subjects', 'verbs'],
     color: 'bg-green-50 border-green-200',
     points: 30,
@@ -86,12 +90,8 @@ export const comprehensiveLevels = [
   }
 ];
 
-// Helper function to get level by ID
-export const getLevelById = (id) => {
-  return comprehensiveLevels.find(level => level.id === id);
-};
+export default comprehensiveLevels;`;
 
-// Export with the expected name
-export const comprehensiveLevels45 = comprehensiveLevels;
-
-export default comprehensiveLevels;
+const levelsPath = path.join(__dirname, '../src/data/comprehensiveLevels45.js');
+fs.writeFileSync(levelsPath, cleanLevels, 'utf8');
+console.log('✅ Created clean levels file with proper escaping');
