@@ -890,32 +890,38 @@ export default function LevelPage() {
 
   // Color coding for word categories with icons (low-saturation pastels with black text)
   const getCategoryColor = (category: string) => {
-    // In challenge mode, remove colors for more difficulty
-    if (learningMode === 'shuffled') {
-      return 'bg-slate-200/80 border-slate-300/50 text-gray-900 hover:bg-slate-300/80'
-    }
-
+    // Color-coded system for visual learning - vibrant and engaging
     const colors = {
-      'pronoun': 'bg-sky-200/80 border-sky-300/50 text-gray-900 hover:bg-sky-300/80',
-      'verb': 'bg-purple-200/80 border-purple-300/50 text-gray-900 hover:bg-purple-300/80',
-      'countable-noun': 'bg-orange-200/80 border-orange-300/50 text-gray-900 hover:bg-orange-300/80',
-      'uncountable-noun': 'bg-orange-200/80 border-orange-300/50 text-gray-900 hover:bg-orange-300/80',
-      'indefinite-article': 'bg-pink-200/80 border-pink-300/50 text-gray-900 hover:bg-pink-300/80',
-      'definite-article': 'bg-pink-200/80 border-pink-300/50 text-gray-900 hover:bg-pink-300/80',
-      'auxiliary': 'bg-violet-200/80 border-violet-300/50 text-gray-900 hover:bg-violet-300/80',
-      'be-verb': 'bg-violet-200/80 border-violet-300/50 text-gray-900 hover:bg-violet-300/80',
-      'negation': 'bg-red-200/80 border-red-300/50 text-gray-900 hover:bg-red-300/80',
-      'negative-contraction': 'bg-red-200/80 border-red-300/50 text-gray-900 hover:bg-red-300/80',
-      'wh-question': 'bg-emerald-200/80 border-emerald-300/50 text-gray-900 hover:bg-emerald-300/80',
-      'modal': 'bg-indigo-200/80 border-indigo-300/50 text-gray-900 hover:bg-indigo-300/80',
-      'conjunction': 'bg-teal-200/80 border-teal-300/50 text-gray-900 hover:bg-teal-300/80',
-      'preposition': 'bg-cyan-200/80 border-cyan-300/50 text-gray-900 hover:bg-cyan-300/80',
-      'adjective': 'bg-lime-200/80 border-lime-300/50 text-gray-900 hover:bg-lime-300/80',
-      'adverb': 'bg-amber-200/80 border-amber-300/50 text-gray-900 hover:bg-amber-300/80',
-      'time-phrase': 'bg-sky-200/80 border-sky-300/50 text-gray-900 hover:bg-sky-300/80',
-      'determiner': 'bg-rose-200/80 border-rose-300/50 text-gray-900 hover:bg-rose-300/80'
+      // Core sentence parts - most important colors
+      'pronoun': 'bg-gradient-to-r from-blue-400 to-blue-500',
+      'verb': 'bg-gradient-to-r from-purple-400 to-purple-500',
+      'countable-noun': 'bg-gradient-to-r from-green-400 to-green-500',
+      'uncountable-noun': 'bg-gradient-to-r from-green-400 to-green-500',
+      
+      // Articles and helpers - supporting colors
+      'indefinite-article': 'bg-gradient-to-r from-pink-400 to-pink-500',
+      'definite-article': 'bg-gradient-to-r from-pink-400 to-pink-500',
+      'auxiliary': 'bg-gradient-to-r from-orange-400 to-orange-500',
+      'be-verb': 'bg-gradient-to-r from-orange-400 to-orange-500',
+      
+      // Negatives and questions - attention colors
+      'negation': 'bg-gradient-to-r from-red-400 to-red-500',
+      'negative-contraction': 'bg-gradient-to-r from-red-400 to-red-500',
+      'wh-question': 'bg-gradient-to-r from-yellow-400 to-yellow-500',
+      'question-word': 'bg-gradient-to-r from-yellow-400 to-yellow-500',
+      
+      // Advanced grammar - accent colors
+      'modal': 'bg-gradient-to-r from-indigo-400 to-indigo-500',
+      'conjunction': 'bg-gradient-to-r from-teal-400 to-teal-500',
+      'preposition': 'bg-gradient-to-r from-cyan-400 to-cyan-500',
+      'adjective': 'bg-gradient-to-r from-lime-400 to-lime-500',
+      'adverb': 'bg-gradient-to-r from-amber-400 to-amber-500',
+      'time-phrase': 'bg-gradient-to-r from-teal-400 to-teal-500',
+      'time-expressions': 'bg-gradient-to-r from-teal-400 to-teal-500',
+      'determiner': 'bg-gradient-to-r from-rose-400 to-rose-500',
+      'complement': 'bg-gradient-to-r from-indigo-400 to-indigo-500'
     }
-    return colors[category as keyof typeof colors] || 'bg-slate-200/80 border-slate-300/50 text-gray-900 hover:bg-slate-300/80'
+    return colors[category as keyof typeof colors] || 'bg-gradient-to-r from-gray-400 to-gray-500'
   }
 
   // Transform verbs for tense/aspect to display appropriate forms
@@ -2026,23 +2032,27 @@ export default function LevelPage() {
                     Tap tiles below to form a sentence...
                   </p>
                 ) : (
-                  <div className="flex flex-wrap gap-2 justify-center">
+                  <div className="flex flex-wrap gap-3 justify-center p-4">
                     {selectedTiles.map((tile, index) => (
-                      <Badge
+                      <div
                         key={index}
-                        variant="secondary"
-                                className={`${getCategoryColor(tile.category)} cursor-move hover:scale-105 hover:shadow-lg text-sm px-3 py-2 rounded-full transition-all duration-200 border shadow-sm min-h-[36px] touch-manipulation`}
-                                draggable
-                                onDragStart={(e) => onDragStart(e, index)}
-                                onDragOver={onDragOver}
-                                onDrop={(e) => onDrop(e, index)}
+                        className={`${getCategoryColor(tile.category)} cursor-move hover:scale-110 active:scale-95 text-sm px-4 py-3 rounded-2xl transition-all duration-300 border-2 border-white/20 hover:border-white/40 shadow-lg hover:shadow-xl min-h-[48px] touch-manipulation relative overflow-hidden group`}
+                        draggable
+                        onDragStart={(e) => onDragStart(e, index)}
+                        onDragOver={onDragOver}
+                        onDrop={(e) => onDrop(e, index)}
                         onClick={() => removeTile(index)}
                       >
-                        <span className={tile.category === 'verb' && isWordToggled(tile) ? 'font-bold' : ''}>
-                          {getChallengeWordDisplay(tile)}
-                        </span>
-                        <span className="ml-1 text-xs opacity-60">×</span>
-                      </Badge>
+                        {/* Bubble effect on hover */}
+                        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+                        
+                        <div className="flex items-center justify-between relative z-10">
+                          <span className={`text-white drop-shadow-sm font-bold ${tile.category === 'verb' && isWordToggled(tile) ? 'font-extrabold' : ''}`}>
+                            {getChallengeWordDisplay(tile)}
+                          </span>
+                          <span className="ml-2 text-xs opacity-80 text-white font-bold">×</span>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -2176,6 +2186,45 @@ export default function LevelPage() {
             )}
 
                 {/* Combo Tips removed for now */}
+
+            {/* Color Legend for Visual Learning */}
+            <div className="mb-6 p-4 bg-slate-800/90 backdrop-blur-sm rounded-2xl border border-slate-600/40">
+              <h3 className="text-lg font-bold text-white mb-3 text-center">🎨 Color-Coded Parts of Speech</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 rounded-full bg-gradient-to-r from-blue-400 to-blue-500"></div>
+                  <span className="text-slate-300">Subjects</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 rounded-full bg-gradient-to-r from-purple-400 to-purple-500"></div>
+                  <span className="text-slate-300">Verbs</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 rounded-full bg-gradient-to-r from-green-400 to-green-500"></div>
+                  <span className="text-slate-300">Objects</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 rounded-full bg-gradient-to-r from-pink-400 to-pink-500"></div>
+                  <span className="text-slate-300">Articles</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 rounded-full bg-gradient-to-r from-orange-400 to-orange-500"></div>
+                  <span className="text-slate-300">Helpers</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 rounded-full bg-gradient-to-r from-red-400 to-red-500"></div>
+                  <span className="text-slate-300">Negatives</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-500"></div>
+                  <span className="text-slate-300">Questions</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 rounded-full bg-gradient-to-r from-teal-400 to-teal-500"></div>
+                  <span className="text-slate-300">Time</span>
+                </div>
+              </div>
+            </div>
 
             {/* Vertical Stacked Word Categories */}
             {learningMode === 'categorized' ? (
