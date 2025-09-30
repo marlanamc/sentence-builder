@@ -69,6 +69,7 @@ export default function LevelPage() {
     )
   }
 
+
   // Load saved sentences from localStorage on component mount
   useEffect(() => {
     const saved = localStorage.getItem('savedSentences')
@@ -171,8 +172,17 @@ export default function LevelPage() {
     const baseCategories = {
       subjects: availablePronouns,
 
-      // Merge base verbs with CSV verbs
-      verbs: [
+      // Level-specific verb filtering - Level 1 gets only basic verbs
+      verbs: level.id === 1 ? [
+        // Level 1: Only 6 most basic verbs for beginners
+        { word: 'eat/eats', baseForm: 'eat', thirdPersonForm: 'eats', category: 'verb', toggleable: true },
+        { word: 'like/likes', baseForm: 'like', thirdPersonForm: 'likes', category: 'verb', toggleable: true },
+        { word: 'play/plays', baseForm: 'play', thirdPersonForm: 'plays', category: 'verb', toggleable: true },
+        { word: 'watch/watches', baseForm: 'watch', thirdPersonForm: 'watches', category: 'verb', toggleable: true },
+        { word: 'drink/drinks', baseForm: 'drink', thirdPersonForm: 'drinks', category: 'verb', toggleable: true },
+        { word: 'read/reads', baseForm: 'read', thirdPersonForm: 'reads', category: 'verb', toggleable: true }
+      ] : [
+        // All other levels: Full verb set
         { word: 'eat/eats', baseForm: 'eat', thirdPersonForm: 'eats', category: 'verb', toggleable: true },
         { word: 'like/likes', baseForm: 'like', thirdPersonForm: 'likes', category: 'verb', toggleable: true },
         { word: 'watch/watches', baseForm: 'watch', thirdPersonForm: 'watches', category: 'verb', toggleable: true },
@@ -207,7 +217,17 @@ export default function LevelPage() {
         }))
       ],
 
-      objects: [
+      // Level-specific object filtering - Level 1 gets only basic objects
+      objects: level.id === 1 ? [
+        // Level 1: Only 6 most basic objects for beginners
+        { word: 'pizza', category: 'uncountable-noun', toggleable: false },
+        { word: 'music', category: 'uncountable-noun', toggleable: false },
+        { word: 'coffee', category: 'uncountable-noun', toggleable: false },
+        { word: 'book/books', category: 'countable-noun', toggleable: true },
+        { word: 'apple/apples', category: 'countable-noun', toggleable: true },
+        { word: 'game/games', category: 'countable-noun', toggleable: true }
+      ] : [
+        // All other levels: Full object set
         { word: 'pizza', category: 'uncountable-noun', toggleable: false },
         { word: 'soccer', category: 'uncountable-noun', toggleable: false },
         { word: 'basketball', category: 'uncountable-noun', toggleable: false },
@@ -786,28 +806,12 @@ export default function LevelPage() {
     categories.forEach(categoryName => {
       let categoryWordsRaw = wordCategories[categoryName as keyof typeof wordCategories] || []
       
-      // Apply Level 1 object filtering for shuffled mode too
-      if (level.id === 1 && categoryName === 'objects') {
-        categoryWordsRaw = categoryWordsRaw.filter((wordObj: { word?: string }) => {
-          // Show uncountable nouns (pizza, soccer, coffee, etc.)
-          if (wordObj.category === 'uncountable-noun') return true
-          // Show only plural forms of countable nouns
-          if (wordObj.category === 'countable-noun' && wordObj.toggleable) {
-            // Modify the word to show only the plural form
-            const parts = wordObj.word.split('/')
-            if (parts.length > 1) {
-              wordObj.word = parts[1] // Use plural form (apples instead of apple/apples)
-              wordObj.toggleable = false // Disable toggling for Level 1
-            }
-            return true
-          }
-          return false
-        })
-      }
+      // Level-specific filtering is now handled in the main word categories
       
-      const categoryWords = (categoryWordsRaw as Array<{ word: string; originalWord?: string }>).map((w) => ({
+      const categoryWords = (categoryWordsRaw as Array<any>).map((w) => ({
         ...w,
-        originalWord: w.originalWord ?? w.word
+        originalWord: w.originalWord ?? w.word,
+        category: w.category || 'unknown'
       }))
       // Limit to 10 words per category for mobile optimization
       allWords.push(...categoryWords.slice(0, 10))
@@ -918,11 +922,11 @@ export default function LevelPage() {
   const mapVerbForLevel = (wordObj: { word?: string; category?: string }) => {
     const category = detectLevelCategory()
     if (wordObj.category !== 'verb') return wordObj
-    const base = wordObj.baseForm || wordObj.word?.split('/')?.[0]
-    const third = wordObj.thirdPersonForm || wordObj.word?.split('/')?.[1]
-    const v2 = wordObj.v2 || toPastTense(base)
-    const v3 = wordObj.v3 || toPastParticiple(base)
-    const ving = wordObj.ving || `${base?.endsWith('e') ? base.slice(0,-1) : base}ing`
+    const base = (wordObj as any).baseForm || wordObj.word?.split('/')?.[0]
+    const third = (wordObj as any).thirdPersonForm || wordObj.word?.split('/')?.[1]
+    const v2 = (wordObj as any).v2 || toPastTense(base)
+    const v3 = (wordObj as any).v3 || toPastParticiple(base)
+    const ving = (wordObj as any).ving || `${base?.endsWith('e') ? base.slice(0,-1) : base}ing`
 
     // Choose default display depending on level
     if (category.includes('past') && !category.includes('perfect') && !category.includes('continuous')) {
@@ -1588,7 +1592,7 @@ export default function LevelPage() {
   if (typeof window !== 'undefined' && window.innerWidth < 768) {
     return (
       <MobileGameLayout
-        level={level}
+        level={level!}
         selectedTiles={selectedTiles}
         onTileSelect={(tile) => handleTileClick(tile.word, tile.category)}
         onTileRemove={removeTile}
@@ -1627,7 +1631,7 @@ export default function LevelPage() {
   if (isClient && isMobile) {
     return (
       <MobileGameLayout
-        level={level}
+        level={level!}
         selectedTiles={selectedTiles}
         onTileSelect={(tile) => handleTileClick(tile.word, tile.category)}
         onTileRemove={removeTile}
@@ -1650,7 +1654,7 @@ export default function LevelPage() {
   // Desktop layout
   return (
     <DesktopGameLayout
-      level={level}
+      level={level!}
       selectedTiles={selectedTiles}
       onTileSelect={(tile) => handleTileClick(tile.word, tile.category)}
       onTileRemove={removeTile}
@@ -1666,7 +1670,7 @@ export default function LevelPage() {
       wordTiles={wordCategories}
       onBack={() => router.push('/game/levels')}
       onShowHelp={() => setShowHelpModal(true)}
-      progress={progress.progressPercentage}
+           progress={progress.completedLevels.length}
       streak={progress.streak}
       totalPoints={progress.totalPoints}
     />
@@ -1812,7 +1816,7 @@ export default function LevelPage() {
             <div className="text-center space-y-4">
               <div className="text-6xl animate-bounce">🎉</div>
               <h2 className="text-3xl font-bold text-white">Good Job!</h2>
-              <p className="text-xl text-white/90">You&apos;ve completed {level.name}!</p>
+              <p className="text-xl text-white/90">You&apos;ve completed {level!.name}!</p>
               <div className="text-2xl animate-pulse">Let&apos;s continue! 🚀</div>
             </div>
           </div>
@@ -1851,14 +1855,14 @@ export default function LevelPage() {
           {/* Progress Bar */}
           <div className="bg-slate-800/50 backdrop-blur-sm rounded-full p-1 shadow-sm border border-slate-600/30">
             <div className="flex items-center justify-between px-3 py-1">
-              <span className="text-xs font-medium text-slate-300">Level {level.id} of 47</span>
+              <span className="text-xs font-medium text-slate-300">Level {level!.id} of 47</span>
               <div className="flex-1 mx-3 bg-slate-700/50 rounded-full h-1.5">
                 <div
                   className="h-1.5 rounded-full transition-all duration-500 bg-[linear-gradient(90deg,#22D3EE,#A78BFA,#F472B6,#34D399)] bg-[length:200%_100%] animate-[progressGlow_3s_linear_infinite]"
-                  style={{ width: `${((level.id / 47) * 100)}%` }}
+                  style={{ width: `${((level!.id / 47) * 100)}%` }}
                 />
               </div>
-              <span className="text-xs text-slate-400">{Math.round(((level.id / 47) * 100))}%</span>
+              <span className="text-xs text-slate-400">{Math.round(((level!.id / 47) * 100))}%</span>
             </div>
           </div>
 
@@ -1868,7 +1872,7 @@ export default function LevelPage() {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <h1 className="text-2xl font-bold text-white drop-shadow-lg">
-                    {level.name}
+                    {level!.name}
                   </h1>
                 </div>
                 <Button
@@ -2149,7 +2153,7 @@ export default function LevelPage() {
               {/* Vertical layout with helper tip */}
               <div className="space-y-3">
             {/* Helper Instructions and Logical Word Combination Tips */}
-            {level.requiredCategories?.includes('verbs') && (
+            {level!.requiredCategories?.includes('verbs') && (
               <div className="bg-slate-800/80 backdrop-blur-sm rounded-xl p-4 border border-slate-600/40 shadow-lg">
                 <div className="flex flex-col items-center justify-center space-y-3 text-slate-200 text-sm">
                   <div className="flex items-center space-x-2">
@@ -2176,14 +2180,14 @@ export default function LevelPage() {
             {/* Vertical Stacked Word Categories */}
             {learningMode === 'categorized' ? (
                   <WordCategoryList
-                    categoriesToShow={level.requiredCategories || []}
-                    wordCategories={wordCategories}
+                    categoriesToShow={level!.requiredCategories || []}
+                    wordCategories={wordCategories as any}
                     getCategoryIcon={getCategoryIcon}
                     getCategoryColor={getCategoryColor}
-                    getChallengeWordDisplay={(w: { word?: string; category?: string }) => getChallengeWordDisplay(mapVerbForLevel(w))}
+                    getChallengeWordDisplay={(w: { word?: string; category?: string }) => getChallengeWordDisplay(mapVerbForLevel(w as any) as any)}
                     onTileClick={handleTileClick}
                     limitWordsPerCategory={10}
-                    levelId={level.id}
+                    levelId={level!.id}
                   />
                 ) : (
               <Card className="bg-slate-800/90 backdrop-blur-sm shadow-lg border-0 rounded-2xl overflow-hidden border border-slate-700/50">
@@ -2195,7 +2199,7 @@ export default function LevelPage() {
                 </div>
                 <div className="p-3">
                       <ShuffledWordGrid
-                        words={getShuffledWords().map((w: { word?: string; category?: string }) => mapVerbForLevel(w))}
+                        words={getShuffledWords().map((w: { word?: string; category?: string }) => mapVerbForLevel(w as any) as any)}
                         learningMode={learningMode}
                         isWordToggled={isWordToggled}
                         getCategoryColor={getCategoryColor}
@@ -2337,7 +2341,7 @@ export default function LevelPage() {
               </section>
 
               {/* Verb Toggle Instructions */}
-              {level.requiredCategories?.includes('verbs') && (
+              {level!.requiredCategories?.includes('verbs') && (
                 <section>
                   <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
                     <span className="w-10 h-10 bg-purple-500/30 text-purple-200 rounded-full flex items-center justify-center text-lg font-bold mr-4 border-2 border-purple-400/40">2</span>

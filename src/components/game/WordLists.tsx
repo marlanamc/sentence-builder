@@ -21,24 +21,7 @@ export function WordCategoryList({ categoriesToShow, wordCategories, getCategory
       {categoriesToShow.map((categoryName) => {
         let allCategoryWords = (wordCategories[categoryName] || []) as WordObj[]
         
-        // Filter objects for Level 1 (Basic Affirmative) - only uncountable nouns and plural forms
-        if (levelId === 1 && categoryName === 'objects') {
-          allCategoryWords = allCategoryWords.filter(wordObj => {
-            // Show uncountable nouns (pizza, soccer, coffee, etc.)
-            if (wordObj.category === 'uncountable-noun') return true
-            // Show only plural forms of countable nouns (books, apples, not book, apple)
-            if (wordObj.category === 'countable-noun' && wordObj.toggleable) {
-              // Modify the word to show only the plural form
-              const parts = wordObj.word.split('/')
-              if (parts.length > 1) {
-                wordObj.word = parts[1] // Use plural form (apples instead of apple/apples)
-                wordObj.toggleable = false // Disable toggling for Level 1
-              }
-              return true
-            }
-            return false
-          })
-        }
+        // Level-specific filtering is now handled in the main level page
         
         const categoryWords = limitWordsPerCategory 
           ? allCategoryWords.slice(0, limitWordsPerCategory)
