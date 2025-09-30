@@ -266,7 +266,7 @@ export const comprehensiveLevels47 = [
     formula: 'if + present, present',
     example: 'If you heat water, it boils.',
     explanation: 'Use zero conditional for facts, rules, and general truths. Both clauses use present simple.',
-    requiredCategories: ['subjects', 'verbs', 'duration-expressions'],
+    requiredCategories: ['subjects', 'verbs', 'conditionals'],
     color: 'bg-yellow-50 border-yellow-200',
     points: 70,
     unlockRequirement: 0,

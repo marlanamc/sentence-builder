@@ -11,12 +11,19 @@ import { grammarEngine } from '@/lib/grammar-engine-instance'
 import { GrammarGuideCard } from '@/components/game/GrammarGuideCard'
 import { VerbSystemGuide } from '@/components/game/VerbSystemGuide'
 import { WordCategoryList, ShuffledWordGrid } from '@/components/game/WordLists'
+import { MobileGameLayout } from '@/components/game/MobileGameLayout'
+import { DesktopGameLayout } from '@/components/game/DesktopGameLayout'
+import { SimpleMobileLayout } from '@/components/game/SimpleMobileLayout'
+import { useMobile } from '@/hooks/useMobile'
+import { useStudentProgress } from '@/hooks/useStudentProgress'
 import { loadGrammarPatternByLevel, fallbackPatterns, type GrammarPattern } from '@/utils/grammarPatterns'
 
 export default function LevelPage() {
   const router = useRouter()
   const params = useParams()
   const levelId = parseInt(params.id as string)
+  const { isMobile, isClient } = useMobile()
+  const { progress, completeLevel, recordAttempt, updatePreferences } = useStudentProgress()
 
   const [selectedTiles, setSelectedTiles] = useState<Array<{ word: string; category: string; originalWord: string }>>([])
   const [feedback, setFeedback] = useState('')
@@ -1573,6 +1580,97 @@ export default function LevelPage() {
       router.push('/game/levels')
     }
   }
+
+  // Debug mobile detection
+  console.log('Mobile detection:', { isClient, isMobile, width: typeof window !== 'undefined' ? window.innerWidth : 'SSR' })
+  
+  // Force mobile layout for testing (375px viewport)
+  if (typeof window !== 'undefined' && window.innerWidth < 768) {
+    return (
+      <MobileGameLayout
+        level={level}
+        selectedTiles={selectedTiles}
+        onTileSelect={(tile) => handleTileClick(tile.word, tile.category)}
+        onTileRemove={removeTile}
+        onCheckSentence={checkSentence}
+        onSaveSentence={saveSentence}
+        onClearSentence={clearSentence}
+        feedback={feedback}
+        showFeedback={showFeedback}
+        isEvaluating={isEvaluating}
+        categorizedCorrect={categorizedCorrect}
+        learningMode={learningMode}
+        onModeChange={setLearningMode}
+        wordTiles={wordCategories}
+        onBack={() => router.push('/game/levels')}
+        onShowHelp={() => setShowHelpModal(true)}
+      />
+    )
+  }
+
+  // Temporary: Always show mobile layout for testing
+  if (!level) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4">
+        <div className="max-w-2xl mx-auto text-center py-20">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">Level Not Found</h1>
+          <p className="text-gray-600 mb-6">The level you&apos;re looking for doesn&apos;t exist.</p>
+          <Button onClick={() => router.push('/game/levels')}>
+            Back to Levels
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  // Render appropriate layout based on device
+  if (isClient && isMobile) {
+    return (
+      <MobileGameLayout
+        level={level}
+        selectedTiles={selectedTiles}
+        onTileSelect={(tile) => handleTileClick(tile.word, tile.category)}
+        onTileRemove={removeTile}
+        onCheckSentence={checkSentence}
+        onSaveSentence={saveSentence}
+        onClearSentence={clearSentence}
+        feedback={feedback}
+        showFeedback={showFeedback}
+        isEvaluating={isEvaluating}
+        categorizedCorrect={categorizedCorrect}
+        learningMode={learningMode}
+        onModeChange={setLearningMode}
+        wordTiles={wordCategories}
+        onBack={() => router.push('/game/levels')}
+        onShowHelp={() => setShowHelpModal(true)}
+      />
+    )
+  }
+
+  // Desktop layout
+  return (
+    <DesktopGameLayout
+      level={level}
+      selectedTiles={selectedTiles}
+      onTileSelect={(tile) => handleTileClick(tile.word, tile.category)}
+      onTileRemove={removeTile}
+      onCheckSentence={checkSentence}
+      onSaveSentence={saveSentence}
+      onClearSentence={clearSentence}
+      feedback={feedback}
+      showFeedback={showFeedback}
+      isEvaluating={isEvaluating}
+      categorizedCorrect={categorizedCorrect}
+      learningMode={learningMode}
+      onModeChange={setLearningMode}
+      wordTiles={wordCategories}
+      onBack={() => router.push('/game/levels')}
+      onShowHelp={() => setShowHelpModal(true)}
+      progress={progress.progressPercentage}
+      streak={progress.streak}
+      totalPoints={progress.totalPoints}
+    />
+  )
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-[#0B1220]">
